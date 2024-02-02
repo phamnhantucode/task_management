@@ -14,14 +14,15 @@ Tên_dự_án là một ứng dụng di động được xây dựng bằng Flut
 - [Tính năng 3]: [Mô tả tính năng 3]
 - ...
 
-## Cài đặt
+## Setup
+```sh
+flutter pub get
+flutter pub run build_runner build
+```
 
-Để cài đặt và chạy ứng dụng, làm theo các bước sau:
-
-1. Clone repo này: `git clone https://github.com/username/ten-du-an.git`
-2. Di chuyển vào thư mục dự án: `cd ten-du-an`
-3. Cài đặt các dependencies: `flutter pub get`
-4. Chạy ứng dụng trên thiết bị/emulator: `flutter run`
+## Run
+```sh
+flutter run
 
 ## Đóng góp
 
@@ -30,3 +31,4 @@ Chúng tôi rất hoan nghênh mọi đóng góp vào dự án. Nếu bạn phá
 ## Tác giả
 
 Tên_tác_giả - [Email liên hệ]
+
