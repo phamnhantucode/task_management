@@ -23,11 +23,6 @@ Tên_dự_án là một ứng dụng di động được xây dựng bằng Flut
 3. Cài đặt các dependencies: `flutter pub get`
 4. Chạy ứng dụng trên thiết bị/emulator: `flutter run`
 
-## Yêu cầu hệ thống
-
-- Flutter 2.x.x
-- Dart 2.x.x
-
 ## Đóng góp
 
 Chúng tôi rất hoan nghênh mọi đóng góp vào dự án. Nếu bạn phát hiện lỗi, có ý tưởng mới hoặc muốn cải thiện dự án, hãy tạo một issue hoặc gửi pull request. Chúng tôi sẽ xem xét và trả lời sớm nhất có thể.
@@ -35,7 +30,3 @@ Chúng tôi rất hoan nghênh mọi đóng góp vào dự án. Nếu bạn phá
 ## Tác giả
 
 Tên_tác_giả - [Email liên hệ]
-
-## Giấy phép
-
-Dự án được phân phối dưới giấy phép [tên giấy phép]. Xem file [LICENSE.md](LICENSE.md) để biết thêm chi tiết.
