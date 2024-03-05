@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:room_master_app/theme/text_theme.dart';
 
 import 'color_schemes.dart';
 
@@ -12,6 +13,7 @@ abstract interface class AppTheme {
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
       ),
+      textTheme: lightTextTheme,
     );
   }
 

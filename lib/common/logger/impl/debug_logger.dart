@@ -14,7 +14,6 @@ final class DebugLogger implements Logger {
       level: level,
       filter: filter,
       output: output,
-      printer: printer ?? l.PrettyPrinter(colors: !Platform.isIOS),
     );
   }
 
