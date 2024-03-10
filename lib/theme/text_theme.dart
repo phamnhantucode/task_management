@@ -6,36 +6,48 @@ const lightTextTheme = TextTheme(
     fontFamily: 'Prompt',
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: AppColors.textGray
+    color: Colors.black
   ),
   bodySmall: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 14,
       fontWeight: FontWeight.w400,
-      color: AppColors.textGray
+      color: Colors.black
   ),
   bodyLarge: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 18,
       fontWeight: FontWeight.w400,
-      color: AppColors.textGray
+      color: Colors.black
   ),
   titleSmall: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 20,
       fontWeight: FontWeight.w700,
-      color: AppColors.textBlack
+      color: Colors.black
   ),
   titleLarge: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 24,
       fontWeight: FontWeight.w700,
-      color: AppColors.textBlack
+      color: Colors.black
   ),
   titleMedium: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 22,
       fontWeight: FontWeight.w700,
-      color: AppColors.textBlack
+      color: Colors.black
   ),
+  labelLarge: TextStyle(
+      fontFamily: 'Prompt',
+      fontSize: 22,
+      fontWeight: FontWeight.w500,
+      color: Colors.black
+  ),
+  labelMedium: TextStyle(
+    fontFamily: 'Prompt',
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+    color: Colors.black
+),
 );

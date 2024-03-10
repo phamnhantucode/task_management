@@ -1,4 +1,12 @@
 {
     "text_hello_world": "Hello World!",
-    "text_display_some_text": "Display some text!"
+    "text_display_some_text": "Display some text!",
+    "text_create_new_task": "Create new task",
+    "text_enter_task_name": "Enter task name",
+    "text_task_name": "Task name",
+    "text_category": "Category",
+    "text_date_and_time": "Date & Time",
+    "text_start_time": "Start time",
+    "text_end_time": "End time",
+    "text_description": "Description"
 }

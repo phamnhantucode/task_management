@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:room_master_app/screens/new_task/new_task_screen.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
@@ -28,7 +29,7 @@ abstract class AppRouter {
     routes: [
       GoRoute(
         path: NavigationPath.home,
-        builder: (_, __) => const HomeScreen(),
+        builder: (_, __) => const NewTaskScreen(),
       ),
       GoRoute(
         path: NavigationPath.login,
