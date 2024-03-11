@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:room_master_app/common/constant.dart';
 import 'package:room_master_app/common/extensions/context.dart';
-import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
-import 'package:time_picker_spinner_pop_up/time_picker_spinner_pop_up.dart';
+
+import '../component/time_select_pop_up.dart';
+import '../component/title_bar.dart';
+import '../component/tm_text_field.dart';
 
 class NewTaskScreen extends StatelessWidget {
   const NewTaskScreen({super.key});
@@ -170,7 +171,7 @@ class NewTaskScreen extends StatelessWidget {
                           context.appColors.buttonDisable),
                     ),
                     onPressed: () async {
-                      final result = await TMCalendarDatePicker(
+                      await TMCalendarDatePicker(
                           value: [getCurrentTimestamp]).onShowDialog(context);
                     },
                     icon: Icon(
@@ -250,111 +251,6 @@ class NewTaskScreen extends StatelessWidget {
             textStyle: context.textTheme.bodyMedium,
             maxLines: 3,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-final class TMSelectTime extends StatelessWidget {
-  const TMSelectTime({
-    super.key,
-    required this.initTime,
-    required this.onChange,
-  });
-
-  final DateTime initTime;
-  final void Function(DateTime dateTime) onChange;
-
-  @override
-  Widget build(BuildContext context) {
-    return TimePickerSpinnerPopUp(
-      onChange: onChange,
-      initTime: initTime,
-      textStyle: context.textTheme.bodyMedium,
-      timeFormat: AppConstants.timeFormat,
-      actionButtonPadding: EdgeInsetsDirectional.symmetric(horizontal: 16.w, vertical: 12.h),
-      isCancelTextLeft: true,
-      cancelTextStyle: context.textTheme.bodyMedium?.copyWith(color: context.appColors.buttonEnable),
-      confirmTextStyle: context.textTheme.bodyMedium?.copyWith(color: context.appColors.buttonEnable),
-      timeWidgetBuilder: (time) => Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(color: context.appColors.borderColor),
-        ),
-        padding:
-            EdgeInsetsDirectional.symmetric(vertical: 16.h, horizontal: 24.w),
-        child: Row(
-          children: [
-            Expanded(child: Text(time.timeFormat)),
-            Icon(
-              Icons.keyboard_arrow_down,
-              color: context.appColors.buttonEnable,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-final class TMTextField extends StatelessWidget {
-  const TMTextField({
-    super.key,
-    this.initialText,
-    this.hintText,
-    this.textStyle,
-    this.maxLines,
-  });
-
-  final String? initialText;
-  final String? hintText;
-  final TextStyle? textStyle;
-  final int? maxLines;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: context.appColors.borderColor)),
-      padding: EdgeInsetsDirectional.only(start: 16.w),
-      child: TextFormField(
-        initialValue: initialText,
-        decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: hintText,
-            hintStyle: textStyle?.copyWith(color: context.appColors.textGray)),
-        maxLines: maxLines,
-      ),
-    );
-  }
-}
-
-class TMTitleBar extends StatelessWidget {
-  const TMTitleBar({super.key, required this.title, this.prefix, this.suffix});
-
-  final String title;
-  final Widget? prefix;
-  final Widget? suffix;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsetsDirectional.symmetric(vertical: 16.h),
-      child: Row(
-        children: [
-          prefix ?? const SizedBox.shrink(),
-          Expanded(
-            child: Center(
-              child: Text(
-                title,
-                style: context.textTheme.bodyLarge
-                    ?.copyWith(color: context.appColors.textBlack),
-              ),
-            ),
-          ),
-          suffix ?? const SizedBox.shrink(),
         ],
       ),
     );
