@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:room_master_app/domain/repositories/test_repository.dart';
@@ -44,7 +45,7 @@ final class AppView extends StatefulWidget {
       context.findAncestorStateOfType<AppViewState>()!;
 }
 
-final class AppViewState extends State<AppView> {
+final class AppViewState extends State<AppView> with WidgetsBindingObserver{
   ThemeMode _themeMode = ThemeMode.light;
   late AppColors appColors;
 
@@ -55,18 +56,41 @@ final class AppViewState extends State<AppView> {
   }
 
   bool isDarkMode(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
+    final brightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
     return brightness == Brightness.dark;
   }
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     if (isDarkMode(context)) {
       appColors = AppColors(appearance: Appearance.dark);
+      setThemeMode(ThemeMode.dark);
     } else {
       appColors = AppColors(appearance: Appearance.light);
+      setThemeMode(ThemeMode.light);
     }
     super.initState();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    setState(() {
+      if (isDarkMode(context)) {
+        appColors = AppColors(appearance: Appearance.dark);
+        setThemeMode(ThemeMode.dark);
+      } else {
+        appColors = AppColors(appearance: Appearance.light);
+        setThemeMode(ThemeMode.light);
+      }
+    });
+    super.didChangePlatformBrightness();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
