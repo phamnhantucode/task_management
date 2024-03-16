@@ -27,10 +27,10 @@ class AppColors {
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
     textGray: Color(0xFFAABBCC),
-    textBlack: Color(0xFF000000),
+    textBlack: Color(0xFFFFFFFF),
     borderColor: Color(0xFFF8F8F8),
-    buttonEnable: Color(0xFF418FFF),
-    textOnBtnEnable: Color(0xFFFFFFFF),
+    buttonEnable: Color(0xFF3A414C),
+    textOnBtnEnable: Color(0xFF000000),
     buttonDisable: Color(0xFF9DC5FB),
     fingerID: Color(0xFFFFFFFF),
     textWhite: Color(0xFFFFFFFF),
