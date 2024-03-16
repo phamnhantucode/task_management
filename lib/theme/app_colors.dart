@@ -40,6 +40,7 @@ class AppColors {
     gradient_bg_4: Color(0xFF398AE5),
       tfcolor: Color(0xFF6CA8F1)
   );
+  
 }
 
 enum Appearance { light, dark }
