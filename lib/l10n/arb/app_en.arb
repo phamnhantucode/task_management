@@ -8,5 +8,8 @@
     "text_date_and_time": "Date & Time",
     "text_start_time": "Start time",
     "text_end_time": "End time",
-    "text_description": "Description"
+    "text_description": "Description",
+    "header_home": "Home Screen",
+    "today_progress_title": "Today's progress summery",
+    "today_task": "Today's task"
 }

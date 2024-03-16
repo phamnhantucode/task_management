@@ -26,6 +26,7 @@ class AppColors {
     textOnBtnEnable: Color(0xFFFFFFFF),
     buttonDisable: Color(0xFF9DC5FB),
   );
+  
 }
 
 enum Appearance { light, dark }

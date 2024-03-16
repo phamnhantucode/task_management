@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/screens/bottom_navigation/nav_bar.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
-import 'package:room_master_app/theme/app_colors.dart';
+import 'package:room_master_app/l10n/l10n.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,9 +21,14 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const SizedBox(height: 20),
             TopHeader(
-                title: 'Home Screen',
-                leftAction: () => {},
-                rightAction: () => {}),
+                title: context.l10n.header_home,
+                leftAction: () => {
+                  print("Left clcik")
+                },
+                rightAction: () => {
+                  print("Right clcik")
+
+                }),
             const SizedBox(height: 40),
             Container(
               height: 200,
@@ -34,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                     colors: [
-                      AppColors.darkScheme.buttonEnable,
+                      context.appColors.buttonEnable,
                       Colors.lightBlueAccent,
                     ],
                   )),
@@ -44,8 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Today's progress summery",
+                      Text(
+                        context.l10n.header_home,
                         style: TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       const Text(
@@ -102,15 +108,27 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Today's task",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Text("See all", style: TextStyle(fontWeight: FontWeight.bold)),
-              ],
+            Container(
+              padding: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    width: 1,
+                    color: context.appColors.borderColor
+                  )
+                )
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    context.l10n.today_task,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const Text("See all",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
             ),
             Expanded(
                 child: SingleChildScrollView(
@@ -121,6 +139,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   _taskWidget(),
                   _taskWidget(),
                   _taskWidget(),
+                  _taskWidget(),
+                  _taskWidget(),
+                  const SizedBox(
+                    height: 40,
+                  )
                 ],
               ),
             ))
@@ -138,11 +161,10 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         shape: RoundedRectangleBorder(
             borderRadius: const BorderRadius.all(Radius.circular(100)),
-            side:
-                BorderSide(width: 3, color: AppColors.darkScheme.buttonEnable)),
+            side: BorderSide(width: 3, color: context.appColors.buttonEnable)),
         child: Icon(
           Icons.add,
-          color: AppColors.darkScheme.buttonEnable,
+          color: context.appColors.buttonEnable,
           size: 32,
         ),
       ),
@@ -158,14 +180,14 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: context.appColors.borderColor,
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, -5), // Moves shadow to the top
           ),
           // Bottom shadow
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: context.appColors.borderColor,
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 5), // Moves shadow to the bottom

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/theme/app_colors.dart';
 
 class NavBar extends StatelessWidget {
@@ -17,7 +16,7 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        color: AppColors.darkScheme.buttonEnable,
+        color: context.appColors.buttonEnable,
         elevation: 0.0,
           child: Row(
             children: [
