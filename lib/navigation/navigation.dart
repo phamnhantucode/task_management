@@ -5,7 +5,8 @@ import 'package:room_master_app/screens/new_task/new_task_screen.dart';
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
 import '../screens/home/home.dart';
-import '../screens/login/login.dart';
+import '../screens/login/login_screen.dart';
+
 
 abstract class NavigationPath {
   NavigationPath._();
@@ -21,7 +22,7 @@ abstract class AppRouter {
     initialLocation: NavigationPath.login,
     redirect: (context, _) {
       if (context.read<AuthenticationCubit>().state) {
-        return NavigationPath.home;
+        return NavigationPath.login;
       } else {
         return null;
       }
