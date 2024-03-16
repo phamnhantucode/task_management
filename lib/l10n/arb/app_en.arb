@@ -12,4 +12,13 @@
     "header_home": "Home Screen",
     "today_progress_title": "Today's progress summery",
     "today_task": "Today's task"
+    "label_username": "Username",
+    "label_password": "Password",
+    "text_login_btn": "Login",
+    "text_remember_me":"Remember me",
+    "label_other_login": "Quick login with Touch ID",
+    "dont_have_acc": "Don't have an account? ",
+    "forget_pass": "Forget Password?",
+    "label_register": "Register",
+    "task_management": "Task Mangement"
 }
