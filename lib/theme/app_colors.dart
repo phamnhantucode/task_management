@@ -10,40 +10,47 @@ class AppColors {
   AppColorsScheme get scheme => _isLightColors ? lightScheme : darkScheme;
 
   static const AppColorsScheme lightScheme = AppColorsScheme(
-    textGray: Color(0xFFAABBCC),
-    textBlack: Color(0xFF000000),
-    borderColor: Color(0xFFDCDCDC),
-    buttonEnable: Color(0xFF418FFF),
-    textOnBtnEnable: Color(0xFFFFFFFF),
-    buttonDisable: Color(0xFFDDEBFF),
-  );
+      textGray: Color(0xFFAABBCC),
+      textBlack: Color(0xFF000000),
+      borderColor: Color(0xFFDCDCDC),
+      buttonEnable: Color(0xFF418FFF),
+      textOnBtnEnable: Color(0xFFFFFFFF),
+      buttonDisable: Color(0xFFDDEBFF),
+      fingerID: Color(0xFFFFFFFF),
+      textWhite: Color(0xFFFFFFFF),);
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
-    textGray: Color(0xFFAABBCC),
-    textBlack: Color(0xFF000000),
-    borderColor: Color(0xFFF8F8F8),
-    buttonEnable: Color(0xFF418FFF),
-    textOnBtnEnable: Color(0xFFFFFFFF),
-    buttonDisable: Color(0xFF9DC5FB),
-  );
+      textGray: Color(0xFFAABBCC),
+      textBlack: Color(0xFF000000),
+      borderColor: Color(0xFFF8F8F8),
+      buttonEnable: Color(0xFF418FFF),
+      textOnBtnEnable: Color(0xFFFFFFFF),
+      buttonDisable: Color(0xFF9DC5FB),
+      fingerID: Color(0xFFFFFFFF),
+      textWhite: Color(0xFFFFFFFF),);
 }
 
 enum Appearance { light, dark }
 
 class AppColorsScheme {
-  const AppColorsScheme({
-    required this.textGray,
-    required this.textBlack,
-    required this.borderColor,
-    required this.buttonEnable,
-    required this.buttonDisable,
-    required this.textOnBtnEnable,
-  });
+  const AppColorsScheme(
+      {required this.textGray,
+      required this.textBlack,
+      required this.borderColor,
+      required this.buttonEnable,
+      required this.buttonDisable,
+      required this.textOnBtnEnable,
+      required this.fingerID,
+      required this.textWhite,
+
+      });
 
   final Color textGray;
   final Color textBlack;
+  final Color textWhite;
   final Color borderColor;
   final Color buttonEnable;
   final Color buttonDisable;
   final Color textOnBtnEnable;
+  final Color fingerID;
 }
