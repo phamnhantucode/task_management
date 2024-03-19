@@ -11,7 +11,7 @@
     "text_description": "Description",
     "header_home": "Home Screen",
     "today_progress_title": "Today's progress summery",
-    "today_task": "Today's task"
+    "today_task": "Today's task",
     "label_username": "Username",
     "label_password": "Password",
     "text_login_btn": "Login",
