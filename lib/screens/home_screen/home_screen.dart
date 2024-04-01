@@ -16,26 +16,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
             const SizedBox(height: 20),
             TopHeader(
                 title: context.l10n.header_home,
-                leftAction: () => {
-                  print("Left clcik")
-                },
-                rightAction: () => {
-                  print("Right clcik")
-
-                }),
+                leftAction: () => {print("Left clcik")},
+                rightAction: () => {print("Right clcik")}),
             const SizedBox(height: 40),
             Container(
               height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
-                  color: Colors.grey[300],
+                  color: context.appColors.bgGrayLight,
                   gradient: LinearGradient(
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
@@ -52,13 +47,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         context.l10n.header_home,
-                        style: TextStyle(fontSize: 20, color: Colors.white),
+                        style: const TextStyle(fontSize: 20, color: Colors.white),
                       ),
                       const Text(
                         "15 task",
                         style: TextStyle(color: Colors.white),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Row(
                         children: [
                           const Expanded(child: SizedBox()),
@@ -66,19 +61,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(
+                              SizedBox(
                                 width: 200,
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Progress',
-                                      style: TextStyle(
+                                      context.l10n.progress,
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white),
                                     ),
-                                    Text(
+                                    const Text(
                                       '40%',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w600,
@@ -96,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   value: 0.4,
                                   minHeight: 8,
                                   color: Colors.white,
-                                  backgroundColor: Colors.white54,
+                                  backgroundColor: context.appColors.bgGrayLight,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               )
@@ -111,24 +106,37 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(
+                color: Colors.white,
                 border: Border(
-                  bottom: BorderSide(
-                    width: 1,
-                    color: context.appColors.borderColor
-                  )
-                )
+                    bottom: BorderSide(
+                        width: 1, color: context.appColors.borderColor)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     context.l10n.today_task,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  const Text("See all",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                   Text("See all",
+                      style: context.textTheme.bodyMedium),
                 ],
               ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                      bottom: BorderSide(
+                          width: 1, color: context.appColors.borderColor)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: context.appColors.borderColor,
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3), // Moves shadow to the top
+                    ),
+                  ]),
             ),
             Expanded(
                 child: SingleChildScrollView(
@@ -183,14 +191,14 @@ class _HomeScreenState extends State<HomeScreen> {
             color: context.appColors.borderColor,
             spreadRadius: 1,
             blurRadius: 5,
-            offset: const Offset(0, -5), // Moves shadow to the top
+            offset: const Offset(0, -3), // Moves shadow to the top
           ),
           // Bottom shadow
           BoxShadow(
             color: context.appColors.borderColor,
             spreadRadius: 1,
             blurRadius: 5,
-            offset: const Offset(0, 5), // Moves shadow to the bottom
+            offset: const Offset(0, 3), // Moves shadow to the bottom
           ),
         ],
         borderRadius: BorderRadius.circular(12),
@@ -225,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
-          IconButton(onPressed: () => {}, icon: Icon(Icons.arrow_forward_ios))
+          IconButton(onPressed: () => {}, icon: const Icon(Icons.arrow_forward_ios))
         ],
       ),
     );
