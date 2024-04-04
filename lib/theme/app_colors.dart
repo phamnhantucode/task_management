@@ -22,7 +22,8 @@ class AppColors {
     gradient_bg_2: Color(0xFF66A6F1),
     gradient_bg_3: Color(0xFF478DE0),
     gradient_bg_4: Color(0xFF398AE5),
-    tfcolor: Color(0xFF6CA8F1)
+    tfcolor: Color(0xFF6CA8F1),
+    defaultBgContainer: Color(0xFFFFFFFF),
   );
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
@@ -38,9 +39,10 @@ class AppColors {
     gradient_bg_2: Color(0xFF66A6F1),
     gradient_bg_3: Color(0xFF478DE0),
     gradient_bg_4: Color(0xFF398AE5),
-      tfcolor: Color(0xFF6CA8F1)
+    tfcolor: Color(0xFF6CA8F1),
+    defaultBgContainer: Color(0xFFFFFFFF),
   );
-  
+
 }
 
 enum Appearance { light, dark }
@@ -59,6 +61,7 @@ class AppColorsScheme {
     required this.gradient_bg_2,
     required this.gradient_bg_3,
     required this.gradient_bg_4,
+    required this.defaultBgContainer,
     required this.tfcolor
   });
 
@@ -75,4 +78,5 @@ class AppColorsScheme {
   final Color gradient_bg_3;
   final Color gradient_bg_4;
   final Color tfcolor;
+  final Color defaultBgContainer;
 }

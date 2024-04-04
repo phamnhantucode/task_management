@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:room_master_app/domain/repositories/test_repository.dart';
+import 'package:room_master_app/screens/bottom_navigation/bloc/bottom_nav_cubit.dart';
 import 'package:room_master_app/theme/app_colors.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
@@ -27,6 +28,9 @@ final class App extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AuthenticationCubit(),
+          ),
+          BlocProvider(
+            create: (context) => BottomNavCubit(),
           ),
         ],
         child: const AppView(),

@@ -20,5 +20,9 @@
     "dont_have_acc": "Don't have an account? ",
     "forget_pass": "Forget Password?",
     "label_register": "Register",
-    "task_management": "Task Mangement"
+    "task_management": "Task Mangement",
+    "text_upcoming_task": "Upcoming Tasks",
+    "text_toDay": "Today",
+    "text_schedule": "Schedule",
+    "text_add_new": "Add new"
 }

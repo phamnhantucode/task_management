@@ -1,35 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:room_master_app/common/extensions/context.dart';
-import 'package:room_master_app/theme/app_colors.dart';
+import 'package:room_master_app/screens/bottom_navigation/bloc/bottom_nav_cubit.dart';
 
 class NavBar extends StatelessWidget {
-  final int pageIndex;
-  final Function(int) onTap;
-
   const NavBar({
     super.key,
-    required this.pageIndex,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        color: context.appColors.buttonEnable,
-        elevation: 0.0,
+    return BlocBuilder<BottomNavCubit, NavFunction>(
+      builder: (context, state) {
+        return BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          color: context.appColors.buttonEnable,
+          elevation: 0.0,
+          height: 60,
           child: Row(
             children: [
-              navItem(Icons.home_outlined, pageIndex == 0),
-              navItem(Icons.calendar_month, pageIndex == 1),
+              navItem(
+                Icons.home_outlined,
+                state == NavFunction.home,
+                onTap: () => context
+                    .read<BottomNavCubit>()
+                    .setNavItemSelected(NavFunction.home),
+              ),
+              navItem(
+                Icons.calendar_month,
+                state == NavFunction.calendar,
+                onTap: () => context
+                    .read<BottomNavCubit>()
+                    .setNavItemSelected(NavFunction.calendar),
+              ),
               const SizedBox(
                 width: 80,
               ),
-              navItem(Icons.message_outlined, pageIndex == 2),
-              navItem(Icons.person_4_outlined, pageIndex == 3),
+              navItem(
+                Icons.message_outlined,
+                state == NavFunction.chat,
+                onTap: () => context
+                    .read<BottomNavCubit>()
+                    .setNavItemSelected(NavFunction.chat),
+              ),
+              navItem(
+                Icons.person_4_outlined,
+                state == NavFunction.user,
+                onTap: () => context
+                    .read<BottomNavCubit>()
+                    .setNavItemSelected(NavFunction.user),
+              ),
             ],
           ),
         );
+      },
+    );
   }
 
   Widget navItem(IconData icon, bool selected, {Function()? onTap}) {
@@ -39,7 +64,7 @@ class NavBar extends StatelessWidget {
           icon: Icon(
             icon,
             color: selected ? Colors.white : Colors.white.withOpacity(0.6),
-            size: 32,
+            size: 26,
           )),
     );
   }
