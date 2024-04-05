@@ -42,7 +42,7 @@ final class LoginScreen extends StatelessWidget {
                 ),
                 TMElevatedButton(
                   height: 50,
-                  label: context.l10n.text_login_btn,
+                  label: context.l10n.label_login,
                   borderRadius: 50.r,
                   style: context.textTheme.labelLarge
                       ?.copyWith(color: context.appColors.buttonEnable),
@@ -122,7 +122,7 @@ Widget _otherLogin(BuildContext context) {
               ?.copyWith(color: context.appColors.textWhite),
         ),
         const SizedBox(
-          height: 20,
+          height: 15,
         ),
         Icon(Icons.fingerprint, size: 90, color: context.appColors.fingerID),
         const SizedBox(
@@ -135,17 +135,27 @@ Widget _otherLogin(BuildContext context) {
 
 Widget _labelRegister(BuildContext context) {
   return Container(
-    padding: const EdgeInsets.all(15),
-    child: Row(
+    margin: EdgeInsets.symmetric(vertical: 20),
+    padding: EdgeInsets.all(15),
+    alignment: Alignment.bottomCenter,
+    child:  Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
+      children: <Widget>[
         Text(
           context.l10n.dont_have_acc,
-          style: context.textTheme.bodySmall,
+          style: context.textTheme.bodyMedium,
         ),
-        Text(context.l10n.label_register,
-            style: context.textTheme.bodySmall
-                ?.copyWith(color: context.appColors.textWhite)),
+       TextButton(
+            onPressed: () { context.go(NavigationPath.register); },
+         style:  TextButton.styleFrom(
+           padding: EdgeInsets.zero,
+         ),
+            child: Text(
+                context.l10n.label_register,
+                style: context.textTheme.bodyMedium
+            ?.copyWith(color: context.appColors.textWhite)
+            ),
+            ),
       ],
     ),
   );
