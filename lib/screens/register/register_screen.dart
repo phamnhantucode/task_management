@@ -4,11 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
-import 'package:room_master_app/screens/component/top_header/primary.dart';
-
-import '../../blocs/authentication/authentication_cubit.dart';
+import 'package:room_master_app/screens/login/component/register_tf.dart';
 import '../component/tm_elevated_button.dart';
-import '../component/tm_text_field.dart';
+import '../login/component/label_auth_tf.dart';
 import '../login/component/password_field.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -38,9 +36,9 @@ class RegisterScreen extends StatelessWidget {
                             style: context.textTheme.titleLarge
                                 ?.copyWith(color: context.appColors.textWhite))),
                     labelTF(context, context.l10n.label_username),
-                    _usernameTF(context),
+                    RegisterTF(hintText: context.l10n.label_username, prefixIcon: Icon(Icons.account_circle_outlined,color: context.appColors.textWhite)),
                     labelTF(context, context.l10n.label_email),
-                    _emailTF(context),
+                    RegisterTF(hintText: context.l10n.label_email, prefixIcon: Icon(Icons.email_outlined,color: context.appColors.textWhite)),
                     labelTF(context, context.l10n.label_password),
                     const PasswordField(),
                     labelTF(context, context.l10n.label_re_password),
@@ -59,7 +57,8 @@ class RegisterScreen extends StatelessWidget {
                     SizedBox(
                       height: 16.h,
                     ),
-                    _labelRegister(context),
+                    LabelAuth(title: context.l10n.dont_have_acc,label_auth: context.l10n.label_register,textStyle:  context.textTheme.bodyMedium
+                        ?.copyWith(color: context.appColors.textWhite),onPress: (){context.go(NavigationPath.login);}),
                   ],
                 ),
               ),
@@ -69,80 +68,6 @@ class RegisterScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _usernameTF(BuildContext context) {
-  return Container(
-      decoration: BoxDecoration(
-        color: context.appColors.tfcolor,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5.0,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TMTextField(
-        hintText: context.l10n.label_username,
-        textStyle: TextStyle(color: context.appColors.textWhite),
-        prefixIcon: Icon(Icons.account_circle_outlined,
-            color: context.appColors.textWhite),
-      ));
-}
-
-
-Widget _emailTF(BuildContext context) {
-  return Container(
-      decoration: BoxDecoration(
-        color: context.appColors.tfcolor,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5.0,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TMTextField(
-        hintText: context.l10n.label_username,
-        textStyle: TextStyle(color: context.appColors.textWhite),
-        prefixIcon: Icon(Icons.email_outlined,
-            color: context.appColors.textWhite),
-      ));
-}
-
-
-
-
-Widget _labelRegister(BuildContext context) {
-  return Container(
-    margin: const EdgeInsets.symmetric(vertical: 20),
-    padding: const EdgeInsets.all(15),
-    alignment: Alignment.bottomCenter,
-    child:  Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          context.l10n.have_acc,
-          style: context.textTheme.bodyMedium,
-        ),
-        TextButton(
-          onPressed: () { context.go(NavigationPath.login); },
-          style:  TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-          ),
-          child: Text(
-              context.l10n.label_login,
-              style: context.textTheme.bodyMedium
-                  ?.copyWith(color: context.appColors.textWhite)
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 Widget labelTF(BuildContext context, String label) {

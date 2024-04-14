@@ -10,6 +10,7 @@ import 'package:room_master_app/screens/login/component/password_field.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
 import '../../navigation/navigation.dart';
+import 'component/label_auth_tf.dart';
 
 final class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -57,7 +58,8 @@ final class LoginScreen extends StatelessWidget {
                   height: 16.h,
                 ),
                 _otherLogin(context),
-                _labelRegister(context),
+                LabelAuth(title: context.l10n.dont_have_acc,label_auth: context.l10n.label_register,textStyle:  context.textTheme.bodyMedium
+                    ?.copyWith(color: context.appColors.textWhite),onPress: (){context.go(NavigationPath.register);}),
               ],
             ),
           ),
@@ -128,34 +130,6 @@ Widget _otherLogin(BuildContext context) {
         const SizedBox(
           height: 16,
         ),
-      ],
-    ),
-  );
-}
-
-Widget _labelRegister(BuildContext context) {
-  return Container(
-    margin: EdgeInsets.symmetric(vertical: 20),
-    padding: EdgeInsets.all(15),
-    alignment: Alignment.bottomCenter,
-    child:  Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          context.l10n.dont_have_acc,
-          style: context.textTheme.bodyMedium,
-        ),
-       TextButton(
-            onPressed: () { context.go(NavigationPath.register); },
-         style:  TextButton.styleFrom(
-           padding: EdgeInsets.zero,
-         ),
-            child: Text(
-                context.l10n.label_register,
-                style: context.textTheme.bodyMedium
-            ?.copyWith(color: context.appColors.textWhite)
-            ),
-            ),
       ],
     ),
   );
