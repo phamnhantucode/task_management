@@ -21,5 +21,8 @@
     "forget_pass": "Forget Password?",
     "label_register": "Register",
     "task_management": "Task Mangement",
-    "progress": "Progress"
+    "progress": "Progress",
+    "task_detail": "Task detail",
+    "overview": "Overviews",
+    "members": "Members"
 }

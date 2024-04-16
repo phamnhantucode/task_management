@@ -33,7 +33,9 @@ class TopHeaderState extends State<TopHeader> {
             child: Center(
               child: widget.leftAction != null
                   ? GestureDetector(
-                      onTap: () => {widget.leftAction!()},
+                      onTap: () {
+                        widget.leftAction!();
+                      },
                       child: Icon(
                         widget.leftIcon ?? Icons.arrow_back_outlined,
                         size: 26,
@@ -61,7 +63,7 @@ class TopHeaderState extends State<TopHeader> {
                     color: context.appColors.bgGrayLight),
                 child: Center(
                     child: GestureDetector(
-                  onTap: () => {widget.rightAction!()},
+                  onTap: widget.rightAction!(),
                   child: Icon(
                     widget.rightIcon ?? Icons.notifications_none_outlined,
                     size: 26,

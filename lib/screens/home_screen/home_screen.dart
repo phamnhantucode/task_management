@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         context.l10n.header_home,
-                        style: const TextStyle(fontSize: 20, color: Colors.white),
+                        style: context.textTheme.titleSmall?.copyWith(color: context.appColors.textWhite),
                       ),
                       const Text(
                         "15 task",

@@ -20,9 +20,9 @@ abstract class AppRouter {
 
   static final routerConfig = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: NavigationPath.login,
-    redirect: (context, _) {
-      return NavigationPath.home;
+    initialLocation: NavigationPath.detail,
+    redirect: (context, state) {
+      return null;
       // if (context.read<AuthenticationCubit>().state) {
       //   return NavigationPath.login;
       // } else {

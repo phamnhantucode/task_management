@@ -1,8 +1,11 @@
 import 'package:avatar_stack/positions.dart';
 import 'package:flutter/material.dart';
 import 'package:avatar_stack/avatar_stack.dart';
+import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
+import 'package:room_master_app/l10n/l10n.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   @override
@@ -16,7 +19,9 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
       body: SafeArea(
           child: Column(
         children: [
-          TopHeader(title: 'Task detail', leftAction: () => {}),
+          TopHeader(title: context.l10n.task_detail, leftAction: () {
+            context.go(NavigationPath.home);
+          }),
           const SizedBox(height: 20),
           Expanded(child: 
           Container(
@@ -58,10 +63,10 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                   const SizedBox(height: 10),
                   Column(
                     children: [
-                      const Row(
+                      Row(
                         children: [
                           Text(
-                            'Progressss',
+                            context.l10n.progress,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
@@ -97,7 +102,7 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                     height: 10,
                   ),
                   Text(
-                    'Overview',
+                    context.l10n.overview,
                     style: context.textTheme.titleLarge,
                   ),
                   const SafeArea(
@@ -109,7 +114,7 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                   )),
                   const SizedBox(height: 20),
                   Text(
-                    'Members',
+                    context.l10n.members,
                     style: context.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 10),
