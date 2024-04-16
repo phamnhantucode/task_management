@@ -14,11 +14,15 @@
     "today_task": "Today's task",
     "label_username": "Username",
     "label_password": "Password",
-    "text_login_btn": "Login",
+     "label_re_password": "Re-Password",
+    "label_login": "Login",
     "text_remember_me":"Remember me",
     "label_other_login": "Quick login with Touch ID",
     "dont_have_acc": "Don't have an account? ",
+     "have_acc": "Already have an account? ",
     "forget_pass": "Forget Password?",
     "label_register": "Register",
-    "task_management": "Task Mangement"
+    "task_management": "Task Mangement",
+    "label_phone_number": "Phone number",
+    "label_email":  "Email"
 }
