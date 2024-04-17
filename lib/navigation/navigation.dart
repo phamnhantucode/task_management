@@ -6,11 +6,13 @@ import 'package:room_master_app/screens/task_detail/task_detail_screen.dart';
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
 import '../screens/login/login_screen.dart';
+import '../screens/register/register_screen.dart';
 
 abstract class NavigationPath {
   NavigationPath._();
   static const home = '/home';
   static const login = '/';
+  static const register = '/register';
   static const newTask = '/new';
   static const detail = '/detail';
 }
@@ -20,19 +22,15 @@ abstract class AppRouter {
 
   static final routerConfig = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: NavigationPath.detail,
+    initialLocation: NavigationPath.login,
     redirect: (context, state) {
       return null;
-      // if (context.read<AuthenticationCubit>().state) {
-      //   return NavigationPath.login;
-      // } else {
-      //   return null;
-      // }
+
     },
     routes: [
       GoRoute(
         path: NavigationPath.home,
-        builder: (_, __) => HomeScreen(),
+        builder: (_, __) => const HomeScreen(),
       ),
       GoRoute(
         path: NavigationPath.newTask,
@@ -45,6 +43,10 @@ abstract class AppRouter {
       GoRoute(
         path: NavigationPath.detail,
         builder: (_, __) => TaskDetailScreen(),
+      ),
+      GoRoute(
+        path: NavigationPath.register,
+        builder: (_, __) => const RegisterScreen(),
       ),
     ],
     errorBuilder: (_, __) => const ErrorScreen(),

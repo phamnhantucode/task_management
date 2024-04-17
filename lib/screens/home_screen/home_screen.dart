@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/bottom_navigation/nav_bar.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+
+import '../../blocs/authentication/authentication_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,8 +27,14 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 20),
             TopHeader(
                 title: context.l10n.header_home,
-                leftAction: () => {print("Left clcik")},
-                rightAction: () => {print("Right clcik")}),
+                leftAction: () {
+                  context.read<AuthenticationCubit>().setUnauthenticated();
+                  context.go(NavigationPath.login);
+                },
+                rightAction: () => {
+                  print("Right clcik")
+
+                }),
             const SizedBox(height: 40),
             Container(
               height: 200,
