@@ -76,6 +76,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   firebase_core: ^2.24.2
   calendar_date_picker2: ^0.5.5
+  avatar_stack: ^1.2.0
 
 dev_dependencies:
   flutter_test:

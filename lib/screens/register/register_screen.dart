@@ -14,20 +14,19 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          reverse: true,
-          child: Container(
-            decoration: _boxDecoration(context),
-            child: Padding(
-              padding: EdgeInsetsDirectional.all(16.w),
-              child: Padding(
-                padding: EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom / 3),
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        body: Container(
+          decoration: _boxDecoration(context),
+          child: Padding(
+            padding: EdgeInsetsDirectional.symmetric(horizontal: 16.w),
+            child: Center(
+              child: SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     Container(
                         padding: const EdgeInsets.symmetric(vertical: 50),

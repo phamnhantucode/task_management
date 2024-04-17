@@ -24,5 +24,9 @@
     "label_register": "Register",
     "task_management": "Task Mangement",
     "label_phone_number": "Phone number",
-    "label_email":  "Email"
+    "label_email":  "Email",
+    "progress": "Progress",
+    "task_detail": "Task detail",
+    "overview": "Overviews",
+    "members": "Members"
 }

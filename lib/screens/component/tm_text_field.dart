@@ -31,6 +31,7 @@ final class TMTextField extends StatelessWidget {
           border: Border.all(color: context.appColors.textWhite)),
       padding: EdgeInsetsDirectional.only(start: 16.w),
       child: TextFormField(
+        scrollPadding: EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
         obscureText: obscureText,
         initialValue: initialText,
         decoration: InputDecoration(
