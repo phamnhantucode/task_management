@@ -7,8 +7,8 @@ import 'package:room_master_app/screens/upcoming_task/upcoming_task_screen.dart'
 import 'bloc/bottom_nav_cubit.dart';
 import 'nav_bar.dart';
 
-class ScaffoldWithNavScreen extends StatelessWidget {
-  const ScaffoldWithNavScreen({super.key});
+class ScaffoldWithNav extends StatelessWidget {
+  const ScaffoldWithNav({super.key});
 
   @override
   Widget build(BuildContext context) {

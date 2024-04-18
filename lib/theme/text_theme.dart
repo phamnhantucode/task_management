@@ -18,7 +18,7 @@ const lightTextTheme = TextTheme(
       color: Colors.black),
   titleSmall: TextStyle(
       fontFamily: 'Prompt',
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: FontWeight.w700,
       color: Colors.black),
   titleLarge: TextStyle(

@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 class AppColors {
   AppColors({this.appearance = Appearance.light});
 
@@ -10,6 +12,8 @@ class AppColors {
   AppColorsScheme get scheme => _isLightColors ? lightScheme : darkScheme;
 
   static const AppColorsScheme lightScheme = AppColorsScheme(
+    bgGray: Colors.black54,
+    bgGrayLight: Color(0xFFE0E0E0),
     textGray: Color(0xFFAABBCC),
     textBlack: Color(0xFF000000),
     borderColor: Color(0xFFDCDCDC),
@@ -27,6 +31,8 @@ class AppColors {
   );
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
+    bgGray: Colors.black54,
+    bgGrayLight: Color(0xFFE0E0E0),
     textGray: Color(0xFFAABBCC),
     textBlack: Color(0xFFFFFFFF),
     borderColor: Color(0xFFF8F8F8),
@@ -48,7 +54,9 @@ class AppColors {
 enum Appearance { light, dark }
 
 class AppColorsScheme {
-  const AppColorsScheme({
+  const AppColorsScheme( {
+    required this.bgGray,
+    required this.bgGrayLight,
     required this.textGray,
     required this.textBlack,
     required this.borderColor,
@@ -65,6 +73,8 @@ class AppColorsScheme {
     required this.tfcolor
   });
 
+  final Color bgGray;
+  final Color bgGrayLight;
   final Color textGray;
   final Color textBlack;
   final Color textWhite;
