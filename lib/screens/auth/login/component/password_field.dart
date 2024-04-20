@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 
-import '../../component/tm_text_field.dart';
+import '../../../component/tm_text_field.dart';
+
 
 class PasswordField extends StatefulWidget {
-  const PasswordField({super.key});
+  const PasswordField({super.key, this.onTextChange});
+
+  final void Function(String)? onTextChange;
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -34,6 +37,7 @@ class _PasswordFieldState extends State<PasswordField> {
         hintText: context.l10n.label_password,
         keyBoardType: TextInputType.visiblePassword,
         textStyle: TextStyle(color: context.appColors.textWhite),
+        onTextChange: widget.onTextChange,
         prefixIcon: Icon(
           Icons.lock,
           color: context.appColors.textWhite,

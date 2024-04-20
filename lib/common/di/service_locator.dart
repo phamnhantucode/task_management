@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:room_master_app/domain/repositories/auth/auth_repository_impl.dart';
 import 'package:room_master_app/domain/repositories/test_repository.dart';
 import 'package:room_master_app/domain/repositories/test_repository_impl.dart';
 
+import '../../domain/repositories/auth/auth_repository.dart';
 import '../logger/impl/debug_logger.dart';
 import '../logger/logger.dart';
 

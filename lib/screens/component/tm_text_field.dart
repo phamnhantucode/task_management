@@ -11,7 +11,9 @@ final class TMTextField extends StatelessWidget {
     this.maxLines = 1,
     this.prefixIcon,
     this.keyBoardType,
-    this.obscureText = false, this.suffixIcon,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.onTextChange,
   });
 
   final String? initialText;
@@ -22,6 +24,7 @@ final class TMTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final TextInputType? keyBoardType;
   final bool obscureText;
+  final void Function(String content)? onTextChange;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +34,11 @@ final class TMTextField extends StatelessWidget {
           border: Border.all(color: context.appColors.textWhite)),
       padding: EdgeInsetsDirectional.only(start: 16.w),
       child: TextFormField(
-        scrollPadding: EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
+        scrollPadding:
+            EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
         obscureText: obscureText,
         initialValue: initialText,
+        onChanged: onTextChange,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,

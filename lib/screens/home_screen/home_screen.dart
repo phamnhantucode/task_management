@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/navigation/navigation.dart';
-import 'package:room_master_app/screens/bottom_navigation/nav_bar.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+
+import '../component/task_container.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
 
@@ -19,8 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
@@ -28,12 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
             TopHeader(
                 title: context.l10n.header_home,
                 leftAction: () {
-                  context.read<AuthenticationCubit>().setUnauthenticated();
+                  context.read<AuthenticationCubit>().logout();
                   context.go(NavigationPath.login);
                 },
                 rightAction: () => {
-                  print("Right clcik")
-
                 }),
             const SizedBox(height: 40),
             Container(
@@ -168,85 +166,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ))
           ],
         ),
-      ),
-      bottomNavigationBar: NavBar(
-        pageIndex: 0,
-        onTap: (e) => {},
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        onPressed: () => {},
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(100)),
-            side: BorderSide(width: 3, color: context.appColors.buttonEnable)),
-        child: Icon(
-          Icons.add,
-          color: context.appColors.buttonEnable,
-          size: 32,
-        ),
-      ),
     );
   }
 
   _taskWidget() {
-    return Container(
-      margin: const EdgeInsets.only(top: 24, left: 4, right: 4),
-      padding: const EdgeInsets.all(8),
-      width: double.infinity,
-      height: 80,
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.borderColor,
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, -3), // Moves shadow to the top
-          ),
-          // Bottom shadow
-          BoxShadow(
-            color: context.appColors.borderColor,
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, 3), // Moves shadow to the bottom
-          ),
-        ],
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Image.network(
-                "https://cdn-icons-png.flaticon.com/128/11389/11389139.png",
-                width: 80,
-                height: 80,
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'UI Meeting',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    height: 4,
-                  ),
-                  Text('13:10 - 14:30'),
-                ],
-              )
-            ],
-          ),
-          IconButton(onPressed: () => {}, icon: const Icon(Icons.arrow_forward_ios))
-        ],
-      ),
+    return TaskContainer(
+      context: context,
+      title: 'Test Title',
+      content: 'Test content',
+      backgroundColor: Colors.blue.shade50,
+      iconBackgroundColor: Colors.blue.shade100,
+      contentColor: Colors.blue.shade500,
+      suffix: IconButton(
+          onPressed: () => {}, icon: const Icon(Icons.arrow_forward_ios)),
     );
   }
 }

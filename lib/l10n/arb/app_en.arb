@@ -28,5 +28,9 @@
     "progress": "Progress",
     "task_detail": "Task detail",
     "overview": "Overviews",
-    "members": "Members"
+    "members": "Members",
+    "text_upcoming_task": "Upcoming Tasks",
+    "text_toDay": "Today",
+    "text_schedule": "Schedule",
+    "text_add_new": "Add new"
 }
