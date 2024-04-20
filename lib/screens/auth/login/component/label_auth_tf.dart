@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 
 class LabelAuth extends StatelessWidget {
-  const LabelAuth({super.key, required this.title, this.textStyle, this.label_auth, this.color, this.onPress, });
+  const LabelAuth({super.key, required this.title, this.textStyle, this.labelAuth, this.color, this.onPress, });
   final String? title;
-  final String? label_auth;
+  final String? labelAuth;
   final TextStyle? textStyle;
   final Color? color;
-  final Function? onPress;
+  final void Function()? onPress;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 20),
-      padding: EdgeInsets.all(15),
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(15),
       alignment: Alignment.bottomCenter,
       child:  Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -23,12 +23,12 @@ class LabelAuth extends StatelessWidget {
             style: context.textTheme.bodyMedium,
           ),
           TextButton(
-            onPressed:(){onPress;},
+            onPressed: onPress,
             style:  TextButton.styleFrom(
               padding: EdgeInsets.zero,
             ),
             child: Text(
-                label_auth!,
+                labelAuth!,
                 style: textStyle
             ),
           ),

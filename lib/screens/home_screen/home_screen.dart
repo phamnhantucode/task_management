@@ -28,12 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
             TopHeader(
                 title: context.l10n.header_home,
                 leftAction: () {
-                  context.read<AuthenticationCubit>().setUnauthenticated();
+                  context.read<AuthenticationCubit>().logout();
                   context.go(NavigationPath.login);
                 },
                 rightAction: () => {
-                  print("Right clcik")
-
                 }),
             const SizedBox(height: 40),
             Container(

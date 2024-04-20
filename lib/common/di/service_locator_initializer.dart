@@ -12,8 +12,14 @@ abstract interface class ServiceLocatorInitializer {
     ServiceLocator.registerLazySingleton<FirebaseFirestore>(
         () => FirebaseFirestore.instance);
 
+    ServiceLocator.registerLazySingleton<FirebaseAuth>(
+        () => FirebaseAuth.instance);
+
     ServiceLocator.registerSingleton<TestRepository>(
         TestRepositoryImpl(ServiceLocator.inject()));
+
+    ServiceLocator.registerSingleton<AuthRepository>(
+        AuthRepositoryImpl(ServiceLocator.inject()));
   }
 
   static void _configureAppModule() {
