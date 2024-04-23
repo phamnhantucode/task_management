@@ -4,6 +4,7 @@ import 'package:avatar_stack/avatar_stack.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/navigation/navigation.dart';
+import 'package:room_master_app/screens/component/task_widget.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 
@@ -125,10 +126,36 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                     style: context.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 10),
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
+                  TaskWidget(
+                      taskName: 'taskName',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName1',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName2',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName3',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName3',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName3',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
                   const SizedBox(height: 10),
                 ],
               ),

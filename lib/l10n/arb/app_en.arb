@@ -28,5 +28,9 @@
     "progress": "Progress",
     "task_detail": "Task detail",
     "overview": "Overviews",
-    "members": "Members"
+    "members": "Members",
+    "seeall": "See all",
+    "statistic": "Statistics",
+    "latest_activities" : "Latest activities",
+    "assign_this_month" : "Assign this month"
 }

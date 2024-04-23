@@ -12,63 +12,62 @@ class AppColors {
   AppColorsScheme get scheme => _isLightColors ? lightScheme : darkScheme;
 
   static const AppColorsScheme lightScheme = AppColorsScheme(
-    bgGray: Colors.black54,
-    bgGrayLight: Color(0xFFE0E0E0),
-    textGray: Color(0xFFAABBCC),
-    textBlack: Color(0xFF000000),
-    borderColor: Color(0xFFDCDCDC),
-    buttonEnable: Color(0xFF418FFF),
-    textOnBtnEnable: Color(0xFFFFFFFF),
-    buttonDisable: Color(0xFFDDEBFF),
-    fingerID: Color(0xFFFFFFFF),
-    textWhite: Color(0xFFFFFFFF),
-    gradient_bg_1: Color(0xFF7BB0EF),
-    gradient_bg_2: Color(0xFF66A6F1),
-    gradient_bg_3: Color(0xFF478DE0),
-    gradient_bg_4: Color(0xFF398AE5),
-    tfcolor: Color(0xFF6CA8F1)
-  );
+      bgGray: Colors.black54,
+      bgGrayLight: Color(0xFFE0E0E0),
+      textGray: Color(0xFFAABBCC),
+      textBlack: Color(0xFF000000),
+      borderColor: Color(0xFFDCDCDC),
+      buttonEnable: Color(0xFF418FFF),
+      textOnBtnEnable: Color(0xFFFFFFFF),
+      buttonDisable: Color(0xFFDDEBFF),
+      fingerID: Color(0xFFFFFFFF),
+      textWhite: Color(0xFFFFFFFF),
+      gradient_bg_1: Color(0xFF7BB0EF),
+      gradient_bg_2: Color(0xFF66A6F1),
+      gradient_bg_3: Color(0xFF478DE0),
+      gradient_bg_4: Color(0xFF398AE5),
+      tfcolor: Color(0xFF6CA8F1));
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
-    bgGray: Colors.black54,
-    bgGrayLight: Color(0xFFE0E0E0),
-    textGray: Color(0xFFAABBCC),
-    textBlack: Color(0xFFFFFFFF),
-    borderColor: Color(0xFFF8F8F8),
-    buttonEnable: Color(0xFF3A414C),
-    textOnBtnEnable: Color(0xFF000000),
-    buttonDisable: Color(0xFF9DC5FB),
-    fingerID: Color(0xFFFFFFFF),
-    textWhite: Color(0xFFFFFFFF),
-    gradient_bg_1: Color(0xFF7BB0EF),
-    gradient_bg_2: Color(0xFF66A6F1),
-    gradient_bg_3: Color(0xFF478DE0),
-    gradient_bg_4: Color(0xFF398AE5),
-      tfcolor: Color(0xFF6CA8F1)
-  );
-  
+      bgGray: Colors.black54,
+      bgGrayLight: Color(0xFFE0E0E0),
+      textGray: Color(0xFFAABBCC),
+      textBlack: Color(0xFFFFFFFF),
+      borderColor: Color(0xFFF8F8F8),
+      buttonEnable: Color(0xFF3A414C),
+      textOnBtnEnable: Color(0xFF000000),
+      buttonDisable: Color(0xFF9DC5FB),
+      fingerID: Color(0xFFFFFFFF),
+      textWhite: Color(0xFFFFFFFF),
+      gradient_bg_1: Color(0xFF7BB0EF),
+      gradient_bg_2: Color(0xFF66A6F1),
+      gradient_bg_3: Color(0xFF478DE0),
+      gradient_bg_4: Color(0xFF398AE5),
+      tfcolor: Color(0xFF6CA8F1));
 }
 
 enum Appearance { light, dark }
 
 class AppColorsScheme {
-  const AppColorsScheme( {
-    required this.bgGray,
-    required this.bgGrayLight,
-    required this.textGray,
-    required this.textBlack,
-    required this.borderColor,
-    required this.buttonEnable,
-    required this.buttonDisable,
-    required this.textOnBtnEnable,
-    required this.fingerID,
-    required this.textWhite,
-    required this.gradient_bg_1,
-    required this.gradient_bg_2,
-    required this.gradient_bg_3,
-    required this.gradient_bg_4,
-    required this.tfcolor
-  });
+  const AppColorsScheme(
+      {required this.bgGray,
+      required this.bgGrayLight,
+      required this.textGray,
+      required this.textBlack,
+      required this.borderColor,
+      required this.buttonEnable,
+      required this.buttonDisable,
+      required this.textOnBtnEnable,
+      required this.fingerID,
+      required this.textWhite,
+      required this.gradient_bg_1,
+      required this.gradient_bg_2,
+      required this.gradient_bg_3,
+      required this.gradient_bg_4,
+      required this.tfcolor,
+      this.primary = Colors.blue,
+      this.primaryDarker = const Color.fromARGB(255, 100, 181, 246),
+      this.primaryLighter = const Color.fromARGB(255, 100, 181, 246)});
 
   final Color bgGray;
   final Color bgGrayLight;
@@ -80,6 +79,9 @@ class AppColorsScheme {
   final Color buttonDisable;
   final Color textOnBtnEnable;
   final Color fingerID;
+  final Color primary;
+  final Color primaryDarker;
+  final Color primaryLighter;
   final Color gradient_bg_1;
   final Color gradient_bg_2;
   final Color gradient_bg_3;

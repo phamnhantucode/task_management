@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/bottom_navigation/nav_bar.dart';
+import 'package:room_master_app/screens/component/task_widget.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 
@@ -31,10 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   context.read<AuthenticationCubit>().setUnauthenticated();
                   context.go(NavigationPath.login);
                 },
-                rightAction: () => {
-                  print("Right clcik")
-
-                }),
+                rightAction: () => {print("Right clcik")}),
             const SizedBox(height: 40),
             Container(
               height: 200,
@@ -58,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         context.l10n.header_home,
-                        style: context.textTheme.titleSmall?.copyWith(color: context.appColors.textWhite),
+                        style: context.textTheme.titleSmall
+                            ?.copyWith(color: context.appColors.textWhite),
                       ),
                       const Text(
                         "15 task",
@@ -102,7 +101,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   value: 0.4,
                                   minHeight: 8,
                                   color: Colors.white,
-                                  backgroundColor: context.appColors.bgGrayLight,
+                                  backgroundColor:
+                                      context.appColors.bgGrayLight,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               )
@@ -127,10 +127,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     context.l10n.today_task,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                   Text("See all",
-                      style: context.textTheme.bodyMedium),
+                  Text(context.l10n.seeall, style: context.textTheme.bodyMedium),
                 ],
               ),
             ),
@@ -149,17 +149,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ]),
             ),
-            Expanded(
+            const Expanded(
                 child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
-                  _taskWidget(),
+                  TaskWidget(
+                      taskName: 'taskName',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName1',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName2',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName3',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName3',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
+                  TaskWidget(
+                      taskName: 'taskName3',
+                      imageUrl:
+                          'https://cdn-icons-png.flaticon.com/128/11389/11389139.png',
+                      time: '13: 30'),
                   const SizedBox(
                     height: 40,
                   )
@@ -244,7 +267,8 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
-          IconButton(onPressed: () => {}, icon: const Icon(Icons.arrow_forward_ios))
+          IconButton(
+              onPressed: () => {}, icon: const Icon(Icons.arrow_forward_ios))
         ],
       ),
     );

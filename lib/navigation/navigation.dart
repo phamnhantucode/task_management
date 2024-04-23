@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/screens/home_screen/home_screen.dart';
 import 'package:room_master_app/screens/new_task/new_task_screen.dart';
+import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/task_detail/task_detail_screen.dart';
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
@@ -15,6 +16,7 @@ abstract class NavigationPath {
   static const register = '/register';
   static const newTask = '/new';
   static const detail = '/detail';
+  static const statistic = '/statistic';
 }
 
 abstract class AppRouter {
@@ -22,7 +24,7 @@ abstract class AppRouter {
 
   static final routerConfig = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: NavigationPath.login,
+    initialLocation: NavigationPath.statistic,
     redirect: (context, state) {
       return null;
 
@@ -35,6 +37,10 @@ abstract class AppRouter {
       GoRoute(
         path: NavigationPath.newTask,
         builder: (_, __) => const NewTaskScreen(),
+      ),
+        GoRoute(
+        path: NavigationPath.statistic,
+        builder: (_, __) => StatisticScreen(),
       ),
       GoRoute(
         path: NavigationPath.login,
