@@ -1,16 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:room_master_app/screens/home_screen/home_screen.dart';
+import 'package:room_master_app/common/utils/utils.dart';
+import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
 import 'package:room_master_app/screens/new_task/new_task_screen.dart';
 import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/task_detail/task_detail_screen.dart';
+
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
-import '../screens/login/login_screen.dart';
-import '../screens/register/register_screen.dart';
+import '../screens/auth/login/login_screen.dart';
+import '../screens/auth/register/register_screen.dart';
 
 abstract class NavigationPath {
   NavigationPath._();
+
   static const home = '/home';
   static const login = '/';
   static const register = '/register';
@@ -26,13 +30,23 @@ abstract class AppRouter {
     debugLogDiagnostics: true,
     initialLocation: NavigationPath.statistic,
     redirect: (context, state) {
-      return null;
+      if (state.matchedLocation == NavigationPath.register) return null;
+      final isLoggedIn = getAuthState(context);
+      final isLoggingIn = state.matchedLocation == NavigationPath.login;
+      if (!isLoggedIn) {
+        return NavigationPath.login;
+      }
 
+      if (isLoggingIn) {
+        return NavigationPath.home;
+      }
+
+      return null;
     },
     routes: [
       GoRoute(
         path: NavigationPath.home,
-        builder: (_, __) => const HomeScreen(),
+        builder: (_, __) => const ScaffoldWithNav(),
       ),
       GoRoute(
         path: NavigationPath.newTask,
@@ -57,4 +71,14 @@ abstract class AppRouter {
     ],
     errorBuilder: (_, __) => const ErrorScreen(),
   );
+
+  static bool getAuthState(BuildContext context) {
+    try {
+      final state = context.watch<AuthenticationCubit>().state;
+      return state.isAuthenticated && getCurrentTimestamp < state.expireTime!;
+    } on Error catch (_) {
+      final state = context.read<AuthenticationCubit>().state;
+      return state.isAuthenticated && getCurrentTimestamp < state.expireTime!;
+    }
+  }
 }
