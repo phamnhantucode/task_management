@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:room_master_app/blocs/loading_button/loading_button_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
@@ -17,65 +18,70 @@ final class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthenticationCubit, AuthenticationState>(
-      listener: (context, state) {
-        if (state.isAuthenticated) {
-          context.go(NavigationPath.home);
-        }
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          child: Container(
-            decoration: _boxDecoration(context),
-            child: Padding(
-              padding: EdgeInsetsDirectional.all(16.w),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      padding: const EdgeInsets.symmetric(vertical: 50),
-                      alignment: AlignmentDirectional.center,
-                      child: Text(context.l10n.task_management,
-                          style: context.textTheme.titleLarge
-                              ?.copyWith(color: context.appColors.textWhite))),
-                  labelTF(context, context.l10n.label_username),
-                  _usernameTF(context),
-                  labelTF(context, context.l10n.label_password),
-                  PasswordField(
-                    onTextChange: (content) {
-                      context.read<AuthenticationCubit>().setPassword(content);
-                    },
-                  ),
-                  SizedBox(
-                    height: 24.h,
-                  ),
-                  TMElevatedButton(
-                    height: 50,
-                    label: context.l10n.label_login,
-                    borderRadius: 50.r,
-                    style: context.textTheme.labelLarge
-                        ?.copyWith(color: context.appColors.buttonEnable),
-                    onPressed: () {
-                      context.read<AuthenticationCubit>().login();
-                    },
-                    color: context.appColors.textWhite,
-                  ),
-                  _rememberMe(context),
-                  SizedBox(
-                    height: 16.h,
-                  ),
-                  _otherLogin(context),
-                  LabelAuth(
-                      title: context.l10n.dont_have_acc,
-                      labelAuth: context.l10n.label_register,
-                      textStyle: context.textTheme.bodyMedium
-                          ?.copyWith(color: context.appColors.textWhite),
-                      onPress: () {
-                        context.go(NavigationPath.register);
-                      }),
-                ],
+    return BlocProvider(
+      create: (context) => LoadingButtonCubit(),
+      child: BlocListener<AuthenticationCubit, AuthenticationState>(
+        listener: (context, state) {
+          if (state.isAuthenticated) {
+            context.go(NavigationPath.home);
+          }
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Container(
+              decoration: _boxDecoration(context),
+              child: Padding(
+                padding: EdgeInsetsDirectional.all(16.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.symmetric(vertical: 50),
+                        alignment: AlignmentDirectional.center,
+                        child: Text(context.l10n.task_management,
+                            style: context.textTheme.titleLarge
+                                ?.copyWith(color: context.appColors
+                                .textWhite))),
+                    labelTF(context, context.l10n.label_username),
+                    _usernameTF(context),
+                    labelTF(context, context.l10n.label_password),
+                    PasswordField(
+                      onTextChange: (content) {
+                        context.read<AuthenticationCubit>().setPassword(
+                            content);
+                      },
+                    ),
+                    SizedBox(
+                      height: 24.h,
+                    ),
+                    TMElevatedButton(
+                      height: 50,
+                      label: context.l10n.label_login,
+                      borderRadius: 50.r,
+                      style: context.textTheme.labelLarge
+                          ?.copyWith(color: context.appColors.buttonEnable),
+                      onPressed: () {
+                        context.read<AuthenticationCubit>().login();
+                      },
+                      color: context.appColors.textWhite,
+                    ),
+                    _rememberMe(context),
+                    SizedBox(
+                      height: 16.h,
+                    ),
+                    _otherLogin(context),
+                    LabelAuth(
+                        title: context.l10n.dont_have_acc,
+                        labelAuth: context.l10n.label_register,
+                        textStyle: context.textTheme.bodyMedium
+                            ?.copyWith(color: context.appColors.textWhite),
+                        onPress: () {
+                          context.go(NavigationPath.register);
+                        }),
+                  ],
+                ),
               ),
             ),
           ),
