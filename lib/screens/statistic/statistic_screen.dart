@@ -5,7 +5,7 @@ import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
-import 'package:room_master_app/screens/component/task_widget.dart';
+import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 
 class StatisticScreen extends StatefulWidget {
@@ -119,52 +119,61 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                                 ],
                               ),
                               Row(
-                                children: AppConstants.taskInWeeksExample
-                                    .map((e) {
-                                      List listTaskAmount = AppConstants.taskInWeeksExample.map((e) => e[e.keys.first]).toList();
-                                      int maxNumber = listTaskAmount.reduce((curr, next) => curr > next ? curr : next);
-                                      int amountTask = e['${e.keys.first}'];
-                                      return Expanded(child:  Column(
-                                          children: [
-                                            Text("$amountTask"),
-                                            const SpacerComponent(size: 'm'),
-                                            RotatedBox(
-                                              quarterTurns: -1,
-                                              child: SizedBox(
-                                                width: 180,
-                                                child: LinearProgressIndicator(
-                                                  value: amountTask / maxNumber,
-                                                  minHeight: 12,
-                                                  color:
-                                                      context.appColors.primary,
-                                                  backgroundColor: context
-                                                      .appColors.bgGrayLight,
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                              ),
-                                            ),
-                                            const SpacerComponent(size: 'm'),
-                                            Text(e.keys.first),
-                                          ],
-                                        ));
-                                    })
-                                    .toList(),
+                                children:
+                                    AppConstants.taskInWeeksExample.map((e) {
+                                  List listTaskAmount = AppConstants
+                                      .taskInWeeksExample
+                                      .map((e) => e[e.keys.first])
+                                      .toList();
+                                  int maxNumber = listTaskAmount.reduce(
+                                      (curr, next) =>
+                                          curr > next ? curr : next);
+                                  int amountTask = e['${e.keys.first}'];
+                                  return Expanded(
+                                      child: Column(
+                                    children: [
+                                      Text("$amountTask"),
+                                      const SpacerComponent(size: 'm'),
+                                      RotatedBox(
+                                        quarterTurns: -1,
+                                        child: SizedBox(
+                                          width: 180,
+                                          child: LinearProgressIndicator(
+                                            value: amountTask / maxNumber,
+                                            minHeight: 12,
+                                            color: context.appColors.primary,
+                                            backgroundColor:
+                                                context.appColors.bgGrayLight,
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                          ),
+                                        ),
+                                      ),
+                                      const SpacerComponent(size: 'm'),
+                                      Text(e.keys.first),
+                                    ],
+                                  ));
+                                }).toList(),
                               )
                             ],
                           ),
                         ),
                         const SpacerComponent(size: 'l'),
-                        Text(context.l10n.latest_activities, style: context.textTheme.titleMedium,),
-                        const Column(
-                          children: [
-                            TaskWidget(taskName: 'taskName', imageUrl: 'https://cdn-icons-png.flaticon.com/128/11389/11389139.png', time: '13: 30'),
-                            TaskWidget(taskName: 'taskName1', imageUrl: 'https://cdn-icons-png.flaticon.com/128/11389/11389139.png', time: '13: 30'),
-                            TaskWidget(taskName: 'taskName2', imageUrl: 'https://cdn-icons-png.flaticon.com/128/11389/11389139.png', time: '13: 30'),
-                            TaskWidget(taskName: 'taskName3', imageUrl: 'https://cdn-icons-png.flaticon.com/128/11389/11389139.png', time: '13: 30'),
-                            TaskWidget(taskName: 'taskName3', imageUrl: 'https://cdn-icons-png.flaticon.com/128/11389/11389139.png', time: '13: 30'),
-                            TaskWidget(taskName: 'taskName3', imageUrl: 'https://cdn-icons-png.flaticon.com/128/11389/11389139.png', time: '13: 30'),
-                          ],
+                        Text(
+                          context.l10n.latest_activities,
+                          style: context.textTheme.titleMedium,
+                        ),
+                        ListView.builder(
+                          itemBuilder: (context, index) => TaskContainer(
+                            context: context,
+                            isShadowContainer: false,
+                            title: 'Test Title',
+                            content: 'Test content',
+                            backgroundColor: Colors.blue.shade50,
+                            iconBackgroundColor: Colors.blue.shade100,
+                            contentColor: Colors.blue.shade500,
+                          ),
+                          itemCount: 20,
                         )
                       ],
                     ),

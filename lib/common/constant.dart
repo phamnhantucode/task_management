@@ -23,4 +23,5 @@ class AppConstants {
     {'S': 15},
     {'S': 22}
   ];
+  static const String dateWeeksMonthFormat = 'EEEE, dd MMMM';
 }
