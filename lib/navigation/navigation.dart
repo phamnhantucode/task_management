@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
 import 'package:room_master_app/screens/new_task/new_task_screen.dart';
-import 'package:room_master_app/screens/profile/edit_profile_screen.dart';
+import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/task_detail/task_detail_screen.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
@@ -21,6 +21,7 @@ abstract class NavigationPath {
   static const register = '/register';
   static const newTask = '/new';
   static const detail = '/detail';
+  static const statistic = '/statistic';
   static const editProfile = '/detail/editProfile';
   static const changePassword = '/detail/changePassword';
 }
@@ -53,6 +54,10 @@ abstract class AppRouter {
       GoRoute(
         path: NavigationPath.newTask,
         builder: (_, __) => const NewTaskScreen(),
+      ),
+        GoRoute(
+        path: NavigationPath.statistic,
+        builder: (_, __) => StatisticScreen(),
       ),
       GoRoute(
         path: NavigationPath.login,
@@ -90,7 +95,6 @@ abstract class AppRouter {
         path: NavigationPath.register,
         builder: (_, __) => const RegisterScreen(),
       ),
-
     ],
     errorBuilder: (_, __) => const ErrorScreen(),
   );
