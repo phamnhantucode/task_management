@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
 import 'package:room_master_app/screens/new_task/new_task_screen.dart';
+import 'package:room_master_app/screens/profile/edit_profile_screen.dart';
 import 'package:room_master_app/screens/task_detail/task_detail_screen.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
+import '../screens/profile/change_password_screen.dart';
 
 abstract class NavigationPath {
   NavigationPath._();
@@ -19,6 +21,8 @@ abstract class NavigationPath {
   static const register = '/register';
   static const newTask = '/new';
   static const detail = '/detail';
+  static const editProfile = '/detail/editProfile';
+  static const changePassword = '/detail/changePassword';
 }
 
 abstract class AppRouter {
@@ -57,11 +61,36 @@ abstract class AppRouter {
       GoRoute(
         path: NavigationPath.detail,
         builder: (_, __) => TaskDetailScreen(),
+        routes: [
+          GoRoute(
+            path: 'editProfile',
+            builder: (context, __) => EditProfileScreen(user: context.read<AuthenticationCubit>().state.user!),
+          ),
+          GoRoute(
+            path: 'changePassword',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const ChangePasswordScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(1.0, 0.0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+              );
+            },
+          ),
+        ]
       ),
       GoRoute(
         path: NavigationPath.register,
         builder: (_, __) => const RegisterScreen(),
       ),
+
     ],
     errorBuilder: (_, __) => const ErrorScreen(),
   );

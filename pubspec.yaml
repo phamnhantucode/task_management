@@ -71,7 +71,7 @@ dependencies:
   from_css_color: ^2.0.0
   json_path: ^0.6.6
   collection: ^1.18.0
-  cached_network_image: ^3.3.0
+  cached_network_image: ^3.3.1
   uuid: ^4.3.3
   cloud_firestore: ^4.14.0
   firebase_core: ^2.24.2
@@ -79,6 +79,10 @@ dependencies:
   easy_date_timeline: 1.0.3
   avatar_stack: ^1.2.0
   firebase_auth: ^4.19.2
+  flutter_svg: ^2.0.10+1
+  image_picker: ^1.1.0
+  firebase_storage: ^11.7.4
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:

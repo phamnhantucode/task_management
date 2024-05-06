@@ -7,6 +7,7 @@ import 'package:room_master_app/screens/bottom_navigation/bloc/bottom_nav_cubit.
 import 'package:room_master_app/theme/app_colors.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
+import '../blocs/setting/setting_cubit.dart';
 import '../common/di/service_locator.dart';
 import '../domain/repositories/auth/auth_repository.dart';
 import '../l10n/l10n.dart';
@@ -32,10 +33,15 @@ final class App extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => AuthenticationCubit(context.read()),
+            create: (context) =>
+            AuthenticationCubit(context.read())
+              ..setUser(),
           ),
           BlocProvider(
             create: (context) => BottomNavCubit(),
+          ),
+          BlocProvider(
+            create: (context) => SettingCubit(),
           ),
         ],
         child: const AppView(),
@@ -55,30 +61,37 @@ final class AppView extends StatefulWidget {
 }
 
 final class AppViewState extends State<AppView> with WidgetsBindingObserver {
-  ThemeMode _themeMode = ThemeMode.light;
-  late AppColors appColors;
+  ThemeMode themeMode = ThemeMode.light;
+  AppColors appColors = AppColors(appearance: Appearance.light);
 
   void setThemeMode(ThemeMode mode) {
     setState(() {
-      _themeMode = mode;
+      themeMode = mode;
+      if (themeMode == ThemeMode.dark) {
+        appColors = AppColors(appearance: Appearance.dark);
+      } else {
+        appColors = AppColors(appearance: Appearance.light);
+      }
     });
   }
 
   bool isDarkMode(BuildContext context) {
-    final brightness = SchedulerBinding.instance.platformDispatcher
-        .platformBrightness;
+    final brightness =
+        SchedulerBinding.instance.platformDispatcher.platformBrightness;
     return brightness == Brightness.dark;
   }
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    if (isDarkMode(context)) {
-      appColors = AppColors(appearance: Appearance.dark);
-      setThemeMode(ThemeMode.dark);
-    } else {
-      appColors = AppColors(appearance: Appearance.light);
-      setThemeMode(ThemeMode.light);
+    if (themeMode == ThemeMode.system) {
+      if (isDarkMode(context)) {
+        appColors = AppColors(appearance: Appearance.dark);
+        setThemeMode(ThemeMode.dark);
+      } else {
+        appColors = AppColors(appearance: Appearance.light);
+        setThemeMode(ThemeMode.light);
+      }
     }
     super.initState();
   }
@@ -86,12 +99,14 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
   @override
   void didChangePlatformBrightness() {
     setState(() {
-      if (isDarkMode(context)) {
-        appColors = AppColors(appearance: Appearance.dark);
-        setThemeMode(ThemeMode.dark);
-      } else {
-        appColors = AppColors(appearance: Appearance.light);
-        setThemeMode(ThemeMode.light);
+      if (themeMode == ThemeMode.system) {
+        if (isDarkMode(context)) {
+          appColors = AppColors(appearance: Appearance.dark);
+          setThemeMode(ThemeMode.dark);
+        } else {
+          appColors = AppColors(appearance: Appearance.light);
+          setThemeMode(ThemeMode.light);
+        }
       }
     });
     super.didChangePlatformBrightness();
@@ -105,17 +120,24 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(430, 932),
-      minTextAdapt: true,
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        routerConfig: AppRouter.routerConfig,
-        themeMode: _themeMode,
+    return BlocListener<SettingCubit, SettingState>(
+      listener: (context, state) {
+        if (state.themeSelected != themeMode) {
+          setThemeMode(state.themeSelected);
+        }
+      },
+      child: ScreenUtilInit(
+        designSize: const Size(430, 932),
+        minTextAdapt: true,
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: AppRouter.routerConfig,
+          themeMode: themeMode,
+        ),
       ),
     );
   }

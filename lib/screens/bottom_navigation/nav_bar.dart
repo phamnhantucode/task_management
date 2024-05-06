@@ -45,10 +45,10 @@ class NavBar extends StatelessWidget {
               ),
               navItem(
                 Icons.person_4_outlined,
-                state == NavFunction.user,
+                state == NavFunction.profile,
                 onTap: () => context
                     .read<BottomNavCubit>()
-                    .setNavItemSelected(NavFunction.user),
+                    .setNavItemSelected(NavFunction.profile),
               ),
             ],
           ),
