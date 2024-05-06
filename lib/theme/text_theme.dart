@@ -38,9 +38,14 @@ const lightTextTheme = TextTheme(
       color: Colors.black),
   labelMedium: TextStyle(
       fontFamily: 'Prompt',
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: FontWeight.w500,
       color: Colors.black),
+  labelSmall:TextStyle(
+    fontFamily: 'Prompt',
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+    color: Colors.black),
   displaySmall: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 20,

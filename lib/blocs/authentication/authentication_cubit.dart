@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:room_master_app/common/utils/utils.dart';
@@ -50,12 +51,24 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
 
   void setPassword(String content) => emit(state.copyWith(password: content));
 
+  void setUser() {
+    if (state.isAuthenticated && getCurrentTimestamp < state.expireTime!) {
+      login();
+      emit(state.copyWith(user: FirebaseAuth.instance.currentUser));
+    }
+  }
+
+  void reloadUser() async {
+    await FirebaseAuth.instance.currentUser?.reload();
+    emit(state.copyWith(user: FirebaseAuth.instance.currentUser));
+  }
+
   @override
   AuthenticationState? fromJson(Map<String, dynamic> json) =>
       AuthenticationState.fromJson(json);
 
   @override
-  Map<String, dynamic>? toJson(AuthenticationState state) =>state.toJson();
+  Map<String, dynamic>? toJson(AuthenticationState state) => state.toJson();
 }
 
 enum LoginStatus { loading, success, failure, unknown }
@@ -64,6 +77,7 @@ enum LoginStatus { loading, success, failure, unknown }
 class AuthenticationState with _$AuthenticationState {
   const factory AuthenticationState({
     @JsonKey(ignore: true) @Default(LoginStatus.unknown) LoginStatus status,
+    @JsonKey(ignore: true) User? user,
     required bool isAuthenticated,
     DateTime? expireTime,
     @Default('') String email,

@@ -11,6 +11,7 @@ import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
+import '../screens/profile/change_password_screen.dart';
 
 abstract class NavigationPath {
   NavigationPath._();
@@ -21,6 +22,8 @@ abstract class NavigationPath {
   static const newTask = '/new';
   static const detail = '/detail';
   static const statistic = '/statistic';
+  static const editProfile = '/detail/editProfile';
+  static const changePassword = '/detail/changePassword';
 }
 
 abstract class AppRouter {
@@ -28,7 +31,7 @@ abstract class AppRouter {
 
   static final routerConfig = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: NavigationPath.statistic,
+    initialLocation: NavigationPath.login,
     redirect: (context, state) {
       if (state.matchedLocation == NavigationPath.register) return null;
       final isLoggedIn = getAuthState(context);
@@ -63,6 +66,30 @@ abstract class AppRouter {
       GoRoute(
         path: NavigationPath.detail,
         builder: (_, __) => TaskDetailScreen(),
+        routes: [
+          GoRoute(
+            path: 'editProfile',
+            builder: (context, __) => EditProfileScreen(user: context.read<AuthenticationCubit>().state.user!),
+          ),
+          GoRoute(
+            path: 'changePassword',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const ChangePasswordScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(1.0, 0.0),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  );
+                },
+              );
+            },
+          ),
+        ]
       ),
       GoRoute(
         path: NavigationPath.register,
