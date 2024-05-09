@@ -8,12 +8,14 @@ import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 
-class TaskDetailScreen extends StatefulWidget {
+class ProjectDetailScreen extends StatefulWidget {
+  const ProjectDetailScreen({super.key});
+
   @override
-  State<StatefulWidget> createState() => TaskDetailScreenState();
+  State<StatefulWidget> createState() => ProjectDetailScreenState();
 }
 
-class TaskDetailScreenState extends State<TaskDetailScreen> {
+class ProjectDetailScreenState extends State<ProjectDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +23,7 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
           child: Column(
         children: [
           TopHeader(
-              title: context.l10n.task_detail,
+              title: 'Project detail',
               leftAction: () {
                 context.go(NavigationPath.home);
               }),
@@ -34,7 +36,7 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Name of task',
+                      'Name of Project',
                       style: context.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 20),
@@ -56,11 +58,10 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                         const SizedBox(
                           width: 20,
                         ),
-                        Expanded(
-                            child: Text(
+                        Text(
                           '04 April, at 11:30',
                           style: context.textTheme.labelMedium,
-                        ))
+                        )
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -128,17 +129,20 @@ class TaskDetailScreenState extends State<TaskDetailScreen> {
                       style: context.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 10),
-                    ListView.builder(
-                      itemBuilder: (context, index) => TaskContainer(
-                        context: context,
-                        isShadowContainer: false,
-                        title: 'Test Title',
-                        content: 'Test content',
-                        backgroundColor: Colors.blue.shade50,
-                        iconBackgroundColor: Colors.blue.shade100,
-                        contentColor: Colors.blue.shade500,
+                    SizedBox(
+                      height: 440,
+                      child: ListView.builder(
+                        itemBuilder: (context, index) => TaskContainer(
+                          context: context,
+                          isShadowContainer: false,
+                          title: 'Test Title',
+                          content: 'Test content',
+                          backgroundColor: Colors.blue.shade50,
+                          iconBackgroundColor: Colors.blue.shade100,
+                          contentColor: Colors.blue.shade500,
+                        ),
+                        itemCount: 20,
                       ),
-                      itemCount: 20,
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -254,6 +258,7 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
             mini: true,
             onPressed: () {
               // Add your action for this button
+              // Add bottom sheet
             },
             child: const Icon(Icons.edit),
           ),
@@ -267,6 +272,7 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
             mini: true,
             onPressed: () {
               // Add your action for this button
+              context.go(NavigationPath.newTask);
             },
             child: const Icon(Icons.add),
           ),

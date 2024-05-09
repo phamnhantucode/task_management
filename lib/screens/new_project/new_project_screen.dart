@@ -9,17 +9,18 @@ import 'package:room_master_app/screens/component/calendar_date_picker_dialog.da
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 
 import '../component/time_select_pop_up.dart';
+import '../component/title_bar.dart';
 import '../component/tm_text_field.dart';
 
-class NewTaskScreen extends StatefulWidget {
-  const NewTaskScreen({super.key});
+class NewProjectScreen extends StatefulWidget {
+  const NewProjectScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => NewTaskScreenState();
+  State<StatefulWidget> createState() => NewProjectScreenState();
 }
 
-class NewTaskScreenState extends State<NewTaskScreen> {
-  String taskName = "";
+class NewProjectScreenState extends State<NewProjectScreen> {
+  String projectName = "";
   String description = "";
 
   @override
@@ -83,7 +84,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
             textStyle: context.textTheme.bodyMedium,
             onTextChange: (e) {
               setState(() {
-                taskName = e;
+                projectName = e;
               });
             },
           ),
@@ -280,7 +281,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
   Widget _buildConfirmBtn() {
     return ElevatedButton(
         onPressed: () {
-          print('conirmmd: $taskName $description');
+          print('conirmmd: $projectName $description');
         },
         child: Text(
           'Confirm',

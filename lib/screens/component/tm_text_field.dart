@@ -54,6 +54,7 @@ final class TMTextField extends StatelessWidget {
         maxLines: maxLines,
         style: textStyle,
         keyboardType: keyBoardType,
+        textInputAction: TextInputAction.done,
       ),
     );
   }
