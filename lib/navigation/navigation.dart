@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
+import 'package:room_master_app/screens/new_project/new_project_screen.dart';
 import 'package:room_master_app/screens/new_task/new_task_screen.dart';
+import 'package:room_master_app/screens/profile/edit_profile_screen.dart';
 import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/task_detail/task_detail_screen.dart';
 
@@ -21,7 +23,8 @@ abstract class NavigationPath {
   static const login = '/';
   static const register = '/register';
   static const newTask = '/new';
-  static const detail = '/detail';
+  static const newProject = '/newProject';
+  static const detailProject = '/detailProject';
   static const statistic = '/statistic';
   static const editProfile = '/detail/editProfile';
   static const changePassword = '/detail/changePassword';
@@ -53,10 +56,10 @@ abstract class AppRouter {
         builder: (_, __) => const ScaffoldWithNav(),
       ),
       GoRoute(
-        path: NavigationPath.newTask,
-        builder: (_, __) => const NewTaskScreen(),
+        path: NavigationPath.newProject,
+        builder: (_, __) => NewProjectScreen(),
       ),
-        GoRoute(
+      GoRoute(
         path: NavigationPath.statistic,
         builder: (_, __) => StatisticScreen(),
       ),
@@ -65,33 +68,37 @@ abstract class AppRouter {
         builder: (_, __) => const LoginScreen(),
       ),
       GoRoute(
-        path: NavigationPath.detail,
-        builder: (_, __) => TaskDetailScreen(),
-        routes: [
-          GoRoute(
-            path: 'editProfile',
-            builder: (context, __) => EditProfileScreen(user: context.read<AuthenticationCubit>().state.user!),
-          ),
-          GoRoute(
-            path: 'changePassword',
-            pageBuilder: (context, state) {
-              return CustomTransitionPage(
-                key: state.pageKey,
-                child: const ChangePasswordScreen(),
-                transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                  return SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(1.0, 0.0),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: child,
-                  );
-                },
-              );
-            },
-          ),
-        ]
-      ),
+          path: NavigationPath.newTask,
+          builder: (context, __) => const NewTaskScreen()),
+      GoRoute(
+          path: NavigationPath.detailProject,
+          builder: (_, __) => ProjectDetailScreen(),
+          routes: [
+            GoRoute(
+              path: 'editProfile',
+              builder: (context, __) => EditProfileScreen(
+                  user: context.read<AuthenticationCubit>().state.user!),
+            ),
+            GoRoute(
+              path: 'changePassword',
+              pageBuilder: (context, state) {
+                return CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const ChangePasswordScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(1.0, 0.0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    );
+                  },
+                );
+              },
+            ),
+          ]),
       GoRoute(
         path: NavigationPath.register,
         builder: (_, __) => const RegisterScreen(),

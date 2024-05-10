@@ -81,8 +81,9 @@ dependencies:
   flutter_svg: ^2.0.10+1
   image_picker: ^1.1.0
   firebase_storage: ^11.7.4
-  path: ^1.9.0
+  path: ^1.8.3
   firebase_auth: ^4.17.6
+  carousel_slider: ^4.2.1
   flutter_firebase_chat_core: ^1.6.7
   flutter_chat_ui: ^1.6.12
   file_picker: ^8.0.3
