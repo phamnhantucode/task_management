@@ -1,3 +1,5 @@
+import 'package:avatar_stack/avatar_stack.dart';
+import 'package:avatar_stack/positions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,13 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SpacerComponent(size: 'l'),
               _buildTopHeader(),
-              const SizedBox(height: 40),
+              SpacerComponent.l(),
               _buildBanner(),
-              const SpacerComponent(size: 'l'),
+              SpacerComponent.l(),
               _buildProjects(),
-              const SpacerComponent(size: 'l'),
+              SpacerComponent.l(),
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
@@ -73,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 400, // fixed height
                 child: _buildTodayTask(),
               ),
-              const SpacerComponent(size: 'l')
+              SpacerComponent.l(),
             ],
           ),
         ));
