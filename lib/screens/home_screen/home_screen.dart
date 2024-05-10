@@ -9,6 +9,7 @@ import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
 import '../../blocs/authentication/authentication_cubit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -27,13 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SpacerComponent(size: 'l'),
               _buildTopHeader(),
-              const SizedBox(height: 40),
+              SpacerComponent.l(),
               _buildBanner(),
-              const SpacerComponent(size: 'l'),
+              SpacerComponent.l(),
               _buildProjects(),
-              const SpacerComponent(size: 'l'),
+              SpacerComponent.l(),
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 400, // fixed height
                 child: _buildTodayTask(),
               ),
-              const SpacerComponent(size: 'l')
+              SpacerComponent.l(),
             ],
           ),
         ));
@@ -99,13 +99,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTopHeader() {
-    return TopHeader(
-        title: context.l10n.header_home,
+    return TopHeader(title: context.l10n.header_home,
+        rightIcon: Icons.qr_code,
         leftAction: () {
           context.read<AuthenticationCubit>().logout();
-          context.go(NavigationPath.login);
         },
-        rightAction: () => {print("Right clcik")});
+        rightAction: () => {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const QrScannerScreen(),))
+        });
   }
 
   Widget _buildBanner() {

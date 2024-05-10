@@ -43,6 +43,19 @@ class RegisterScreen extends StatelessWidget {
                           child: Text(context.l10n.task_management,
                               style: context.textTheme.titleLarge?.copyWith(
                                   color: context.appColors.textWhite))),
+                      labelTF(context, context.l10n.label_username),
+                      RegisterTF(
+                        hintText: context.l10n.label_username,
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: context.appColors.textWhite,
+                        ),
+                        onTextChange: (content) {
+                          context
+                              .read<AuthenticationCubit>()
+                              .setUsername(content);
+                        },
+                      ),
                       labelTF(context, context.l10n.label_email),
                       RegisterTF(
                         hintText: context.l10n.label_email,

@@ -84,6 +84,15 @@ dependencies:
   path: ^1.8.3
   firebase_auth: ^4.17.6
   carousel_slider: ^4.2.1
+  flutter_firebase_chat_core: ^1.6.7
+  flutter_chat_ui: ^1.6.12
+  file_picker: ^8.0.3
+  open_filex: ^4.4.0
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^5.1.0
+  qr_scanner_overlay: ^0.0.2
+  rxdart: ^0.27.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

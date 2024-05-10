@@ -45,7 +45,7 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                           style: context.textTheme.bodyMedium,
                           textAlign: TextAlign.left,
                         ),
-                        SpacerComponent(size: 'l'),
+                        SpacerComponent.l(),
                         Container(
                           width: MediaQuery.of(context).size.width,
                           child: Column(
@@ -88,7 +88,7 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                                       .toList(),
                                 ),
                               ),
-                              const SpacerComponent(size: 'm'),
+                              SpacerComponent.m(),
                               Row(
                                 children: [
                                   Expanded(
@@ -133,7 +133,7 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                                       child: Column(
                                     children: [
                                       Text("$amountTask"),
-                                      const SpacerComponent(size: 'm'),
+                                      SpacerComponent.s(),
                                       RotatedBox(
                                         quarterTurns: -1,
                                         child: SizedBox(
@@ -149,7 +149,7 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                                           ),
                                         ),
                                       ),
-                                      const SpacerComponent(size: 'm'),
+                                      SpacerComponent.m(),
                                       Text(e.keys.first),
                                     ],
                                   ));
@@ -158,7 +158,7 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                             ],
                           ),
                         ),
-                        const SpacerComponent(size: 'l'),
+                        SpacerComponent.m(),
                         Text(
                           context.l10n.latest_activities,
                           style: context.textTheme.titleMedium,

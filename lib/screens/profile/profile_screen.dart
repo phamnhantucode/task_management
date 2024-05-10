@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,11 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/blocs/setting/setting_cubit.dart';
 import 'package:room_master_app/common/app_setting.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/domain/service/file_picker_service.dart';
+import 'package:room_master_app/domain/service/qr_action.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/models/enum/image_picker_type.dart';
 import 'package:room_master_app/navigation/navigation.dart';
@@ -26,8 +27,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-      ProfileBloc()
+      create: (context) => ProfileBloc()
         ..add(InitBloc(user: context.read<AuthenticationCubit>().state.user)),
       child: Scaffold(
         appBar: AppBar(
@@ -68,9 +68,9 @@ class ProfileScreen extends StatelessWidget {
                               if (state.avatarPath != null) {
                                 return ClipOval(
                                     child: CachedNetworkImage(
-                                      imageUrl: state.avatarPath!,
-                                      fit: BoxFit.cover,
-                                    ));
+                                  imageUrl: state.avatarPath!,
+                                  fit: BoxFit.cover,
+                                ));
                               } else {
                                 return ClipOval(
                                   child: Image.network(
@@ -114,20 +114,21 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                  BlocBuilder<AuthenticationCubit, AuthenticationState>(
-                    builder: (context, state) {
-                      if (state.user != null) {
-                        return Text(
-                          state.user!.displayName != null && state.user!.displayName!.isNotEmpty
-                              ? state.user!.displayName!
-                              : state.user!.email!,
-                          style: context.textTheme.labelMedium,
-                          textAlign: TextAlign.center,
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                BlocBuilder<AuthenticationCubit, AuthenticationState>(
+                  builder: (context, state) {
+                    if (state.user != null) {
+                      return Text(
+                        state.user!.displayName != null &&
+                                state.user!.displayName!.isNotEmpty
+                            ? state.user!.displayName!
+                            : state.user!.email!,
+                        style: context.textTheme.labelMedium,
+                        textAlign: TextAlign.center,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
                 const SizedBox(height: 32.0),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -143,10 +144,10 @@ class ProfileScreen extends StatelessWidget {
                           borderRadius: BorderRadius.all(Radius.circular(8))),
                       title: Center(
                           child: Text(
-                            context.l10n.text_edit_profile,
-                            style: context.textTheme.labelMedium?.copyWith(
-                                color: context.appColors.textOnBtnEnable),
-                          )),
+                        context.l10n.text_edit_profile,
+                        style: context.textTheme.labelMedium?.copyWith(
+                            color: context.appColors.textOnBtnEnable),
+                      )),
                       onTap: () async {
                         await context.push(NavigationPath.editProfile);
                         context.read<AuthenticationCubit>().reloadUser();
@@ -154,98 +155,144 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    contentPadding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    leading: const Icon(
-                      Icons.lock,
-                      color: Colors.lightGreen,
-                    ),
-                    title: Text(context.l10n.text_change_password),
-                    trailing: const Icon(Icons.keyboard_arrow_right),
-                    onTap: () {
-                      context.push(NavigationPath.changePassword);
-                    },
-                  ),
+                _buildListTile(
+                  context: context,
+                  leadingIcon: Icons.qr_code,
+                  leadingIconColor: Colors.blue,
+                  title: context.l10n.text_your_qr_code,
+                  onTap: () {
+                    popUpQr(context);
+                  },
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    contentPadding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    leading: const Icon(
-                      Icons.settings,
-                      color: Colors.blue,
-                    ),
-                    title: Text(context.l10n.text_settings),
-                    trailing: const Icon(Icons.keyboard_arrow_right),
-                    onTap: () {
-                      showModalBottomSheet<void>(
-                        isScrollControlled: true,
-                        context: context,
-                        builder: (BuildContext innerContext) {
-                          return BlocProvider.value(
-                              value: context.read<ProfileBloc>(),
-                              child: const SettingPage());
+                _buildListTile(
+                  context: context,
+                  leadingIcon: Icons.lock,
+                  leadingIconColor: Colors.lightGreen,
+                  title: context.l10n.text_change_password,
+                  onTap: () {
+                    context.push(NavigationPath.changePassword);
+                  },
+                ),
+                _buildListTile(
+                  context: context,
+                  leadingIcon: Icons.settings,
+                  leadingIconColor: Colors.blue,
+                  title: context.l10n.text_settings,
+                  onTap: () {
+                    showModalBottomSheet<void>(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext innerContext) {
+                        return BlocProvider.value(
+                            value: context.read<ProfileBloc>(),
+                            child: const SettingPage());
+                      },
+                    );
+                  },
+                ),
+                _buildListTile(
+                  context: context,
+                  leadingIcon: Icons.notifications,
+                  leadingIconColor: Colors.orange,
+                  title: context.l10n.text_notifications,
+                  trailing: BlocBuilder<ProfileBloc, ProfileState>(
+                    builder: (context, state) {
+                      return RMSwitch(
+                        value: state.isTurnOnNotification,
+                        onChanged: (value) {
+                          context.read<ProfileBloc>().add(
+                              SetNotification(isTurnOnNotification: value));
                         },
                       );
                     },
                   ),
+                  onTap: () {},
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    contentPadding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    leading: const Icon(
-                      Icons.notifications,
-                      color: Colors.orange,
-                    ),
-                    title: Text(context.l10n.text_notifications),
-                    trailing: BlocBuilder<ProfileBloc, ProfileState>(
-                      builder: (context, state) {
-                        return RMSwitch(
-                          value: state.isTurnOnNotification,
-                          onChanged: (value) {
-                            context.read<ProfileBloc>().add(
-                                SetNotification(isTurnOnNotification: value));
-                          },
-                        );
-                      },
-                    ),
-                    onTap: () {},
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    contentPadding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    leading: const Icon(
-                      Icons.exit_to_app,
-                      color: Colors.red,
-                    ),
-                    title: Text(context.l10n.text_logout),
-                    trailing: const Icon(Icons.keyboard_arrow_right),
-                    onTap: () {
-                      context.read<AuthenticationCubit>().logout();
-                    },
-                  ),
+                _buildListTile(
+                  context: context,
+                  leadingIcon: Icons.exit_to_app,
+                  leadingIconColor: Colors.red,
+                  title: context.l10n.text_logout,
+                  onTap: () {
+                    context.read<AuthenticationCubit>().logout();
+                  },
                 ),
               ],
             );
           },
         ),
+      ),
+    );
+  }
+
+  void popUpQr(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 300),
+            decoration: BoxDecoration(
+                color: context.appColors.defaultBgContainer,
+                borderRadius: BorderRadius.circular(16)),
+            padding: EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  context.l10n.text_your_qr_code,
+                  style: context.textTheme.labelMedium,
+                ),
+                Text(
+                  context.l10n.text_content_qr_profile_dialog,
+                  style: context.textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: context.appColors.buttonEnable, width: 2),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: QrImageView(
+                    data: QrAction.profile.encode(
+                        context.read<AuthenticationCubit>().state.user?.uid ??
+                            ''),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListTile({
+    required BuildContext context,
+    required IconData leadingIcon,
+    required Color leadingIconColor,
+    required String title,
+    required VoidCallback onTap,
+    Widget? trailing,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8))),
+        leading: Icon(
+          leadingIcon,
+          color: leadingIconColor,
+        ),
+        title: Text(title),
+        trailing: trailing ?? const Icon(Icons.keyboard_arrow_right),
+        onTap: onTap,
       ),
     );
   }
@@ -255,29 +302,6 @@ class EditAvatarPage extends StatelessWidget {
   const EditAvatarPage({
     super.key,
   });
-
-  Future<String?> imageSelector(BuildContext context,
-      ImagePickerType pickerType) async {
-    XFile? imageFile;
-    final imagePicker = ImagePicker();
-    switch (pickerType) {
-      case ImagePickerType.gallery:
-        imageFile = await imagePicker.pickImage(
-            source: ImageSource.gallery, imageQuality: 90);
-        break;
-      case ImagePickerType.camera:
-        imageFile = await imagePicker.pickImage(
-            source: ImageSource.camera, imageQuality: 90);
-        break;
-    }
-
-    if (imageFile != null) {
-      print("You selected  image : " + imageFile.path);
-    } else {
-      print("You have not taken image");
-    }
-    return imageFile?.path;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,8 +327,8 @@ class EditAvatarPage extends StatelessWidget {
             ),
             TMElevatedButton(
               onPressed: () async {
-                final filePath =
-                await imageSelector(context, ImagePickerType.gallery);
+                final filePath = await FileService.instance
+                    .imageSelection(ImagePickerType.gallery);
                 if (filePath != null) {
                   context
                       .read<ProfileBloc>()
@@ -319,8 +343,8 @@ class EditAvatarPage extends StatelessWidget {
             ),
             TMElevatedButton(
               onPressed: () async {
-                final filePath =
-                await imageSelector(context, ImagePickerType.camera);
+                final filePath = await FileService.instance
+                    .imageSelection(ImagePickerType.camera);
                 if (filePath != null) {
                   context
                       .read<ProfileBloc>()
@@ -434,7 +458,7 @@ class SettingPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16)),
                   child: ListTile(
                     contentPadding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8))),
                     leading: SvgPicture.asset(AppAssets.iconEnglishFlag),
@@ -459,12 +483,12 @@ class SettingPage extends StatelessWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       for (var i = 0;
-                                      i < Language.values.length;
-                                      i++)
+                                          i < Language.values.length;
+                                          i++)
                                         ListTile(
                                           contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 4, horizontal: 12),
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 4, horizontal: 12),
                                           shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(8))),
@@ -480,7 +504,7 @@ class SettingPage extends StatelessWidget {
                                               context
                                                   .read<SettingCubit>()
                                                   .setLanguage(
-                                                  Language.values[i]);
+                                                      Language.values[i]);
                                             },
                                           ),
                                         ),
@@ -503,7 +527,8 @@ class SettingPage extends StatelessWidget {
     );
   }
 
-  Expanded buildItemRadio<T>(BuildContext context, {
+  Expanded buildItemRadio<T>(
+    BuildContext context, {
     required T value,
     required T groupValue,
     void Function(T? value)? onChanged,
