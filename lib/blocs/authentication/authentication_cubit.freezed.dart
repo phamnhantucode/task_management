@@ -22,10 +22,14 @@ AuthenticationState _$AuthenticationStateFromJson(Map<String, dynamic> json) {
 mixin _$AuthenticationState {
   @JsonKey(ignore: true)
   LoginStatus get status => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  User? get user => throw _privateConstructorUsedError;
   bool get isAuthenticated => throw _privateConstructorUsedError;
   DateTime? get expireTime => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  String get username => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   AuthException? get authException => throw _privateConstructorUsedError;
 
@@ -43,10 +47,12 @@ abstract class $AuthenticationStateCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(ignore: true) LoginStatus status,
+      @JsonKey(ignore: true) User? user,
       bool isAuthenticated,
       DateTime? expireTime,
       String email,
       String password,
+      @JsonKey(ignore: true) String username,
       @JsonKey(ignore: true) AuthException? authException});
 }
 
@@ -64,10 +70,12 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
   @override
   $Res call({
     Object? status = null,
+    Object? user = freezed,
     Object? isAuthenticated = null,
     Object? expireTime = freezed,
     Object? email = null,
     Object? password = null,
+    Object? username = null,
     Object? authException = freezed,
   }) {
     return _then(_value.copyWith(
@@ -75,6 +83,10 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as LoginStatus,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User?,
       isAuthenticated: null == isAuthenticated
           ? _value.isAuthenticated
           : isAuthenticated // ignore: cast_nullable_to_non_nullable
@@ -90,6 +102,10 @@ class _$AuthenticationStateCopyWithImpl<$Res, $Val extends AuthenticationState>
       password: null == password
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
+              as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
               as String,
       authException: freezed == authException
           ? _value.authException
@@ -109,10 +125,12 @@ abstract class _$$AuthenticationStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(ignore: true) LoginStatus status,
+      @JsonKey(ignore: true) User? user,
       bool isAuthenticated,
       DateTime? expireTime,
       String email,
       String password,
+      @JsonKey(ignore: true) String username,
       @JsonKey(ignore: true) AuthException? authException});
 }
 
@@ -128,10 +146,12 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? status = null,
+    Object? user = freezed,
     Object? isAuthenticated = null,
     Object? expireTime = freezed,
     Object? email = null,
     Object? password = null,
+    Object? username = null,
     Object? authException = freezed,
   }) {
     return _then(_$AuthenticationStateImpl(
@@ -139,6 +159,10 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as LoginStatus,
+      user: freezed == user
+          ? _value.user
+          : user // ignore: cast_nullable_to_non_nullable
+              as User?,
       isAuthenticated: null == isAuthenticated
           ? _value.isAuthenticated
           : isAuthenticated // ignore: cast_nullable_to_non_nullable
@@ -155,6 +179,10 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
+      username: null == username
+          ? _value.username
+          : username // ignore: cast_nullable_to_non_nullable
+              as String,
       authException: freezed == authException
           ? _value.authException
           : authException // ignore: cast_nullable_to_non_nullable
@@ -168,10 +196,12 @@ class __$$AuthenticationStateImplCopyWithImpl<$Res>
 class _$AuthenticationStateImpl implements _AuthenticationState {
   const _$AuthenticationStateImpl(
       {@JsonKey(ignore: true) this.status = LoginStatus.unknown,
+      @JsonKey(ignore: true) this.user,
       required this.isAuthenticated,
       this.expireTime,
       this.email = '',
       this.password = '',
+      @JsonKey(ignore: true) this.username = '',
       @JsonKey(ignore: true) this.authException});
 
   factory _$AuthenticationStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -180,6 +210,9 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
   @override
   @JsonKey(ignore: true)
   final LoginStatus status;
+  @override
+  @JsonKey(ignore: true)
+  final User? user;
   @override
   final bool isAuthenticated;
   @override
@@ -192,11 +225,14 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
   final String password;
   @override
   @JsonKey(ignore: true)
+  final String username;
+  @override
+  @JsonKey(ignore: true)
   final AuthException? authException;
 
   @override
   String toString() {
-    return 'AuthenticationState(status: $status, isAuthenticated: $isAuthenticated, expireTime: $expireTime, email: $email, password: $password, authException: $authException)';
+    return 'AuthenticationState(status: $status, user: $user, isAuthenticated: $isAuthenticated, expireTime: $expireTime, email: $email, password: $password, username: $username, authException: $authException)';
   }
 
   @override
@@ -205,6 +241,7 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
         (other.runtimeType == runtimeType &&
             other is _$AuthenticationStateImpl &&
             (identical(other.status, status) || other.status == status) &&
+            (identical(other.user, user) || other.user == user) &&
             (identical(other.isAuthenticated, isAuthenticated) ||
                 other.isAuthenticated == isAuthenticated) &&
             (identical(other.expireTime, expireTime) ||
@@ -212,14 +249,16 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.password, password) ||
                 other.password == password) &&
+            (identical(other.username, username) ||
+                other.username == username) &&
             (identical(other.authException, authException) ||
                 other.authException == authException));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, status, isAuthenticated,
-      expireTime, email, password, authException);
+  int get hashCode => Object.hash(runtimeType, status, user, isAuthenticated,
+      expireTime, email, password, username, authException);
 
   @JsonKey(ignore: true)
   @override
@@ -239,10 +278,12 @@ class _$AuthenticationStateImpl implements _AuthenticationState {
 abstract class _AuthenticationState implements AuthenticationState {
   const factory _AuthenticationState(
           {@JsonKey(ignore: true) final LoginStatus status,
+          @JsonKey(ignore: true) final User? user,
           required final bool isAuthenticated,
           final DateTime? expireTime,
           final String email,
           final String password,
+          @JsonKey(ignore: true) final String username,
           @JsonKey(ignore: true) final AuthException? authException}) =
       _$AuthenticationStateImpl;
 
@@ -253,6 +294,9 @@ abstract class _AuthenticationState implements AuthenticationState {
   @JsonKey(ignore: true)
   LoginStatus get status;
   @override
+  @JsonKey(ignore: true)
+  User? get user;
+  @override
   bool get isAuthenticated;
   @override
   DateTime? get expireTime;
@@ -260,6 +304,9 @@ abstract class _AuthenticationState implements AuthenticationState {
   String get email;
   @override
   String get password;
+  @override
+  @JsonKey(ignore: true)
+  String get username;
   @override
   @JsonKey(ignore: true)
   AuthException? get authException;

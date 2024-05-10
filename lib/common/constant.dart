@@ -26,4 +26,7 @@ class AppConstants {
   static const String dateWeeksMonthFormat = 'EEEE, dd MMMM';
 
   static const String imageCloudStoragePath = 'images/';
+  static const String fileCloudStoragePath = 'files/';
+
+  static const String defaultUriAvatar = 'https://picsum.photos/200/300';
 }

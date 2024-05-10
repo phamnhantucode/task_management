@@ -6,6 +6,7 @@ import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
 import '../../blocs/authentication/authentication_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,15 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
-          const SizedBox(height: 20),
           TopHeader(
               title: context.l10n.header_home,
+              rightIcon: Icons.qr_code,
               leftAction: () {
                 context.read<AuthenticationCubit>().logout();
-                context.go(NavigationPath.login);
               },
-              rightAction: () => {print("Right clcik")}),
-          const SizedBox(height: 40),
+              rightAction: () => {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const QrScannerScreen(),))
+              }),
+          const SizedBox(height: 20),
           Container(
             height: 200,
             width: double.infinity,

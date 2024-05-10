@@ -66,5 +66,20 @@
     "text_cancel": "Cancel",
     "text_success": "Success",
     "text_message": "Message",
-    "text_theme": "Theme"
+    "text_theme": "Theme",
+    "text_no_users": "No users",
+    "text_error": "Error",
+    "text_friend": "Friends",
+    "text_all": "All",
+    "text_your_qr_code": "Your QR code",
+    "text_content_qr_profile_dialog": "Let's your friend scan to do more action",
+    "text_qr_scanner": "Qr Scanner",
+    "text_error_controller_not_ready": "Controller not ready.",
+    "text_error_permission_denied": "Permission denied",
+    "text_generic_error": "Generic Error",
+    "text_error_scanning_is_unsupported_on_this_device": "Scanning is unsupported on this device",
+    "text_add_friend": "Add friend",
+    "text_already_friend": "Already friend",
+    "text_waiting": "Waiting",
+    "text_accept": "Accept"
 }

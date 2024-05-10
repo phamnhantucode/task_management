@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:room_master_app/domain/repositories/test_repository.dart';
@@ -33,9 +34,8 @@ final class App extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) =>
-            AuthenticationCubit(context.read())
-              ..setUser(),
+            create: (context) => AuthenticationCubit(context.read())
+              ..login(),
           ),
           BlocProvider(
             create: (context) => BottomNavCubit(),
@@ -83,6 +83,7 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.bottom]);
     WidgetsBinding.instance.addObserver(this);
     if (themeMode == ThemeMode.system) {
       if (isDarkMode(context)) {

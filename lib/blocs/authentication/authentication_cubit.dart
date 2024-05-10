@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:room_master_app/domain/repositories/auth/auth_repository.dart';
 import '../../domain/exception/auth_exception.dart';
 
 part 'authentication_cubit.freezed.dart';
+
 part 'authentication_cubit.g.dart';
 
 final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
@@ -16,22 +19,27 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
   final AuthRepository _authRepository;
 
   void login() async {
-    emit(state.copyWith(status: LoginStatus.loading));
-    final result = await _authRepository.login(state.email, state.password);
-    if (result.first == null) {
-      emit(state.copyWith(
-          status: LoginStatus.success,
-          isAuthenticated: result.second,
-          expireTime: getCurrentTimestamp.add(const Duration(days: 1))));
-    } else {
-      emit(state.copyWith(
-          authException: result.first, isAuthenticated: result.second));
+    if (state.email.isNotEmpty && state.password.isNotEmpty) {
+      emit(state.copyWith(status: LoginStatus.loading));
+      final result = await _authRepository.login(state.email, state.password);
+      if (result.first == null) {
+        emit(state.copyWith(
+            status: LoginStatus.success,
+            isAuthenticated: result.second,
+            expireTime: state.expireTime ??
+                getCurrentTimestamp.add(const Duration(days: 1))));
+        setUser();
+      } else {
+        emit(state.copyWith(
+            authException: result.first, isAuthenticated: result.second));
+      }
     }
   }
 
   void register() async {
     emit(state.copyWith(status: LoginStatus.loading));
-    final result = await _authRepository.register(state.email, state.password);
+    final result = await _authRepository.register(
+        state.email, state.password, state.username);
     if (result.first == null) {
       emit(state.copyWith(
           status: LoginStatus.success,
@@ -41,19 +49,22 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
       emit(state.copyWith(
           authException: result.first, isAuthenticated: result.second));
     }
+    setUser();
   }
 
-  void logout() {
+  void logout() async {
+    await _authRepository.logOut();
     emit(const AuthenticationState(isAuthenticated: false));
   }
 
   void setEmail(String content) => emit(state.copyWith(email: content));
 
+  void setUsername(String content) => emit(state.copyWith(username: content));
+
   void setPassword(String content) => emit(state.copyWith(password: content));
 
   void setUser() {
     if (state.isAuthenticated && getCurrentTimestamp < state.expireTime!) {
-      login();
       emit(state.copyWith(user: FirebaseAuth.instance.currentUser));
     }
   }
@@ -82,6 +93,7 @@ class AuthenticationState with _$AuthenticationState {
     DateTime? expireTime,
     @Default('') String email,
     @Default('') String password,
+    @JsonKey(ignore: true) @Default('') String username,
     @JsonKey(ignore: true) AuthException? authException,
   }) = _AuthenticationState;
 

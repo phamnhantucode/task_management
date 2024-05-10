@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/screens/chat/rooms_screen.dart';
 import 'package:room_master_app/screens/home_screen/home_screen.dart';
 import 'package:room_master_app/screens/profile/profile_screen.dart';
 import 'package:room_master_app/screens/upcoming_task/upcoming_task_screen.dart';
@@ -18,7 +19,7 @@ class ScaffoldWithNav extends StatelessWidget {
         builder: (context, state) => switch (state) {
           NavFunction.home => const HomeScreen(),
           NavFunction.calendar => const UpcomingTaskScreen(),
-          NavFunction.chat => const HomeScreen(),
+          NavFunction.chat => const RoomsScreen(),
           NavFunction.profile => const ProfileScreen(),
         },
       ),
