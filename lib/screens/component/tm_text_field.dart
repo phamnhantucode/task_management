@@ -14,9 +14,13 @@ final class TMTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.onTextChange,
+    this.validator,
+    this.controller,  this.keys, this.keyboardType, this.errorText,
   });
 
   final String? initialText;
+  final  Key? keys;
+  final TextInputType? keyboardType;
   final String? hintText;
   final TextStyle? textStyle;
   final int maxLines;
@@ -25,32 +29,43 @@ final class TMTextField extends StatelessWidget {
   final TextInputType? keyBoardType;
   final bool obscureText;
   final void Function(String content)? onTextChange;
+  final FormFieldValidator? validator;
+  final TextEditingController? controller;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: context.appColors.textWhite)),
-      padding: EdgeInsetsDirectional.only(start: 16.w),
-      child: TextFormField(
-        scrollPadding:
-            EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
-        obscureText: obscureText,
-        initialValue: initialText,
-        onChanged: onTextChange,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: hintText,
-          hintStyle: context.textTheme.bodyMedium
-              ?.copyWith(color: context.appColors.textGray),
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
+    return TextFormField(
+      scrollPadding:
+          EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
+      obscureText: obscureText,
+      initialValue: initialText,
+      onChanged: onTextChange,
+      
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.all(12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: context.appColors.textWhite)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: context.appColors.textWhite)
         ),
-        maxLines: maxLines,
-        style: textStyle,
-        keyboardType: keyBoardType,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: context.appColors.textWhite)
+        ),
+    
+        hintText: hintText,
+        hintStyle: context.textTheme.bodyMedium
+            ?.copyWith(color: context.appColors.textGray),
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        errorText: errorText
       ),
+      maxLines: maxLines,
+      style: textStyle,
+      keyboardType: keyBoardType,
+      validator: validator,
     );
   }
 }

@@ -28,6 +28,7 @@ class AppColors {
     gradient_bg_4: Color(0xFF398AE5),
     tfcolor: Color(0xFF6CA8F1),
     defaultBgContainer: Color(0xFFFFFFFF),
+      failureText: Color(0xFFEF6565)
   );
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
@@ -47,6 +48,7 @@ class AppColors {
     gradient_bg_4: Color(0xFF398AE5),
     tfcolor: Color(0xFF6CA8F1),
     defaultBgContainer: Color(0xFFFFFFFF),
+      failureText: Color(0xFFEF6565)
   );
 
 }
@@ -70,7 +72,8 @@ class AppColorsScheme {
     required this.gradient_bg_3,
     required this.gradient_bg_4,
     required this.defaultBgContainer,
-    required this.tfcolor
+    required this.tfcolor,
+    required this.failureText
   });
 
   final Color bgGray;
@@ -89,4 +92,5 @@ class AppColorsScheme {
   final Color gradient_bg_4;
   final Color tfcolor;
   final Color defaultBgContainer;
+  final Color failureText;
 }

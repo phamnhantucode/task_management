@@ -6,9 +6,11 @@ import '../../../component/tm_text_field.dart';
 
 
 class PasswordField extends StatefulWidget {
-  const PasswordField({super.key, this.onTextChange});
+  const PasswordField({super.key, this.onTextChange, this.validator, this.controller});
 
   final void Function(String)? onTextChange;
+  final FormFieldValidator? validator;
+  final TextEditingController? controller;
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -18,19 +20,14 @@ class _PasswordFieldState extends State<PasswordField> {
 
   bool isHidePassword = true;
 
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: context.appColors.tfcolor,
         borderRadius: BorderRadius.circular(10.0),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 6.0,
-            offset: Offset(0, 2),
-          ),
-        ],
+
       ),
       child: TMTextField(
         obscureText: isHidePassword,
@@ -38,6 +35,8 @@ class _PasswordFieldState extends State<PasswordField> {
         keyBoardType: TextInputType.visiblePassword,
         textStyle: TextStyle(color: context.appColors.textWhite),
         onTextChange: widget.onTextChange,
+        validator: widget.validator,
+        controller: widget.controller,
         prefixIcon: Icon(
           Icons.lock,
           color: context.appColors.textWhite,
@@ -47,7 +46,7 @@ class _PasswordFieldState extends State<PasswordField> {
             isHidePassword = !isHidePassword;
           }),
           icon: Icon(
-            isHidePassword ? Icons.remove_red_eye : Icons.panorama_fish_eye,
+            isHidePassword ? Icons.visibility_off  : Icons.visibility,
             color: context.appColors.textWhite,
           ),
         ),
