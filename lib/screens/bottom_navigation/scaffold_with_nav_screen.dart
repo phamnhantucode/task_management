@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/home_screen/home_screen.dart';
 import 'package:room_master_app/screens/profile/profile_screen.dart';
 import 'package:room_master_app/screens/upcoming_task/upcoming_task_screen.dart';
@@ -14,6 +16,7 @@ class ScaffoldWithNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: BlocBuilder<BottomNavCubit, NavFunction>(
         builder: (context, state) => switch (state) {
           NavFunction.home => const HomeScreen(),
@@ -26,7 +29,11 @@ class ScaffoldWithNav extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
-        onPressed: () => {},
+        onPressed: ()  {
+          if (context.read<BottomNavCubit>().state == NavFunction.home) {
+            context.go(NavigationPath.newProject);
+          }
+        },
         elevation: 0,
         shape: RoundedRectangleBorder(
             borderRadius: const BorderRadius.all(Radius.circular(100)),
