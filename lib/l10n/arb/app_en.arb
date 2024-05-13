@@ -93,5 +93,10 @@
     "text_error_create_project": "Error create project",
     "text_project_detail": "Project detail",
     "text_percent_with_number": "{number}%",
-    "text_tasks": "Tasks"
+    "text_tasks": "Tasks",
+    "text_start_date": "Start date",
+    "text_end_date": "End date",
+    "text_empty": "Empty",
+    "text_hours_left": "{number} hours left",
+    "text_your_are_not_the_owner_of_this_project": "You are not the owner of this project"
 }
