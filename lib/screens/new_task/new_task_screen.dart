@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
+import 'package:room_master_app/screens/component/top_header/primary.dart';
 
 import '../component/time_select_pop_up.dart';
-import '../component/title_bar.dart';
 import '../component/tm_text_field.dart';
 
-class NewTaskScreen extends StatelessWidget {
+class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
+
+  @override
+  State<StatefulWidget> createState() => NewTaskScreenState();
+}
+
+class NewTaskScreenState extends State<NewTaskScreen> {
+  String taskName = "";
+  String description = "";
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +30,13 @@ class NewTaskScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TMTitleBar(
-                title: context.l10n.text_create_new_task,
-              ),
+              TopHeader(title: 'New Project', leftAction: (){
+                context.go(NavigationPath.home);
+              },),
               SizedBox(
                 height: 16.h,
               ),
-              _buildTaskNameSection(context),
+              _buildProjectNameSection(context),
               SizedBox(
                 height: 16.h,
               ),
@@ -47,6 +57,7 @@ class NewTaskScreen extends StatelessWidget {
               ]),
               _buildDateAndTimeSection(context),
               _buildDescriptionSection(context),
+              _buildConfirmBtn()
             ],
           ),
         ),
@@ -54,14 +65,14 @@ class NewTaskScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskNameSection(BuildContext context) {
+  Widget _buildProjectNameSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.l10n.text_task_name,
+            'Project name',
             style: context.textTheme.labelLarge,
           ),
           SizedBox(
@@ -70,6 +81,11 @@ class NewTaskScreen extends StatelessWidget {
           TMTextField(
             hintText: context.l10n.text_enter_task_name,
             textStyle: context.textTheme.bodyMedium,
+            onTextChange: (e) {
+              setState(() {
+                taskName = e;
+              });
+            },
           ),
         ],
       ),
@@ -171,8 +187,8 @@ class NewTaskScreen extends StatelessWidget {
                           context.appColors.buttonDisable),
                     ),
                     onPressed: () async {
-                      await TMCalendarDatePicker(
-                          value: [getCurrentTimestamp]).onShowDialog(context);
+                      await TMCalendarDatePicker(value: [getCurrentTimestamp])
+                          .onShowDialog(context);
                     },
                     icon: Icon(
                       Icons.calendar_month,
@@ -250,9 +266,25 @@ class NewTaskScreen extends StatelessWidget {
             hintText: context.l10n.text_description,
             textStyle: context.textTheme.bodyMedium,
             maxLines: 3,
+            onTextChange: (e) {
+              setState(() {
+                description = e;
+              });
+            },
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildConfirmBtn() {
+    return ElevatedButton(
+        onPressed: () {
+          print('conirmmd: $taskName $description');
+        },
+        child: Text(
+          'Confirm',
+          style: context.textTheme.titleSmall,
+        ));
   }
 }

@@ -8,4 +8,4 @@ class BottomNavCubit extends Cubit<NavFunction> {
   }
 }
 
-enum NavFunction {home, calendar, chat, user}
+enum NavFunction {home, calendar, chat, profile}

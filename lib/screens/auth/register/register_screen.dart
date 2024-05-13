@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:room_master_app/blocs/loading_button/loading_button_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
-import 'package:room_master_app/screens/auth/login/provider/validate_provider.dart';
 
 import '../../../blocs/authentication/authentication_cubit.dart';
 import '../../component/tm_elevated_button.dart';
@@ -71,6 +69,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: Text(context.l10n.task_management,
                                   style: context.textTheme.titleLarge?.copyWith(
                                       color: context.appColors.textWhite))),
+                          labelTF(context, context.l10n.label_username),
+                          RegisterTF(
+                            hintText: context.l10n.label_username,
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: context.appColors.textWhite,
+                            ),
+                            onTextChange: (content) {
+                              context
+                                  .read<AuthenticationCubit>()
+                                  .setUsername(content);
+                            },
+                          ),
                           labelTF(context, context.l10n.label_email),
                           RegisterTF(
                             hintText: context.l10n.label_email,
@@ -122,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           LabelAuth(
                               title: context.l10n.dont_have_acc,
-                              labelAuth: context.l10n.label_login,
+                              labelAuth: context.l10n.label_register,
                               textStyle: context.textTheme.bodyMedium
                                   ?.copyWith(color: context.appColors.textWhite),
                               onPress: () {

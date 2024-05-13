@@ -28,7 +28,7 @@ class AppColors {
     gradient_bg_4: Color(0xFF398AE5),
     tfcolor: Color(0xFF6CA8F1),
     defaultBgContainer: Color(0xFFFFFFFF),
-      failureText: Color(0xFFEF6565)
+      failureText: Color(0xFFEF6565),
   );
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
@@ -56,25 +56,30 @@ class AppColors {
 enum Appearance { light, dark }
 
 class AppColorsScheme {
-  const AppColorsScheme( {
-    required this.bgGray,
-    required this.bgGrayLight,
-    required this.textGray,
-    required this.textBlack,
-    required this.borderColor,
-    required this.buttonEnable,
-    required this.buttonDisable,
-    required this.textOnBtnEnable,
-    required this.fingerID,
-    required this.textWhite,
-    required this.gradient_bg_1,
-    required this.gradient_bg_2,
-    required this.gradient_bg_3,
-    required this.gradient_bg_4,
-    required this.defaultBgContainer,
-    required this.tfcolor,
-    required this.failureText
-  });
+  const AppColorsScheme(
+      {required this.bgGray,
+      required this.bgGrayLight,
+      required this.textGray,
+      required this.textBlack,
+      required this.borderColor,
+      required this.buttonEnable,
+      required this.buttonDisable,
+      required this.textOnBtnEnable,
+      required this.fingerID,
+      required this.textWhite,
+      required this.gradient_bg_1,
+      required this.gradient_bg_2,
+      required this.gradient_bg_3,
+      required this.gradient_bg_4,
+      required this.tfcolor,
+      required this.defaultBgContainer,
+      this.primary = Colors.blue,
+      this.primaryDarker = const Color.fromARGB(255, 100, 181, 246),
+      this.primaryLighter = const Color.fromARGB(255, 100, 181, 246),
+
+        required this.defaultBgContainer,
+        required this.tfcolor,
+        required this.failureText});
 
   final Color bgGray;
   final Color bgGrayLight;
@@ -86,6 +91,9 @@ class AppColorsScheme {
   final Color buttonDisable;
   final Color textOnBtnEnable;
   final Color fingerID;
+  final Color primary;
+  final Color primaryDarker;
+  final Color primaryLighter;
   final Color gradient_bg_1;
   final Color gradient_bg_2;
   final Color gradient_bg_3;

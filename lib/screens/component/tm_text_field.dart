@@ -14,6 +14,7 @@ final class TMTextField extends StatelessWidget {
     this.obscureText = false,
     this.suffixIcon,
     this.onTextChange,
+    this.controller, this.borderColor,
     this.validator,
     this.controller,  this.keys, this.keyboardType, this.errorText,
   });
@@ -30,8 +31,9 @@ final class TMTextField extends StatelessWidget {
   final bool obscureText;
   final void Function(String content)? onTextChange;
   final FormFieldValidator? validator;
-  final TextEditingController? controller;
   final String? errorText;
+  final TextEditingController? controller;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +43,11 @@ final class TMTextField extends StatelessWidget {
       obscureText: obscureText,
       initialValue: initialText,
       onChanged: onTextChange,
-      
+
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.all(12),
+        contentPadding: const EdgeInsets.all(12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: context.appColors.textWhite)),
+        borderSide: BorderSide(color: borderColor ?? context.appColors.textWhite)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: context.appColors.textWhite)
@@ -54,7 +56,7 @@ final class TMTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: context.appColors.textWhite)
         ),
-    
+
         hintText: hintText,
         hintStyle: context.textTheme.bodyMedium
             ?.copyWith(color: context.appColors.textGray),
