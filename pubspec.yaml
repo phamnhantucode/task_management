@@ -71,7 +71,7 @@ dependencies:
   from_css_color: ^2.0.0
   json_path: ^0.6.6
   collection: ^1.18.0
-  cached_network_image: ^3.3.1
+  cached_network_image: ^3.3.0
   uuid: ^4.3.3
   cloud_firestore: ^4.14.0
   firebase_core: ^2.24.2

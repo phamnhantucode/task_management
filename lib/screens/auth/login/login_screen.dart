@@ -107,12 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: 50.r,
                           style: context.textTheme.labelLarge
                               ?.copyWith(color: context.appColors.buttonEnable),
-                          onPressed: _formKey.currentState!.validate()
-                              ? () {
-                                  context.read<AuthenticationCubit>().login();
-                                }
-                              : null,
-                          color: context.appColors.textWhite,
+                          onPressed:() {
+                          _formKey.currentState!.validate();
+                          context.read<AuthenticationCubit>().login();
+                        }
                         ),
                         _rememberMe(context),
                         SizedBox(

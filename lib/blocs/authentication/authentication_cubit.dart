@@ -7,7 +7,6 @@ import 'package:room_master_app/domain/repositories/auth/auth_repository.dart';
 import '../../domain/exception/auth_exception.dart';
 
 part 'authentication_cubit.freezed.dart';
-
 part 'authentication_cubit.g.dart';
 
 final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
