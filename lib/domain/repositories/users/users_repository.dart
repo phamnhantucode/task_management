@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 
@@ -33,6 +31,32 @@ class UsersRepository {
     } catch (e) {
       print('Error retrieving user: $e');
       return null; // Error occurred while retrieving the user
+    }
+  }
+
+  Future<List<User>> getUsersById(List<String> userIds) async {
+    try {
+      final List<DocumentSnapshot> docs = await Future.wait(
+        userIds.map((userId) => _userCollection.doc(userId).get()),
+      );
+
+      final users = docs
+          .where((doc) => doc.exists)
+          .map((doc) {
+        final data = doc.data()! as Map<String, dynamic>;
+
+        data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+        data['id'] = doc.id;
+        data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
+        data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+        return User.fromJson(data);
+      })
+          .toList();
+
+      return users;
+    } catch (e) {
+      print('Error retrieving users: $e');
+      return []; // Error occurred while retrieving the users
     }
   }
 }

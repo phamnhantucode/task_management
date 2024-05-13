@@ -81,5 +81,14 @@
     "text_add_friend": "Add friend",
     "text_already_friend": "Already friend",
     "text_waiting": "Waiting",
-    "text_accept": "Accept"
+    "text_accept": "Accept",
+    "text_project_name": "Project name",
+    "text_project_description": "Description",
+    "text_create_project": "Create project",
+    "text_confirm": "Confirm",
+    "text_enter_project_name": "Enter project name",
+    "text_error_create_project": "Error create project",
+    "text_project_detail": "Project detail",
+    "text_percent_with_number": "{number}%",
+    "text_tasks": "Tasks"
 }

@@ -18,7 +18,7 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
 
   final AuthRepository _authRepository;
 
-  void login() async {
+  void login({bool isAutoLogin = false}) async {
     if (state.email.isNotEmpty && state.password.isNotEmpty) {
       emit(state.copyWith(status: LoginStatus.loading));
       final result = await _authRepository.login(state.email, state.password);
@@ -26,7 +26,7 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
         emit(state.copyWith(
             status: LoginStatus.success,
             isAuthenticated: result.second,
-            expireTime: state.expireTime ??
+            expireTime: isAutoLogin ? state.expireTime :
                 getCurrentTimestamp.add(const Duration(days: 1))));
         setUser();
       } else {
