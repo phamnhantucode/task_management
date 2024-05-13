@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 
-Future<T?> showAlertDialog<T>({
+Future<T?> showAuthDialog<T>({
   required BuildContext context,
   required String title,
   required String content,

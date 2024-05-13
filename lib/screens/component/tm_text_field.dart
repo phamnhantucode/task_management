@@ -15,8 +15,7 @@ final class TMTextField extends StatelessWidget {
     this.suffixIcon,
     this.onTextChange,
     this.controller, this.borderColor,
-    this.validator,
-    this.controller,  this.keys, this.keyboardType, this.errorText,
+    this.validator,  this.keys, this.keyboardType, this.errorText,
   });
 
   final String? initialText;

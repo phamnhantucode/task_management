@@ -78,7 +78,6 @@ dependencies:
   calendar_date_picker2: ^0.5.5
   easy_date_timeline: 1.0.3
   avatar_stack: ^1.2.0
-  firebase_auth: 4.17.8
   formz: ^0.7.0
   flutter_svg: ^2.0.10+1
   image_picker: ^1.1.0
