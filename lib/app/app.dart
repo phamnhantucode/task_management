@@ -35,7 +35,7 @@ final class App extends StatelessWidget {
         providers: [
           BlocProvider(
             create: (context) => AuthenticationCubit(context.read())
-              ..login(),
+              ..login(isAutoLogin: true),
           ),
           BlocProvider(
             create: (context) => BottomNavCubit(),

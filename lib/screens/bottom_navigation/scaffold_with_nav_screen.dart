@@ -5,6 +5,7 @@ import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/chat/rooms_screen.dart';
 import 'package:room_master_app/screens/home_screen/home_screen.dart';
+import 'package:room_master_app/screens/new_project/new_project_screen.dart';
 import 'package:room_master_app/screens/profile/profile_screen.dart';
 import 'package:room_master_app/screens/upcoming_task/upcoming_task_screen.dart';
 
@@ -32,7 +33,14 @@ class ScaffoldWithNav extends StatelessWidget {
         backgroundColor: Colors.white,
         onPressed: ()  {
           if (context.read<BottomNavCubit>().state == NavFunction.home) {
-            context.go(NavigationPath.newProject);
+            showModalBottomSheet<void>(
+              isScrollControlled: true,
+              context: context,
+              builder: (BuildContext innerContext) {
+                return const NewProjectScreen();
+              },
+            );
+
           }
         },
         elevation: 0,

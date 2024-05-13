@@ -28,7 +28,7 @@ class TMElevatedButton extends StatelessWidget {
             shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(borderRadius ?? 8))),
           ),
-          onPressed: isDisable ? null: onPressed,
+          onPressed: isDisable ? null : onPressed,
           child: Row(
             children: [
               leading ?? const SizedBox.shrink(),
