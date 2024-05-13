@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 
-class TMElevatedButton extends StatelessWidget {
-  const TMElevatedButton({
-    super.key,
-    this.height,
-    this.color,
-    this.label,
-    this.borderRadius,
-    this.style,
-    this.onPressed,
-    this.textColor,
-    this.decoration,
-    this.leading,
-    this.trailing,
-    this.isDisable = false,
-  });
 
+class TMElevatedButton extends StatelessWidget {
+  const TMElevatedButton({super.key,this.height, this.color, this.label, this.borderRadius, this.style, this.onPressed, this.textColor, this.decoration, this.leading, this.trailing,  this.isDisable = false});
   final double? height;
   final Color? color;
   final Color? textColor;
@@ -59,3 +46,6 @@ class TMElevatedButton extends StatelessWidget {
     );
   }
 }
+
+
+

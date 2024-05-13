@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -9,7 +7,6 @@ import 'package:room_master_app/domain/repositories/auth/auth_repository.dart';
 import '../../domain/exception/auth_exception.dart';
 
 part 'authentication_cubit.freezed.dart';
-
 part 'authentication_cubit.g.dart';
 
 final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
@@ -31,6 +28,7 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
         setUser();
       } else {
         emit(state.copyWith(
+            status: LoginStatus.failure,
             authException: result.first, isAuthenticated: result.second));
       }
     }
@@ -79,7 +77,11 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
       AuthenticationState.fromJson(json);
 
   @override
-  Map<String, dynamic>? toJson(AuthenticationState state) => state.toJson();
+  Map<String, dynamic>? toJson(AuthenticationState state) =>state.toJson();
+
+  void clean() {
+    emit(state.copyWith(authException: null, status: LoginStatus.unknown));
+  }
 }
 
 enum LoginStatus { loading, success, failure, unknown }
