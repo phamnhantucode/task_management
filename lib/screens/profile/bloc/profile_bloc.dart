@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:room_master_app/domain/repositories/users/users_repository.dart';
 import 'package:room_master_app/domain/service/cloud_storage_service.dart';
 
 part 'profile_bloc.freezed.dart';
@@ -28,6 +29,9 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileState> {
     final downloadPath =
         await CloudStorageService.instance.uploadImage(event.avatarPath);
     await FirebaseAuth.instance.currentUser?.updatePhotoURL(downloadPath);
+    if (downloadPath != null) {
+      await UsersRepository.instance.updateUserImageUrl(FirebaseAuth.instance.currentUser?.uid ?? '', downloadPath);
+    }
     emit(state.copyWith(avatarPath: downloadPath));
   }
 

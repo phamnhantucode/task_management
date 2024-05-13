@@ -30,7 +30,7 @@ class NewProjectBloc extends Bloc<NewProjectEvent, NewProjectState> {
           ownerId: FirebaseAuth.instance.currentUser!.uid,
           description: state.description,
           startDate: state.startDate,
-          membersId: [],
+          membersId: [FirebaseAuth.instance.currentUser!.uid],
           status: ProjectStatus.notStarted,
           createdAt: getCurrentTimestamp,
           updatedAt: getCurrentTimestamp,
