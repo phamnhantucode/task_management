@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 
 final class TMTextField extends StatelessWidget {
@@ -15,9 +14,12 @@ final class TMTextField extends StatelessWidget {
     this.suffixIcon,
     this.onTextChange,
     this.controller, this.borderColor,
+    this.validator,  this.keys, this.keyboardType, this.errorText,
   });
 
   final String? initialText;
+  final  Key? keys;
+  final TextInputType? keyboardType;
   final String? hintText;
   final TextStyle? textStyle;
   final int maxLines;
@@ -26,36 +28,44 @@ final class TMTextField extends StatelessWidget {
   final TextInputType? keyBoardType;
   final bool obscureText;
   final void Function(String content)? onTextChange;
+  final FormFieldValidator? validator;
+  final String? errorText;
   final TextEditingController? controller;
   final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: borderColor ?? context.appColors.textWhite)),
-      padding: EdgeInsetsDirectional.only(start: 16.w),
-      child: TextFormField(
-        controller: controller,
-        scrollPadding:
-            EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
-        obscureText: obscureText,
-        initialValue: initialText,
-        onChanged: onTextChange,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: hintText,
-          hintStyle: context.textTheme.bodyMedium
-              ?.copyWith(color: context.appColors.textGray),
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
+    return TextFormField(
+      scrollPadding:
+          EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
+      obscureText: obscureText,
+      initialValue: initialText,
+      onChanged: onTextChange,
+
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.all(12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: borderColor ?? context.appColors.textWhite)),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: context.appColors.textWhite)
         ),
-        maxLines: maxLines,
-        style: textStyle,
-        keyboardType: keyBoardType,
-        textInputAction: TextInputAction.done,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: context.appColors.textWhite)
+        ),
+
+        hintText: hintText,
+        hintStyle: context.textTheme.bodyMedium
+            ?.copyWith(color: context.appColors.textGray),
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        errorText: errorText
       ),
+      maxLines: maxLines,
+      style: textStyle,
+      keyboardType: keyBoardType,
+      validator: validator,
     );
   }
 }

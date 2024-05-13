@@ -4,11 +4,12 @@ import 'package:room_master_app/common/extensions/context.dart';
 import '../../../component/tm_text_field.dart';
 
 class RegisterTF extends StatelessWidget {
-  const RegisterTF({super.key, required this.hintText, this.prefixIcon, this.onTextChange});
+  const RegisterTF({super.key, required this.hintText, this.prefixIcon, this.onTextChange, this.validator, this.controller});
   final String? hintText;
   final Widget? prefixIcon;
   final void Function(String content)? onTextChange;
-
+  final FormFieldValidator? validator;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +30,7 @@ class RegisterTF extends StatelessWidget {
           textStyle: TextStyle(color: context.appColors.textWhite),
           prefixIcon: prefixIcon,
           onTextChange: onTextChange,
+          validator: validator,
         ));
   }
 }
