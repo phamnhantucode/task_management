@@ -290,11 +290,26 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
             )
           ],
         ),
-        SpacerComponent.s(
+        SpacerComponent.m(
           isVertical: true,
         ),
         Column(
           children: [
+            Row(
+              children: [
+                Expanded(
+                  child: LinearProgressIndicator(
+                    value: context.watch<ProjectDetailCubit>().state.progress,
+                    minHeight: 10,
+                    backgroundColor: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 8,
+            ),
             Row(
               children: [
                 Text(
@@ -316,21 +331,6 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 ))
               ],
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: LinearProgressIndicator(
-                    value: context.watch<ProjectDetailCubit>().state.progress,
-                    minHeight: 10,
-                    backgroundColor: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                )
-              ],
-            )
           ],
         ),
         const SizedBox(
@@ -631,25 +631,29 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
   Widget buildAttachments(BuildContext context) {
     return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
       builder: (context, state) {
-        return Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (var n = 0; n < state.attachments.length; n++)
-              AttachmentDownloadable(
-                attachment: state.attachments[n],
-                isRemovable: _isEditing,
-                onRemove: () {
-                  context
-                      .read<ProjectDetailCubit>()
-                      .removeAttachment(state.attachments[n]);
-                },
-              ),
-            isOwnerOfProject(context)
-                ? buildAddAttachmentButton(context)
-                : const SizedBox.shrink()
-          ],
-        );
+        if (state.attachments.isNotEmpty) {
+          return Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (var n = 0; n < state.attachments.length; n++)
+                AttachmentDownloadable(
+                  attachment: state.attachments[n],
+                  isRemovable: _isEditing,
+                  onRemove: () {
+                    context
+                        .read<ProjectDetailCubit>()
+                        .removeAttachment(state.attachments[n]);
+                  },
+                ),
+              isOwnerOfProject(context)
+                  ? buildAddAttachmentButton(context)
+                  : const SizedBox.shrink()
+            ],
+          );
+        } else {
+          return Text('There is nothing here', style: context.textTheme.bodyMedium?.copyWith(color: context.appColors.textGray));
+        }
       },
     );
   }

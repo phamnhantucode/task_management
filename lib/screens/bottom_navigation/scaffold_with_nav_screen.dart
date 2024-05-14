@@ -44,23 +44,6 @@ class ScaffoldWithNav extends StatelessWidget {
               },
             );
           }
-          if (context.read<BottomNavCubit>().state == NavFunction.chat) {
-            UsersRepository.instance.getUserById("VDAaWR74ZCWDrMXZ4BltqmDVEdP2").then((user) {
-              if (user != null &&
-                  context.read<AuthenticationCubit>().state.user?.uid !=
-                      user.id) {
-                // context.pop();
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => ProfileOtherUserPage(
-                      otherUser: user,
-                    ),
-                  ),
-                  (route) => true,
-                );
-              }
-            });
-          }
         },
         elevation: 0,
         shape: RoundedRectangleBorder(
