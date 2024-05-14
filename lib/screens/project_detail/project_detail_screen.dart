@@ -1,10 +1,17 @@
+import 'dart:io';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
@@ -18,6 +25,10 @@ import 'package:room_master_app/screens/component/tm_icon_button.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart';
 
+import '../../domain/service/cloud_storage_service.dart';
+import '../../domain/service/file_picker_service.dart';
+import '../../models/domain/project/project.dart';
+import '../component/bottomsheet/upload_attachment_page.dart';
 import '../component/tm_elevated_button.dart';
 import '../component/tm_text_field.dart';
 import '../new_task/new_task_screen.dart';
@@ -107,6 +118,13 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                           buildMembers(),
                           const SizedBox(height: 20),
                           Text(
+                            context.l10n.text_attachment,
+                            style: context.textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 10),
+                          buildAttachments(context),
+                          const SizedBox(height: 20),
+                          Text(
                             context.l10n.text_tasks,
                             style: context.textTheme.titleLarge,
                           ),
@@ -157,14 +175,19 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 backgroundColor: Colors.blue.shade50,
                 iconBackgroundColor: Colors.blue.shade100,
                 contentColor: Colors.blue.shade500,
-                suffix: _isEditing ? TMIconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () {
-                    context.read<ProjectDetailCubit>().deleteTask(state.tasksCopy[index].id);
-                  },
-                  backgroundColor: context.appColors.buttonEnable.withAlpha(20),
-                ): null,
-              ) ,
+                suffix: _isEditing
+                    ? TMIconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () {
+                          context
+                              .read<ProjectDetailCubit>()
+                              .deleteTask(state.tasksCopy[index].id);
+                        },
+                        backgroundColor:
+                            context.appColors.buttonEnable.withAlpha(20),
+                      )
+                    : null,
+              ),
               itemCount: state.tasksCopy.length,
             ),
           );
@@ -544,6 +567,103 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
       },
     );
   }
+
+  bool _isUploading = false;
+
+  void _handleFileSelection(BuildContext context) async {
+    final filePath = await FileService.instance.fileSelection(FileType.any);
+    if (filePath != null) {
+      _setAttachmentUploading(true);
+      final downloadPath =
+          await CloudStorageService.instance.uploadFile(filePath);
+      if (downloadPath != null) {
+        context.read<ProjectDetailCubit>().addAttachment(
+            fileName: path.basename(filePath), downloadUrl: downloadPath);
+
+        _setAttachmentUploading(false);
+      }
+    }
+  }
+
+  void _setAttachmentUploading(bool bool) {
+    setState(() {
+      _isUploading = bool;
+    });
+  }
+
+  Widget buildAttachments(BuildContext context) {
+    return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
+      builder: (context, state) {
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (var n = 0; n < state.attachments.length; n++)
+              AttachmentDownloadable(
+                attachment: state.attachments[n],
+                isRemovable: _isEditing,
+                onRemove: () {
+                  context
+                      .read<ProjectDetailCubit>()
+                      .removeAttachment(state.attachments[n]);
+                },
+              ),
+            isOwnerOfProject(context)
+                ? buildAddAttachmentButton(context)
+                : const SizedBox.shrink()
+          ],
+        );
+      },
+    );
+  }
+
+  bool isOwnerOfProject(BuildContext context) {
+    return context.read<AuthenticationCubit>().state.user?.uid ==
+        context.read<ProjectDetailCubit>().state.project?.owner.id;
+  }
+
+  GestureDetector buildAddAttachmentButton(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          if (!_isUploading) {
+            showModalBottomSheet<void>(
+              context: context,
+              builder: (BuildContext innerContext) => BlocProvider.value(
+                value: context.read<ProjectDetailCubit>(),
+                child: UploadAttachmentPage(
+                  onFileSelection: () {
+                    _handleFileSelection(context);
+                    context.pop();
+                  },
+                  onCancel: () {
+                    context.pop();
+                  },
+                ),
+              ),
+            );
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            color: Colors.blue.shade50,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: _isUploading
+              ? Container(
+                  width: 16,
+                  height: 16,
+                  padding: const EdgeInsets.all(4),
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 1,
+                  ))
+              : const Icon(
+                  Icons.add,
+                  color: Colors.blue,
+                  size: 20,
+                ),
+        ));
+  }
 }
 
 String getAvatarUrl(int n) {
@@ -626,7 +746,7 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
         flushbarPosition: FlushbarPosition.TOP,
         backgroundColor: Colors.orangeAccent,
         message: context.l10n.text_your_are_not_the_owner_of_this_project,
-        duration:  const Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ).show(context);
     }
   }
@@ -651,5 +771,118 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
   void _toggleCancel() {
     context.read<ProjectDetailCubit>().cancelUpdateProject();
     widget.onEditing(false);
+  }
+}
+
+class AttachmentDownloadable extends StatefulWidget {
+  const AttachmentDownloadable({
+    super.key,
+    required this.attachment,
+    this.isRemovable = false,
+    this.onRemove,
+  });
+
+  final Attachment attachment;
+  final bool isRemovable;
+  final void Function()? onRemove;
+
+  @override
+  State<AttachmentDownloadable> createState() => _AttachmentDownloadableState();
+}
+
+class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
+  bool _isDownloading = false;
+
+  void _setDownloadingState(bool isDownloading) {
+    setState(() {
+      _isDownloading = isDownloading;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var color = widget.isRemovable ? Colors.orangeAccent : Colors.blueAccent;
+    return GestureDetector(
+      onTap: () {
+        if (widget.isRemovable) {
+          widget.onRemove?.call();
+        } else {
+          downloadAttachment();
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _isDownloading
+                ? Container(
+                    width: 16,
+                    height: 16,
+                    padding: const EdgeInsets.all(2),
+                    child: CircularProgressIndicator(
+                      color: color,
+                      strokeWidth: 1,
+                    ),
+                  )
+                : Icon(
+                    Icons.attach_file,
+                    color: color,
+                    size: 18,
+                  ),
+            const SizedBox(
+              width: 4,
+            ),
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      overflow: TextOverflow.ellipsis,
+                      widget.attachment.fileName,
+                      style:
+                          context.textTheme.bodySmall?.copyWith(color: color),
+                    ),
+                  ),
+                  if (widget.isRemovable)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Icon(
+                        Icons.close,
+                        color: color,
+                        size: 16,
+                      ),
+                    )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> downloadAttachment() async {
+    _setDownloadingState(true);
+    var localPath = widget.attachment.filePath;
+    try {
+      final client = http.Client();
+      final request = await client.get(Uri.parse(widget.attachment.filePath));
+      final bytes = request.bodyBytes;
+      final documentDir = (await getApplicationDocumentsDirectory()).path;
+      localPath = '$documentDir/${widget.attachment.fileName}';
+
+      if (!File(localPath).existsSync()) {
+        await File(localPath).writeAsBytes(bytes);
+      }
+    } finally {
+      OpenFilex.open(localPath);
+    }
+    _setDownloadingState(false);
   }
 }
