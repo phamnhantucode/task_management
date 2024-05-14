@@ -32,10 +32,12 @@ class TaskContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () {
+      onTap: (){
         if (onTap != null) {
           onTap!();
         }
+      },
+      onLongPress: () {
         onLongPress?.call();
         HapticFeedback.vibrate();
       },
@@ -85,7 +87,8 @@ class TaskContainer extends StatelessWidget {
                       style: context.textTheme.labelMedium,
                     ),
                     Text(
-                      content,
+                      content.replaceAll('\n', ' '),
+                      overflow: TextOverflow.ellipsis,
                       style: context.textTheme.bodyMedium?.copyWith(
                         color: contentColor,
                       ),
