@@ -70,6 +70,7 @@ class ProjectRepository {
                   .map((id) => UsersRepository.instance.getUserById(id))))
               .whereType<types.User>()
               .toList();
+
           return Project.fromProjectDto(projectDto, owner, members);
         }).toList());
 
@@ -299,6 +300,41 @@ class ProjectRepository {
         .get();
 
     return querySnapshot.docs.map((doc) => Task.fromJson(doc.data())).toList();
+  }
+
+  Future<double> getProjectProgressFuture(String projectId) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('projects')
+        .doc(projectId)
+        .collection('tasks')
+        .get();
+
+    final totalTasks = snapshot.docs.length;
+    final completedTasks = snapshot.docs.where((doc) {
+      final task = TaskDto.fromJson(doc.data());
+      return task.status == TaskStatus.completed;
+    }).length;
+
+    if (totalTasks == 0) return 0.0;
+
+    return completedTasks / totalTasks;
+  }
+
+  Future<double> getUserTaskProgressFuture(String userId) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collectionGroup('tasks')
+        .where('assigneeId', isEqualTo: userId)
+        .get();
+
+    final totalTasks = snapshot.docs.length;
+    final completedTasks = snapshot.docs.where((doc) {
+      final task = Task.fromJson(doc.data());
+      return task.status == TaskStatus.completed;
+    }).length;
+
+    if (totalTasks == 0) return 0.0;
+
+    return completedTasks / totalTasks;
   }
 
   Stream<double> getProjectProgress(String projectId) {
