@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../domain/project/project.dart';
+
 part 'project.freezed.dart';
 part 'project.g.dart';
 
@@ -21,6 +23,20 @@ class ProjectDto with _$ProjectDto {
   }) = _ProjectDto;
 
   factory ProjectDto.fromJson(Map<String, dynamic> json) => _$ProjectDtoFromJson(json);
+  factory ProjectDto.fromProject(Project project) {
+    return ProjectDto(
+      id: project.id,
+      name: project.name,
+      ownerId: project.owner.id,
+      description: project.description,
+      startDate: project.startDate,
+      membersId: project.members.map((e) => e.id).toList(),
+      endDate: project.endDate,
+      status: project.status,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    );
+  }
 }
 
 enum TaskStatus { notStarted, inProgress, completed }

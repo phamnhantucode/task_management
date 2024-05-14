@@ -93,6 +93,8 @@ dependencies:
   mobile_scanner: ^5.1.0
   qr_scanner_overlay: ^0.0.2
   rxdart: ^0.27.7
+  omni_datetime_picker: ^1.1.0
+  another_flushbar: ^1.12.30
 
 dev_dependencies:
   flutter_test:

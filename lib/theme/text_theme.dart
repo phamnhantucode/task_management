@@ -19,31 +19,31 @@ const lightTextTheme = TextTheme(
   titleSmall: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 18,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: Colors.black),
   titleLarge: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 24,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: Colors.black),
   titleMedium: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 22,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: Colors.black),
   labelLarge: TextStyle(
-      fontFamily: 'Prompt',
-      fontSize: 22,
-      fontWeight: FontWeight.w500,
-      color: Colors.black),
-  labelMedium: TextStyle(
       fontFamily: 'Prompt',
       fontSize: 20,
       fontWeight: FontWeight.w500,
       color: Colors.black),
+  labelMedium: TextStyle(
+      fontFamily: 'Prompt',
+      fontSize: 18,
+      fontWeight: FontWeight.w500,
+      color: Colors.black),
   labelSmall:TextStyle(
     fontFamily: 'Prompt',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: FontWeight.w500,
     color: Colors.black),
   displaySmall: TextStyle(

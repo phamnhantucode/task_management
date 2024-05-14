@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 
 class TaskContainer extends StatelessWidget {
@@ -13,7 +14,7 @@ class TaskContainer extends StatelessWidget {
     this.suffix,
     this.iconBackgroundColor,
     this.contentColor,
-    this.isShadowContainer = true,
+    this.isShadowContainer = true, this.onLongPress,
   });
 
   final BuildContext context;
@@ -26,73 +27,76 @@ class TaskContainer extends StatelessWidget {
   final Function? onTap;
   final Widget? taskIcon;
   final Widget? suffix;
+  final void Function()? onLongPress;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 24, left: 4, right: 4),
-      padding: const EdgeInsets.all(12),
-      width: double.infinity,
-      height: 80,
-      decoration: BoxDecoration(
-        boxShadow: isShadowContainer
-            ? [
-                BoxShadow(
-                  color: context.appColors.borderColor,
-                  spreadRadius: 1,
-                  blurRadius: 2,// Moves shadow to the top
-                ),
-              ]
-            : [],
-        borderRadius: BorderRadius.circular(12),
-        color: backgroundColor ?? context.appColors.defaultBgContainer,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-             GestureDetector(
-              onTap: (){
-                if (onTap != null) {
-                  onTap!();
-                }
-              },
-              child:  Container(
-                decoration: BoxDecoration(
-                    color: iconBackgroundColor,
-                    borderRadius: BorderRadius.circular(14)),
-                padding: const EdgeInsetsDirectional.all(10),
-                child: Center(
-                  child: Image.network(
-                    "https://cdn-icons-png.flaticon.com/128/11389/11389139.png",
+    return GestureDetector(
+      onLongPress: () {
+        if (onTap != null) {
+          onTap!();
+        }
+        onLongPress?.call();
+        HapticFeedback.vibrate();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(top: 24, left: 4, right: 4),
+        padding: const EdgeInsets.all(12),
+        width: double.infinity,
+        height: 80,
+        decoration: BoxDecoration(
+          boxShadow: isShadowContainer
+              ? [
+                  BoxShadow(
+                    color: context.appColors.borderColor,
+                    spreadRadius: 1,
+                    blurRadius: 2, // Moves shadow to the top
                   ),
-                ),
-              ),
-             ),
-              const SizedBox(
-                width: 12,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: context.textTheme.labelSmall,
-                  ),
-                  Text(
-                    content.replaceAll("\n", " "),
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: contentColor,
+                ]
+              : [],
+          borderRadius: BorderRadius.circular(12),
+          color: backgroundColor ?? context.appColors.defaultBgContainer,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: iconBackgroundColor,
+                      borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsetsDirectional.all(10),
+                  child: Center(
+                    child: Image.network(
+                      "https://cdn-icons-png.flaticon.com/128/11389/11389139.png",
                     ),
                   ),
-                ],
-              )
-            ],
-          ),
-          suffix ?? const SizedBox.shrink(),
-        ],
+                ),
+                const SizedBox(
+                  width: 12,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: context.textTheme.labelMedium,
+                    ),
+                    Text(
+                      content,
+                      style: context.textTheme.bodyMedium?.copyWith(
+                        color: contentColor,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            suffix ?? const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
   }

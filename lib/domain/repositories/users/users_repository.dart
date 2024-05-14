@@ -59,4 +59,27 @@ class UsersRepository {
       return []; // Error occurred while retrieving the users
     }
   }
+
+  //update imageUrl
+  Future<void> updateUserImageUrl(String userId, String imageUrl) async {
+    try {
+      await _userCollection.doc(userId).update({
+        'imageUrl': imageUrl,
+      });
+    } catch (e) {
+      print('Error updating user image URL: $e');
+    }
+  }
+
+  //update firstname
+  Future<void> updateUserFirstName(String userId, String firstName) async {
+    try {
+      await _userCollection.doc(userId).update({
+        'firstName': firstName,
+      });
+    } catch (e) {
+      print('Error updating user first name: $e');
+    }
+  }
+
 }

@@ -25,6 +25,8 @@
     "invalid_email_exception": "Invalid Address Email ! Please try again",
     "user_not_found_exception": "User Not Found ! Please try again",
      "user_disabled_exception": "User Disabled ! Please try again",
+     "accept" : "Accept",
+     "decline" : "Decline",
     "task_management": "Task Mangement",
     "label_phone_number": "Phone number",
     "label_email":  "Email",
@@ -93,5 +95,13 @@
     "text_error_create_project": "Error create project",
     "text_project_detail": "Project detail",
     "text_percent_with_number": "{number}%",
-    "text_tasks": "Tasks"
+    "text_tasks": "Tasks",
+    "text_start_date": "Start date",
+    "text_end_date": "End date",
+    "text_empty": "Empty",
+    "text_hours_left": "{number} hours left",
+    "text_your_are_not_the_owner_of_this_project": "You are not the owner of this project",
+    "text_attachment": "Attachment",
+    "text_photo": "Photo",
+    "text_file": "File"
 }

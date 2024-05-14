@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
@@ -479,6 +480,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
     return ElevatedButton(
         onPressed: () {
           context.read<NewTaskCubit>().createTask(widget.projectId);
+          context.pop();
         },
         child: Text(
           context.l10n.text_confirm,

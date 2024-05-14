@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as path;
@@ -13,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:room_master_app/domain/service/cloud_storage_service.dart';
 import 'package:room_master_app/domain/service/file_picker_service.dart';
 import 'package:room_master_app/models/enum/image_picker_type.dart';
+import 'package:room_master_app/screens/component/bottomsheet/upload_attachment_page.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key, required this.room});
@@ -39,42 +41,18 @@ class _ChatPageState extends State<ChatPage> {
   void _handleAttachmentPressed() {
     showModalBottomSheet<void>(
       context: context,
-      builder: (BuildContext context) => SafeArea(
-        child: SizedBox(
-          height: 144,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleImageSelection();
-                },
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Photo'),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleFileSelection();
-                },
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('File'),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Cancel'),
-                ),
-              ),
-            ],
-          ),
-        ),
+      builder: (BuildContext context) => UploadAttachmentPage(
+        onImageSelection: () {
+          _handleImageSelection();
+          context.pop();
+        },
+        onFileSelection: () {
+          _handleFileSelection();
+          context.pop();
+        },
+        onCancel: () {
+          context.pop();
+        },
       ),
     );
   }
@@ -174,9 +152,7 @@ class _ChatPageState extends State<ChatPage> {
             builder: (context, snapshot) {
               return Chat(
                 theme: const DefaultChatTheme(
-                  primaryColor: Colors.lightBlueAccent
-
-                ),
+                    primaryColor: Colors.lightBlueAccent),
                 inputOptions: const InputOptions(
                   sendButtonVisibilityMode: SendButtonVisibilityMode.always,
                 ),
@@ -188,8 +164,6 @@ class _ChatPageState extends State<ChatPage> {
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 user: types.User(
                     id: FirebaseChatCore.instance.firebaseUser?.uid ?? ''),
-
-
               );
             },
           ),

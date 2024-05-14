@@ -68,3 +68,19 @@ Color getUserAvatarNameColor(types.User user) {
   final index = user.id.hashCode % colors.length;
   return colors[index];
 }
+
+Color getBackgroundColor(int current, int max) {
+  final percentage = current / max;
+  if (percentage < 0.3) {
+    return Colors.redAccent;
+  } else if (percentage < 0.6) {
+    return Colors.orangeAccent;
+  } else {
+    return Colors.green.shade400;
+  }
+}
+
+Color getContrastColor(Color color) {
+  double brightness = color.red * 0.2126 + color.green * 0.7152 + color.blue * 0.0772;
+  return brightness > 200 ? Colors.black : Colors.white;
+}

@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/assets/app_assets.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/domain/repositories/users/users_repository.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
 import 'package:room_master_app/screens/component/tm_text_field.dart';
@@ -70,6 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 height: 54,
                 onPressed: () async {
                   await widget.user.updateDisplayName(displayNameTxtController.text);
+                  UsersRepository.instance.updateUserFirstName(context.read<AuthenticationCubit>().state.user?.uid ?? '', displayNameTxtController.text);
                   context.pop();
                 },
               ),
