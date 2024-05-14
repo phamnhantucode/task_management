@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/repositories/project/project_repository.dart';
+import '../../main.dart';
 import '../../models/domain/project/project.dart';
 import '../../models/dtos/project/project.dart';
 
@@ -18,7 +19,7 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   late StreamSubscription<List<Attachment>> attachmentsSubscription;
   late StreamSubscription<double> progressSubscription;
 
-  void init(String projectId) {
+  void init(String projectId) async {
     projectSubscription = ProjectRepository.instance
         .getProjectStream(projectId)
         .listen((project) {
@@ -99,5 +100,19 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   void deleteTask(String taskId) {
     // ProjectRepository.instance.deleteTaskFromProject(taskId, state.project?.id ?? '');
     emit(state.copyWith(tasksCopy: state.tasksCopy.where((task) => task.id != taskId).toList()));
+  }
+
+  void addAttachment({required String fileName, required String downloadUrl}) {
+    ProjectRepository.instance.addAttachmentToProject(state.project!.id, Attachment(
+        id: uuid.v1(),
+        fileName: fileName,
+        filePath: downloadUrl,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now()
+    ));
+  }
+
+  void removeAttachment(Attachment attachment) {
+    ProjectRepository.instance.deleteAttachmentFromProject(state.project!.id,attachment.id,);
   }
 }

@@ -98,5 +98,8 @@
     "text_end_date": "End date",
     "text_empty": "Empty",
     "text_hours_left": "{number} hours left",
-    "text_your_are_not_the_owner_of_this_project": "You are not the owner of this project"
+    "text_your_are_not_the_owner_of_this_project": "You are not the owner of this project",
+    "text_attachment": "Attachment",
+    "text_photo": "Photo",
+    "text_file": "File"
 }
