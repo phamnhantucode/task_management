@@ -25,6 +25,8 @@
     "invalid_email_exception": "Invalid Address Email ! Please try again",
     "user_not_found_exception": "User Not Found ! Please try again",
      "user_disabled_exception": "User Disabled ! Please try again",
+     "accept" : "Accept",
+     "decline" : "Decline",
     "task_management": "Task Mangement",
     "label_phone_number": "Phone number",
     "label_email":  "Email",

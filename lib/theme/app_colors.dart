@@ -29,6 +29,8 @@ class AppColors {
     tfcolor: Color(0xFF6CA8F1),
     defaultBgContainer: Color(0xFFFFFFFF),
     failureText: Color(0xFFEF6565),
+    bgGrayWhiteLight: Color(0xFFF1ECEC),
+    colorDarkGray: Color(0xFF797A7C),
   );
 
   static const AppColorsScheme darkScheme = AppColorsScheme(
@@ -48,7 +50,9 @@ class AppColors {
       gradient_bg_4: Color(0xFF398AE5),
       tfcolor: Color(0xFF6CA8F1),
       defaultBgContainer: Color(0xFFFFFFFF),
-      failureText: Color(0xFFEF6565));
+      failureText: Color(0xFFEF6565),
+      bgGrayWhiteLight: Color(0xFFF1ECEC),
+      colorDarkGray: Color(0xFF838080));
 }
 
 enum Appearance { light, dark }
@@ -74,10 +78,13 @@ class AppColorsScheme {
       this.primary = Colors.blue,
       this.primaryDarker = const Color.fromARGB(255, 100, 181, 246),
       this.primaryLighter = const Color.fromARGB(255, 100, 181, 246),
-      required this.failureText});
+      required this.failureText,
+        required this.bgGrayWhiteLight,
+      required this.colorDarkGray});
 
   final Color bgGray;
   final Color bgGrayLight;
+  final Color bgGrayWhiteLight;
   final Color textGray;
   final Color textBlack;
   final Color textWhite;
@@ -96,4 +103,5 @@ class AppColorsScheme {
   final Color tfcolor;
   final Color defaultBgContainer;
   final Color failureText;
+  final Color colorDarkGray;
 }

@@ -68,6 +68,8 @@ class _RoomsScreenState extends State<RoomsScreen> {
     final name = room.name ?? '';
 
     return Container(
+        width: 60,
+        height: 60,
         margin: const EdgeInsets.only(right: 16),
         child: CircleAvatar(
             backgroundColor: hasImage ? Colors.transparent : color,
@@ -142,17 +144,39 @@ class _RoomsScreenState extends State<RoomsScreen> {
                     ),
                   );
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    children: [
-                      _buildAvatar(room),
-                      Text(room.name ?? ''),
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    TFSearch(context),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: [
+                          _buildAvatar(room),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(room.name ?? '',
+                                  style: context.textTheme.labelSmall
+                                      ?.copyWith(
+                                      color:
+                                      context.appColors.textBlack)),
+                              const SizedBox(
+                                height: 2,
+                              ),
+                              Text("Hi ban! Cho minh muon 100k",
+                                  style: context.textTheme.bodySmall
+                                      ?.copyWith(
+                                      color: context
+                                          .appColors.colorDarkGray))
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             },
