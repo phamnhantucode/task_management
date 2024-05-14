@@ -55,31 +55,37 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         // Add padding around the avatar
                         padding: const EdgeInsets.all(4.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey,
-                              width: 1.0,
+                        child: GestureDetector(
+                          onTap: (){
+                            print(context.read<AuthenticationCubit>().state.user?.uid ??
+                            '');
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 1.0,
+                              ),
                             ),
-                          ),
-                          child: BlocBuilder<ProfileBloc, ProfileState>(
-                            builder: (context, state) {
-                              if (state.avatarPath != null) {
-                                return ClipOval(
-                                    child: CachedNetworkImage(
-                                  imageUrl: state.avatarPath!,
-                                  fit: BoxFit.cover,
-                                ));
-                              } else {
-                                return ClipOval(
-                                  child: Image.network(
-                                    'https://example.com/avatar.jpg',
+                            child: BlocBuilder<ProfileBloc, ProfileState>(
+                              builder: (context, state) {
+                                if (state.avatarPath != null) {
+                                  return ClipOval(
+                                      child: CachedNetworkImage(
+                                    imageUrl: state.avatarPath!,
                                     fit: BoxFit.cover,
-                                  ),
-                                );
-                              }
-                            },
+                                  ));
+                                } else {
+                                  return ClipOval(
+                                    child: Image.network(
+                                      'https://example.com/avatar.jpg',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ),
                         ),
                       ),

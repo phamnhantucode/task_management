@@ -52,7 +52,13 @@ class TaskContainer extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
+             GestureDetector(
+              onTap: (){
+                if (onTap != null) {
+                  onTap!();
+                }
+              },
+              child:  Container(
                 decoration: BoxDecoration(
                     color: iconBackgroundColor,
                     borderRadius: BorderRadius.circular(14)),
@@ -63,20 +69,21 @@ class TaskContainer extends StatelessWidget {
                   ),
                 ),
               ),
+             ),
               const SizedBox(
                 width: 12,
               ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween ,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: context.textTheme.labelMedium,
+                    style: context.textTheme.labelSmall,
                   ),
                   Text(
-                    content,
-                    style: context.textTheme.bodyMedium?.copyWith(
+                    content.replaceAll("\n", " "),
+                    style: context.textTheme.bodySmall?.copyWith(
                       color: contentColor,
                     ),
                   ),
