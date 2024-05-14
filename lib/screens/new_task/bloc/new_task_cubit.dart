@@ -21,6 +21,21 @@ class NewTaskCubit extends Cubit<NewTaskState> {
     emit(state.copyWith(description: description));
   }
 
+  void taskOnChangeDateTime(
+      {DateTime? startDate,
+      DateTime? endDate, bool? isSingle = false}) {
+    if (startDate != null) {
+      if (isSingle == true) {
+        emit(state.copyWith(startDate: startDate, endDate: endDate));
+      } else {
+        emit(state.copyWith(startDate: startDate));
+      }
+    }
+    if (endDate != null) {
+      emit(state.copyWith(endDate: endDate));
+    }
+  }
+
   void createTask(String projectId) {
     emit(state.copyWith(status: NewTaskSubmitStatus.submitting));
     try {
@@ -34,6 +49,8 @@ class NewTaskCubit extends Cubit<NewTaskState> {
               projectId: projectId,
               assigneeId: state.assigneeId,
               authorId: FirebaseAuth.instance.currentUser!.uid,
+              startDate: state.startDate,
+              endDate: state.endDate,
               createdAt: getCurrentTimestamp,
               updatedAt: getCurrentTimestamp));
       emit(state.copyWith(status: NewTaskSubmitStatus.success));

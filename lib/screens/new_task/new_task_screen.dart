@@ -25,7 +25,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
   late DraggableScrollableController _scrollController;
   bool _isFullScreen = false;
   double keyboardSize = 0;
-
+  bool isSingleDate = false;
   @override
   void initState() {
     super.initState();
@@ -249,9 +249,23 @@ class NewTaskScreenState extends State<NewTaskScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    context.l10n.text_date_and_time,
-                    style: context.textTheme.labelLarge,
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Text(
+                        context.l10n.text_date_and_time,
+                        style: context.textTheme.labelLarge,
+                      )),
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isSingleDate = !isSingleDate;
+                            });
+                          },
+                          icon: Icon(isSingleDate
+                              ? Icons.calendar_month
+                              : Icons.edit_calendar_outlined))
+                    ],
                   ),
                   SizedBox(
                     height: 16.h,
@@ -270,7 +284,13 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                         ),
                         Expanded(
                             child: Text(
-                          '05 April, Tuesday',
+                          context.read<NewTaskCubit>().state.startDate != null
+                              ? context
+                                  .read<NewTaskCubit>()
+                                  .state
+                                  .startDate
+                                  .toString()
+                              : 'Start date',
                           style: context.textTheme.bodyMedium
                               ?.copyWith(color: context.appColors.textGray),
                         )),
@@ -284,8 +304,12 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                             ),
                             onPressed: () async {
                               await TMCalendarDatePicker(
-                                      value: [getCurrentTimestamp])
-                                  .onShowDialog(context);
+                                  value: [getCurrentTimestamp],
+                                  onDateTimeSelected: (e) {
+                                    context
+                                        .read<NewTaskCubit>()
+                                        .taskOnChangeDateTime(startDate: e[0]!);
+                                  }).onShowDialog(context);
                             },
                             icon: Icon(
                               Icons.calendar_month,
@@ -295,6 +319,59 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                       ],
                     ),
                   ),
+                  SpacerComponent.m(),
+                  if (!isSingleDate)
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        border:
+                            Border.all(color: context.appColors.borderColor),
+                      ),
+                      padding: EdgeInsetsDirectional.symmetric(
+                          vertical: 6.h, horizontal: 12.w),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 8.w,
+                          ),
+                          Expanded(
+                              child: Text(
+                             context.read<NewTaskCubit>().state.endDate != null
+                              ? context
+                                  .read<NewTaskCubit>()
+                                  .state
+                                  .endDate
+                                  .toString()
+                              : 'End date',
+                            style: context.textTheme.bodyMedium
+                                ?.copyWith(color: context.appColors.textGray),
+                          )),
+                          IconButton(
+                              constraints: const BoxConstraints(),
+                              style: ButtonStyle(
+                                shape: const MaterialStatePropertyAll(
+                                    CircleBorder()),
+                                backgroundColor: MaterialStatePropertyAll(
+                                    context.appColors.buttonDisable),
+                              ),
+                              onPressed: () async {
+                                await TMCalendarDatePicker(
+                                    value: [getCurrentTimestamp],
+                                    onDateTimeSelected: (e) {
+                                      context
+                                          .read<NewTaskCubit>()
+                                          .taskOnChangeDateTime(
+                                              endDate: e[0]!);
+                                    }).onShowDialog(context);
+                              },
+                              icon: Icon(
+                                Icons.calendar_month,
+                                color: context.appColors.buttonEnable,
+                                size: 18.r,
+                              )),
+                        ],
+                      ),
+                    ),
                   SizedBox(
                     height: 16.h,
                   ),
@@ -312,8 +389,16 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                               height: 8.h,
                             ),
                             TMSelectTime(
-                              initTime: getCurrentTimestamp,
-                              onChange: (DateTime dateTime) {},
+                              initTime: context
+                                      .watch<NewTaskCubit>()
+                                      .state
+                                      .startDate ??
+                                  getCurrentTimestamp,
+                              onChange: (DateTime dateTime) {
+                                context
+                                    .read<NewTaskCubit>()
+                                    .taskOnChangeDateTime(startDate: dateTime, isSingle: isSingleDate);
+                              },
                             )
                           ],
                         ),
@@ -333,9 +418,25 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                               height: 8.h,
                             ),
                             TMSelectTime(
-                              initTime: getCurrentTimestamp,
-                              onChange: (DateTime dateTime) {},
-                            )
+                                initTime: isSingleDate
+                                    ? context
+                                            .watch<NewTaskCubit>()
+                                            .state
+                                            .endDate ?? context
+                                            .watch<NewTaskCubit>()
+                                            .state
+                                            .startDate ??
+                                        getCurrentTimestamp
+                                    : context
+                                            .watch<NewTaskCubit>()
+                                            .state
+                                            .endDate ??
+                                        getCurrentTimestamp,
+                                onChange: (DateTime dateTime) {
+                                  context
+                                      .read<NewTaskCubit>()
+                                      .taskOnChangeDateTime(endDate: dateTime);
+                                })
                           ],
                         ),
                       ),

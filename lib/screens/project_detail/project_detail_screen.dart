@@ -4,6 +4,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,12 +18,14 @@ import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/models/dtos/project/project.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/tm_icon_button.dart';
 import 'package:room_master_app/screens/component/top_header/primary.dart';
+import 'package:room_master_app/screens/component/user_dialog.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart';
 
 import '../../domain/service/cloud_storage_service.dart';
@@ -65,13 +68,13 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 const SizedBox(height: 20),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 20),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               color: Colors.orange.shade50,
@@ -101,9 +104,11 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                           SafeArea(
                               child: Text(
                             context
-                                .watch<ProjectDetailCubit>()
-                                .state
-                                .projectDescription,
+                                    .watch<ProjectDetailCubit>()
+                                    .state
+                                    .project
+                                    ?.description ??
+                                '',
                             maxLines: 5,
                             overflow: TextOverflow.ellipsis,
                             style: context.textTheme.bodyMedium
@@ -175,6 +180,10 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 backgroundColor: Colors.blue.shade50,
                 iconBackgroundColor: Colors.blue.shade100,
                 contentColor: Colors.blue.shade500,
+                onTap: () {
+                  context.push(NavigationPath.detailTask,
+                      extra: state.tasks[index]);
+                },
                 suffix: _isEditing
                     ? TMIconButton(
                         icon: const Icon(Icons.delete_outline),
@@ -542,32 +551,60 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
     );
     return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
       builder: (context, state) {
-        if (state.project == null) {
-          return const SizedBox.shrink();
-        } else {
-          return Stack(children: [
-            AvatarStack(
-              settings: settings,
-              height: 50,
-              avatars: [
-                for (var n = 0; n < state.project!.members.length; n++)
-                  CachedNetworkImageProvider(
-                      state.project!.members[n].imageUrl ?? getAvatarUrl(n)),
-              ],
-            ),
-            Positioned(
-                right: 0,
-                child: TMIconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {},
-                  backgroundColor: context.appColors.buttonEnable.withAlpha(20),
-                )),
-          ]);
-        }
+        return Stack(children: [
+          state.project == null
+              ? const SizedBox.shrink()
+              : AvatarStack(
+                  settings: settings,
+                  height: 50,
+                  avatars: [
+                    for (var n = 0; n < state.project!.members.length; n++)
+                      CachedNetworkImageProvider(
+                          state.project!.members[n].imageUrl ??
+                              getAvatarUrl(n)),
+                  ],
+                ),
+          Positioned(
+              right: 0,
+              child: TMIconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20),
+                        child: SafeArea(
+                          child: Column(
+                            children: [
+                              SpacerComponent.l(),
+                              buildSearch(),
+                              UserDialog()
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                backgroundColor: context.appColors.buttonEnable.withAlpha(20),
+              )),
+        ]);
       },
     );
   }
 
+  buildSearch() {
+    return SearchBar(
+      padding: const MaterialStatePropertyAll<EdgeInsets>(
+          EdgeInsets.symmetric(horizontal: 16.0)),
+      onTap: () {},
+      onChanged: (_) {},
+      leading: const Icon(Icons.search),
+    );
+  }
   bool _isUploading = false;
 
   void _handleFileSelection(BuildContext context) async {
