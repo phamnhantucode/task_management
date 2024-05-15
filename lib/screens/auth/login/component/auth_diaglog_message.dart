@@ -16,7 +16,7 @@ Future<T?> showAuthDialog<T>({
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Center(child: Text(title, style: context.textTheme.titleMedium?.copyWith(color: colorTitle))),
+        title: Center(child: Text(title, style: context.textTheme.bodyLarge?.copyWith(color: colorTitle))),
         content: Text(content, style: context.textTheme.bodyMedium?.copyWith(color: colorContent)),
         actions: [
           TextButton(
@@ -24,7 +24,7 @@ Future<T?> showAuthDialog<T>({
             style: TextButton.styleFrom(
              backgroundColor: context.appColors.buttonDisable,
             ),
-              child: Text(titleButton, style: context.textTheme.labelMedium  ?.copyWith(color: context.appColors.buttonEnable),),
+              child: Text(titleButton, style: context.textTheme.bodyLarge ?.copyWith(color: context.appColors.buttonEnable),),
 
           ),
           if (leftAction != null)

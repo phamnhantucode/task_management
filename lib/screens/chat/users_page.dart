@@ -1,14 +1,19 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:path/path.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/l10n/l10n.dart';
-import 'package:room_master_app/screens/chat/bloc/user_friends_cubit.dart';
+import 'package:badges/badges.dart' as badges;
 
 import '../../common/extensions/extensions.dart';
 import '../../common/utils/utils.dart';
+import 'bloc/user_friends_cubit.dart';
 import 'chat_page.dart';
 
 class UsersPage extends StatelessWidget {
@@ -29,9 +34,9 @@ class UsersPage extends StatelessWidget {
         radius: 20,
         child: !hasImage
             ? Text(
-                name.isEmpty ? '' : name[0].toUpperCase(),
-                style: const TextStyle(color: Colors.white),
-              )
+          name.isEmpty ? '' : name[0].toUpperCase(),
+          style: const TextStyle(color: Colors.white),
+        )
             : null,
       ),
     );
@@ -60,86 +65,49 @@ class UsersPage extends StatelessWidget {
               systemOverlayStyle: SystemUiOverlayStyle.light,
               title: Text(context.l10n.text_friend),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.person_add),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadiusDirectional.only(
-                          topEnd: Radius.circular(25),
-                          topStart: Radius.circular(25),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: badges.Badge(
+                    position: badges.BadgePosition.topEnd(top: 0, end: 0),
+                    showBadge: context.watch<UserFriendsCubit>().state.userWaitingAccepts.isNotEmpty,
+                    badgeContent: Text(
+                      context.watch<UserFriendsCubit>().state.userWaitingAccepts.length.toString(),
+                      style: context.textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
                       ),
-                      builder: (innerContext) => BlocProvider.value(
-                        value: context.read<UserFriendsCubit>(),
-                        child: buildUsersWaitingAcceptFriendBottomSheet(
-                            innerContext),
-                      ),
-                    );
-                  },
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.person_add, size: 30,),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          context: context,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadiusDirectional.only(
+                              topEnd: Radius.circular(25),
+                              topStart: Radius.circular(25),
+                            ),
+                          ),
+                          builder: (innerContext) => BlocProvider.value(
+                            value: context.read<UserFriendsCubit>(),
+                            child: buildUsersWaitingAcceptFriendBottomSheet(
+                                innerContext),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
-            body: BlocBuilder<UserFriendsCubit, UserFriendsState>(
-              builder: (context, state) {
-                if (state.users.isEmpty) {
-                  return Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(
-                      bottom: 200,
-                    ),
-                    child: Text(context.l10n.text_no_users),
-                  );
-                }
-                return ListView.builder(
-                  itemCount: state.users.length,
-                  itemBuilder: (context, index) {
-                    final user = state.users.elementAt(index);
-                    return GestureDetector(
-                      onTap: () {
-                        _handlePressed(user, context);
-                      },
-                      child: Column(
-                        children: [
-                          TFSearch(context),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 8,
-                            ),
-                            child: Row(
-                              children: [
-                                _buildAvatar(user),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(user.firstName ?? '',
-                                        style: context.textTheme.labelSmall
-                                            ?.copyWith(
-                                                color: context
-                                                    .appColors.textBlack)),
-                                    const SizedBox(
-                                      height: 2,
-                                    ),
-                                    Text("Management",
-                                        style: context.textTheme.bodySmall
-                                            ?.copyWith(
-                                                color: context
-                                                    .appColors.colorDarkGray)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
+            body: Column(
+              children: [
+                _buildSearchField(context),
+                Expanded(
+                  child: _buildUserList(context)
+                  ),
+              ],
             ),
           );
         }),
@@ -337,6 +305,86 @@ class UsersPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildSearchField(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(
+        top: 16, left: 16, right: 16, bottom: 16),
+    child: TextFormField(
+      style: context.textTheme.bodySmall,
+      onChanged: (value) {
+        context.read<UserFriendsCubit>().searchFriends(value);
+      } ,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        hintText: "Search...",
+        hintStyle: TextStyle(
+            color: context.appColors.colorDarkGray),
+        prefixIcon: Icon(
+          Icons.search,
+          color: Colors.grey.shade600,
+          size: 20,
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding: EdgeInsets.all(8),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+            BorderSide(color: Colors.grey.shade100)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+            BorderSide(color: Colors.grey.shade100)),
+      ),
+    ),
+  );
+
+  Widget _buildUserList(BuildContext context) {
+    return BlocBuilder<UserFriendsCubit, UserFriendsState>(builder: (context, state) {
+
+      if (state.usersFiltered.isEmpty) {
+        return Center(
+          child: Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(bottom: 200),
+            child: Text(context.l10n.text_no_users),
+          ),
+        );
+      }
+
+      return ListView.builder(
+        itemCount: state.usersFiltered.length,
+        itemBuilder: (context, index) {
+          final user = state.usersFiltered[index];
+          return GestureDetector(
+            onTap: () {
+              _handlePressed(user, context);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              child: Row(
+                children: [
+                  _buildAvatar(user),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user.firstName ?? '',
+                          style: context.textTheme.labelSmall?.copyWith(
+                              color: context.appColors.textBlack)),
+                      const SizedBox(height: 2),
+                      Text("Management",
+                          style: context.textTheme.bodySmall?.copyWith(
+                              color: context.appColors.colorDarkGray)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+                },
+      );
+    },);
   }
 }
 

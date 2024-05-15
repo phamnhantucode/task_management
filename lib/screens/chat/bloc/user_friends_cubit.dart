@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -23,15 +22,22 @@ class UserFriendsCubit extends Cubit<UserFriendsState> {
         .getAcceptedFriendsStream(
             firebase_auth.FirebaseAuth.instance.currentUser?.uid ?? '')
         .listen((friends) {
-          final users = friends.map((e) {
-            if (e.author.id ==
-                firebase_auth.FirebaseAuth.instance.currentUser?.uid) {
-              return e.target;
-            } else {
-              return e.author;
-            }
-          }).toList();
-      emit(state.copyWith(users: users));
+      final users = friends.map((e) {
+        if (e.author.id ==
+            firebase_auth.FirebaseAuth.instance.currentUser?.uid) {
+          return e.target;
+        } else {
+          return e.author;
+        }
+      }).toList();
+
+      emit(state.copyWith(
+          users: users,
+          usersFiltered: users
+              .where((element) => state.searchQuery.isNotEmpty
+                  ? element.firstName!.toLowerCase().contains(state.searchQuery)
+                  : true)
+              .toList()));
     });
     userWaitingAcceptsSubscription = FriendRepository.instance
         .getListWaitedAcceptedStream(
@@ -71,5 +77,13 @@ class UserFriendsCubit extends Cubit<UserFriendsState> {
 
   void declineFriend(Friend userWaitingAccept) {
     FriendRepository.instance.deleteFriend(userWaitingAccept.id);
+  }
+
+  void searchFriends(String value) {
+    emit(state.copyWith(
+        searchQuery: value.toLowerCase(),
+        usersFiltered: state.users
+            .where((element) => element.firstName!.toLowerCase().contains(value.toLowerCase()))
+            .toList()));
   }
 }

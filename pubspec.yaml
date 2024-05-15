@@ -95,6 +95,7 @@ dependencies:
   rxdart: ^0.27.7
   omni_datetime_picker: ^1.1.0
   another_flushbar: ^1.12.30
+  badges: ^3.1.2
 
 dev_dependencies:
   flutter_test:

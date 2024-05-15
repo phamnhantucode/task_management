@@ -67,65 +67,67 @@ class _LoginScreenState extends State<LoginScreen> {
             context.go(NavigationPath.home);
           }
         },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Container(
-                decoration: _boxDecoration(context),
-                child: Padding(
-                  padding: EdgeInsetsDirectional.all(16.w),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            padding: const EdgeInsets.symmetric(vertical: 50),
-                            alignment: AlignmentDirectional.center,
-                            child: Text(context.l10n.task_management,
-                                style: context.textTheme.titleLarge?.copyWith(
-                                    color: context.appColors.textWhite))),
-                        labelTF(context, context.l10n.label_email),
-                        _usernameTF(context, provider),
-                        labelTF(context, context.l10n.label_password),
-                        PasswordField(
-                            onTextChange: (content) {
-                              context
-                                  .read<AuthenticationCubit>()
-                                  .setPassword(content);
-                            },
-                            validator: (value) =>
-                                provider.passwordValidator(value)),
-                        SizedBox(
-                          height: 24.h,
-                        ),
-                        TMElevatedLoadingButton(
-                          height: 50,
-                          label: context.l10n.label_login,
-                          borderRadius: 50.r,
-                          style: context.textTheme.labelLarge
-                              ?.copyWith(color: context.appColors.buttonEnable),
-                          onPressed:() {
-                          _formKey.currentState!.validate();
-                          context.read<AuthenticationCubit>().login();
-                        }
-                        ),
-                        _rememberMe(context),
-                        SizedBox(
-                          height: 16.h,
-                        ),
-                        _otherLogin(context),
-                        LabelAuth(
-                            title: context.l10n.dont_have_acc,
-                            labelAuth: context.l10n.label_register,
-                            textStyle: context.textTheme.bodyMedium
-                                ?.copyWith(color: context.appColors.textWhite),
-                            onPress: () {
-                              context.go(NavigationPath.register);
-                            }),
-                      ],
+        child: SafeArea(
+          child: Scaffold(
+            extendBody: true,
+            body: Container(
+              decoration: _boxDecoration(context),
+              child: Padding(
+                padding: EdgeInsetsDirectional.all(16.w),
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.symmetric(vertical: 50),
+                              alignment: AlignmentDirectional.center,
+                              child: Text(context.l10n.task_management,
+                                  style: context.textTheme.titleLarge?.copyWith(
+                                      color: context.appColors.textWhite))),
+                          labelTF(context, context.l10n.label_email),
+                          _usernameTF(context, provider),
+                          labelTF(context, context.l10n.label_password),
+                          PasswordField(
+                              onTextChange: (content) {
+                                context
+                                    .read<AuthenticationCubit>()
+                                    .setPassword(content);
+                              },
+                              validator: (value) =>
+                                  provider.passwordValidator(value)),
+                          SizedBox(
+                            height: 26.h,
+                          ),
+                          TMElevatedLoadingButton(
+                            height: 50,
+                            label: context.l10n.label_login,
+                            borderRadius: 50.r,
+                            style: context.textTheme.labelLarge
+                                ?.copyWith(color: context.appColors.buttonEnable),
+                            onPressed:() {
+                            _formKey.currentState!.validate();
+                            context.read<AuthenticationCubit>().login();
+                          }
+                          ),
+                          _rememberMe(context),
+                          SizedBox(
+                            height: 16.h,
+                          ),
+                          _otherLogin(context),
+                          LabelAuth(
+                              title: context.l10n.dont_have_acc,
+                              labelAuth: context.l10n.label_register,
+                              textStyle: context.textTheme.bodyMedium
+                                  ?.copyWith(color: context.appColors.textWhite),
+                              onPress: () {
+                                context.go(NavigationPath.register);
+                              }),
+                        ],
+                      ),
                     ),
                   ),
                 ),
