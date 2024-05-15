@@ -59,7 +59,7 @@ class UploadAttachmentPage extends StatelessWidget {
                   child: _buildButton(context, onImageSelection, Icons.image,
                       context.l10n.text_photo)),
           SizedBox(
-            width: onImageSelection == null || onFileSelection == null ? 8 : 0,
+            width: onImageSelection == null || onFileSelection == null ? 0 : 8,
           ),
           onFileSelection == null
               ? const SizedBox.shrink()

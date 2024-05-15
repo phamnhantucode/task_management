@@ -7,6 +7,7 @@ import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/utils/utils.dart';
+import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/chat/chat_page.dart';
 import 'package:room_master_app/screens/chat/users_page.dart';
 
@@ -115,75 +116,150 @@ class _RoomsScreenState extends State<RoomsScreen> {
       ),
       body: _user == null
           ? const SizedBox.shrink()
-          : StreamBuilder<List<types.Room>>(
-        stream: FirebaseChatCore.instance.rooms(),
-        initialData: const [],
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(
-                bottom: 200,
-              ),
-              child: const Text('No rooms'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final room = snapshot.data![index];
-
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ChatPage(
-                        room: room,
-                      ),
+          : Column(
+            children: [
+              TFSearch(context),
+              Expanded(
+                child: StreamBuilder<List<types.Room>>(
+                        stream: FirebaseChatCore.instance.rooms(),
+                        initialData: const [],
+                        builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(
+                      bottom: 200,
                     ),
+                    child: const Text('No rooms'),
                   );
-                },
-                child: Column(
-                  children: [
-                    TFSearch(context),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: [
-                          _buildAvatar(room),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(room.name ?? '',
-                                  style: context.textTheme.labelSmall
-                                      ?.copyWith(
-                                      color:
-                                      context.appColors.textBlack)),
-                              const SizedBox(
-                                height: 2,
-                              ),
-                              Text("Hi ban! Cho minh muon 100k",
-                                  style: context.textTheme.bodySmall
-                                      ?.copyWith(
-                                      color: context
-                                          .appColors.colorDarkGray))
-                            ],
+                }
+
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final room = snapshot.data![index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ChatPage(
+                              room: room,
+                            ),
                           ),
-                        ],
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            _buildAvatar(room),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(room.name ?? '',
+                                    style: context.textTheme.labelSmall
+                                        ?.copyWith(
+                                        color:
+                                        context.appColors.textBlack)),
+                                const SizedBox(
+                                  height: 2,
+                                ),
+                                StreamBuilder<List<types.Message>>(
+                                    stream: FirebaseChatCore.instance.messages(snapshot.data![index]),
+                                  builder: (context, snapshot) {
+                                      String lastMessage = '';
+                                      if (snapshot.hasData) {
+                                        switch (snapshot.data!.first.type) {
+                                          case types.MessageType.audio:
+                                          case types.MessageType.custom:
+                                          case types.MessageType.system:
+                                          case types.MessageType.unsupported:
+                                          case types.MessageType.video:
+                                            if (snapshot.data!.first.author.id == _user!.uid) {
+                                              lastMessage = context.l10n.text_you_have_sent_a_message;
+                                            } else {
+                                              lastMessage = context.l10n.text_someone_have_sent_a_message(snapshot.data!.first.author.firstName ?? '');
+                                            }
+                                          case types.MessageType.file:
+                                            if (snapshot.data!.first.author.id == _user!.uid) {
+                                              lastMessage = context.l10n.text_you_have_sent_a_file;
+                                            } else {
+                                              lastMessage = context.l10n.text_someone_have_sent_a_file(snapshot.data!.first.author.firstName ?? '');
+                                            }
+                                          case types.MessageType.image:
+                                            if (snapshot.data!.first.author.id == _user!.uid) {
+                                              lastMessage = context.l10n.text_you_have_sent_an_image;
+                                            } else {
+                                              lastMessage = context.l10n.text_someone_have_sent_an_image(snapshot.data!.first.author.firstName ?? '');
+                                            }
+                                          case types.MessageType.text:
+                                            if (snapshot.data!.first.author.id == _user!.uid) {
+                                              lastMessage = (snapshot.data!.first as types.TextMessage).text;
+                                            } else {
+                                              lastMessage = '${snapshot.data?.first.author.firstName}: ${(snapshot.data!.first as types.TextMessage).text}';
+                                            }
+                                        }
+                                        return Text(lastMessage,
+                                            style: context.textTheme.bodySmall
+                                                ?.copyWith(
+                                                color: context
+                                                    .appColors.colorDarkGray));
+                                      } else {
+                                        return Text("Start your conservation here",
+                                            style: context.textTheme.bodySmall
+                                                ?.copyWith(
+                                                color: context
+                                                    .appColors.colorDarkGray));
+
+                                      }
+                                  }
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+                    );
+                  },
+                );
+                        },
+                      ),
+              ),
+            ],
+          ),
     );
   }
-
+  Widget TFSearch(BuildContext context)=> Padding(
+    padding: const EdgeInsets.only(
+        top: 16, left: 16, right: 16, bottom: 16),
+    child: TextFormField(
+      style: context.textTheme.bodySmall,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        hintText: "Search...",
+        hintStyle: TextStyle(
+            color: context.appColors.colorDarkGray),
+        prefixIcon: Icon(
+          Icons.search,
+          color: Colors.grey.shade600,
+          size: 20,
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding: EdgeInsets.all(8),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+            BorderSide(color: Colors.grey.shade100)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+            BorderSide(color: Colors.grey.shade100)),
+      ),
+    ),
+  );
 }

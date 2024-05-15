@@ -20,6 +20,8 @@
     "label_other_login": "Quick login with Touch ID",
     "dont_have_acc": "Don't have an account? ",
      "have_acc": "Already have an account? ",
+     "termandprivacy": "I agree to the Terms of Services and Privacy Policy",
+     "isterm":"You must agree to the Terms of Services and Privacy Policy to register.",
     "forget_pass": "Forget Password?",
     "label_register": "Register",
     "invalid_email_exception": "Invalid Address Email ! Please try again",
@@ -104,5 +106,11 @@
     "text_attachment": "Attachment",
     "text_photo": "Photo",
     "text_file": "File",
-    "text_your_project": "Recent projects"
+    "text_your_project": "Recent projects",
+    "text_you_have_sent_an_image": "You have sent an image",
+    "text_you_have_sent_a_file": "You have sent a file",
+    "text_you_have_sent_a_message": "You have sent a message",
+    "text_someone_have_sent_a_message": "{someone} have sent a message",
+    "text_someone_have_sent_an_image": "{someone} have sent an image",
+    "text_someone_have_sent_a_file": "{someone} have sent a file"
 }

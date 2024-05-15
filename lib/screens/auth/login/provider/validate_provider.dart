@@ -28,8 +28,6 @@ class ValidateProvide extends ChangeNotifier{
   confirmPass(String value1, String value2) {
     if (value1.isEmpty) {
       return "Re-enter your password";
-    } else if (value1 != value2) {
-      return "Passwords don't match";
     } else {
       return null;
     }
@@ -43,5 +41,13 @@ class ValidateProvide extends ChangeNotifier{
       return null;
     }
   }
+  userValidator(String value){
+    if(value.isEmpty){
+      return "User is required";
+      }else{
+      return null;
+    }
+  }
+
 
 }
