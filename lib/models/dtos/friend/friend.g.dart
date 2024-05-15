@@ -6,7 +6,8 @@ part of 'friend.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$FriendImpl _$$FriendImplFromJson(Map<String, dynamic> json) => _$FriendImpl(
+_$FriendDtoImpl _$$FriendDtoImplFromJson(Map<String, dynamic> json) =>
+    _$FriendDtoImpl(
       id: json['id'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -15,7 +16,7 @@ _$FriendImpl _$$FriendImplFromJson(Map<String, dynamic> json) => _$FriendImpl(
       isTargetAccepted: json['isTargetAccepted'] as bool,
     );
 
-Map<String, dynamic> _$$FriendImplToJson(_$FriendImpl instance) =>
+Map<String, dynamic> _$$FriendDtoImplToJson(_$FriendDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'createdAt': instance.createdAt.toIso8601String(),

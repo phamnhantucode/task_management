@@ -14,12 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-Friend _$FriendFromJson(Map<String, dynamic> json) {
-  return _Friend.fromJson(json);
+FriendDto _$FriendDtoFromJson(Map<String, dynamic> json) {
+  return _FriendDto.fromJson(json);
 }
 
 /// @nodoc
-mixin _$Friend {
+mixin _$FriendDto {
   String get id => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -29,13 +29,14 @@ mixin _$Friend {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $FriendCopyWith<Friend> get copyWith => throw _privateConstructorUsedError;
+  $FriendDtoCopyWith<FriendDto> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $FriendCopyWith<$Res> {
-  factory $FriendCopyWith(Friend value, $Res Function(Friend) then) =
-      _$FriendCopyWithImpl<$Res, Friend>;
+abstract class $FriendDtoCopyWith<$Res> {
+  factory $FriendDtoCopyWith(FriendDto value, $Res Function(FriendDto) then) =
+      _$FriendDtoCopyWithImpl<$Res, FriendDto>;
   @useResult
   $Res call(
       {String id,
@@ -47,9 +48,9 @@ abstract class $FriendCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$FriendCopyWithImpl<$Res, $Val extends Friend>
-    implements $FriendCopyWith<$Res> {
-  _$FriendCopyWithImpl(this._value, this._then);
+class _$FriendDtoCopyWithImpl<$Res, $Val extends FriendDto>
+    implements $FriendDtoCopyWith<$Res> {
+  _$FriendDtoCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -96,10 +97,11 @@ class _$FriendCopyWithImpl<$Res, $Val extends Friend>
 }
 
 /// @nodoc
-abstract class _$$FriendImplCopyWith<$Res> implements $FriendCopyWith<$Res> {
-  factory _$$FriendImplCopyWith(
-          _$FriendImpl value, $Res Function(_$FriendImpl) then) =
-      __$$FriendImplCopyWithImpl<$Res>;
+abstract class _$$FriendDtoImplCopyWith<$Res>
+    implements $FriendDtoCopyWith<$Res> {
+  factory _$$FriendDtoImplCopyWith(
+          _$FriendDtoImpl value, $Res Function(_$FriendDtoImpl) then) =
+      __$$FriendDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -112,11 +114,11 @@ abstract class _$$FriendImplCopyWith<$Res> implements $FriendCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$FriendImplCopyWithImpl<$Res>
-    extends _$FriendCopyWithImpl<$Res, _$FriendImpl>
-    implements _$$FriendImplCopyWith<$Res> {
-  __$$FriendImplCopyWithImpl(
-      _$FriendImpl _value, $Res Function(_$FriendImpl) _then)
+class __$$FriendDtoImplCopyWithImpl<$Res>
+    extends _$FriendDtoCopyWithImpl<$Res, _$FriendDtoImpl>
+    implements _$$FriendDtoImplCopyWith<$Res> {
+  __$$FriendDtoImplCopyWithImpl(
+      _$FriendDtoImpl _value, $Res Function(_$FriendDtoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -129,7 +131,7 @@ class __$$FriendImplCopyWithImpl<$Res>
     Object? targetId = null,
     Object? isTargetAccepted = null,
   }) {
-    return _then(_$FriendImpl(
+    return _then(_$FriendDtoImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -160,8 +162,8 @@ class __$$FriendImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$FriendImpl implements _Friend {
-  _$FriendImpl(
+class _$FriendDtoImpl implements _FriendDto {
+  _$FriendDtoImpl(
       {required this.id,
       required this.createdAt,
       required this.updatedAt,
@@ -169,8 +171,8 @@ class _$FriendImpl implements _Friend {
       required this.targetId,
       required this.isTargetAccepted});
 
-  factory _$FriendImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FriendImplFromJson(json);
+  factory _$FriendDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FriendDtoImplFromJson(json);
 
   @override
   final String id;
@@ -187,14 +189,14 @@ class _$FriendImpl implements _Friend {
 
   @override
   String toString() {
-    return 'Friend(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, authorId: $authorId, targetId: $targetId, isTargetAccepted: $isTargetAccepted)';
+    return 'FriendDto(id: $id, createdAt: $createdAt, updatedAt: $updatedAt, authorId: $authorId, targetId: $targetId, isTargetAccepted: $isTargetAccepted)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FriendImpl &&
+            other is _$FriendDtoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
@@ -216,27 +218,28 @@ class _$FriendImpl implements _Friend {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$FriendImplCopyWith<_$FriendImpl> get copyWith =>
-      __$$FriendImplCopyWithImpl<_$FriendImpl>(this, _$identity);
+  _$$FriendDtoImplCopyWith<_$FriendDtoImpl> get copyWith =>
+      __$$FriendDtoImplCopyWithImpl<_$FriendDtoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FriendImplToJson(
+    return _$$FriendDtoImplToJson(
       this,
     );
   }
 }
 
-abstract class _Friend implements Friend {
-  factory _Friend(
+abstract class _FriendDto implements FriendDto {
+  factory _FriendDto(
       {required final String id,
       required final DateTime createdAt,
       required final DateTime updatedAt,
       required final String authorId,
       required final String targetId,
-      required final bool isTargetAccepted}) = _$FriendImpl;
+      required final bool isTargetAccepted}) = _$FriendDtoImpl;
 
-  factory _Friend.fromJson(Map<String, dynamic> json) = _$FriendImpl.fromJson;
+  factory _FriendDto.fromJson(Map<String, dynamic> json) =
+      _$FriendDtoImpl.fromJson;
 
   @override
   String get id;
@@ -252,6 +255,6 @@ abstract class _Friend implements Friend {
   bool get isTargetAccepted;
   @override
   @JsonKey(ignore: true)
-  _$$FriendImplCopyWith<_$FriendImpl> get copyWith =>
+  _$$FriendDtoImplCopyWith<_$FriendDtoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

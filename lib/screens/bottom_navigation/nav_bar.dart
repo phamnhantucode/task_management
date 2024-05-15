@@ -1,7 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/screens/bottom_navigation/bloc/bottom_nav_cubit.dart';
+import 'package:badges/badges.dart' as badges;
+
+import '../../domain/repositories/friends/friends_repository.dart';
+import '../../models/domain/friend/friend.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({
@@ -36,12 +41,24 @@ class NavBar extends StatelessWidget {
               const SizedBox(
                 width: 80,
               ),
-              navItem(
-                Icons.message_outlined,
-                state == NavFunction.chat,
-                onTap: () => context
-                    .read<BottomNavCubit>()
-                    .setNavItemSelected(NavFunction.chat),
+              StreamBuilder<List<Friend>>(
+                stream: FriendRepository.instance
+                    .getListWaitedAcceptedStream(
+                        FirebaseAuth.instance.currentUser?.uid ?? ''),
+                builder: (context, snapshot) {
+                  return badges.Badge(
+                    badgeContent: const SizedBox(),
+                    showBadge: snapshot.data?.isNotEmpty ?? false,
+                    position: badges.BadgePosition.topEnd(top: 5, end: 10),
+                    child: navItem(
+                      Icons.message_outlined,
+                      state == NavFunction.chat,
+                      onTap: () => context
+                          .read<BottomNavCubit>()
+                          .setNavItemSelected(NavFunction.chat),
+                    ),
+                  );
+                }
               ),
               navItem(
                 Icons.person_4_outlined,
