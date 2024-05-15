@@ -48,6 +48,7 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
           authException: result.first, isAuthenticated: result.second));
     }
     setUser();
+    reloadUser();
   }
 
   void logout() async {

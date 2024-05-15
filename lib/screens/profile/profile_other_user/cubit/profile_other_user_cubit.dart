@@ -20,7 +20,7 @@ class ProfileOtherUserCubit extends Cubit<ProfileOtherUserState> {
       emit(state.copyWith(friendState: FriendState.non));
     } else {
       if (!friend.isTargetAccepted) {
-        if (friend.authorId == userId) {
+        if (friend.author.id == userId) {
           emit(state.copyWith(friendState: FriendState.waiting));
         } else {
           emit(state.copyWith(friendState: FriendState.needAccept));
@@ -32,7 +32,7 @@ class ProfileOtherUserCubit extends Cubit<ProfileOtherUserState> {
   }
 
   void addFriend(User otherUser, String userId) async {
-    await FriendRepository.instance.addFriend(Friend(
+    await FriendRepository.instance.addFriend(FriendDto(
       createdAt: getCurrentTimestamp,
       updatedAt: getCurrentTimestamp,
       authorId: userId,
@@ -47,7 +47,7 @@ class ProfileOtherUserCubit extends Cubit<ProfileOtherUserState> {
     final listWaitedAccept =
         await FriendRepository.instance.getListWaitedAccepted(userId);
     FriendRepository.instance.acceptFriend(listWaitedAccept
-        .firstWhere((element) => element.authorId == otherUser.id)
+        .firstWhere((element) => element.author.id == otherUser.id)
         .id);
     update(otherUser, userId);
   }
