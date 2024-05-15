@@ -45,6 +45,7 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
           expireTime: getCurrentTimestamp.add(const Duration(days: 1))));
     } else {
       emit(state.copyWith(
+          status: LoginStatus.failure,
           authException: result.first, isAuthenticated: result.second));
     }
     setUser();

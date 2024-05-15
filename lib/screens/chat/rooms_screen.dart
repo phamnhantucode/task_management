@@ -115,75 +115,105 @@ class _RoomsScreenState extends State<RoomsScreen> {
       ),
       body: _user == null
           ? const SizedBox.shrink()
-          : StreamBuilder<List<types.Room>>(
-        stream: FirebaseChatCore.instance.rooms(),
-        initialData: const [],
-        builder: (context, snapshot) {
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(
-                bottom: 200,
-              ),
-              child: const Text('No rooms'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final room = snapshot.data![index];
-
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ChatPage(
-                        room: room,
-                      ),
+          : Column(
+            children: [
+              TFSearch(context),
+              Expanded(
+                child: StreamBuilder<List<types.Room>>(
+                        stream: FirebaseChatCore.instance.rooms(),
+                        initialData: const [],
+                        builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(
+                      bottom: 200,
                     ),
+                    child: const Text('No rooms'),
                   );
-                },
-                child: Column(
-                  children: [
-                    TFSearch(context),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: [
-                          _buildAvatar(room),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(room.name ?? '',
-                                  style: context.textTheme.labelSmall
-                                      ?.copyWith(
-                                      color:
-                                      context.appColors.textBlack)),
-                              const SizedBox(
-                                height: 2,
-                              ),
-                              Text("Hi ban! Cho minh muon 100k",
-                                  style: context.textTheme.bodySmall
-                                      ?.copyWith(
-                                      color: context
-                                          .appColors.colorDarkGray))
-                            ],
+                }
+
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final room = snapshot.data![index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ChatPage(
+                              room: room,
+                            ),
                           ),
-                        ],
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            _buildAvatar(room),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(room.name ?? '',
+                                    style: context.textTheme.labelSmall
+                                        ?.copyWith(
+                                        color:
+                                        context.appColors.textBlack)),
+                                const SizedBox(
+                                  height: 2,
+                                ),
+                                Text("Hi ban! Cho minh muon 100k",
+                                    style: context.textTheme.bodySmall
+                                        ?.copyWith(
+                                        color: context
+                                            .appColors.colorDarkGray))
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-      ),
+                    );
+                  },
+                );
+                        },
+                      ),
+              ),
+            ],
+          ),
     );
   }
-
+  Widget TFSearch(BuildContext context)=> Padding(
+    padding: const EdgeInsets.only(
+        top: 16, left: 16, right: 16, bottom: 16),
+    child: TextFormField(
+      style: context.textTheme.bodySmall,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        hintText: "Search...",
+        hintStyle: TextStyle(
+            color: context.appColors.colorDarkGray),
+        prefixIcon: Icon(
+          Icons.search,
+          color: Colors.grey.shade600,
+          size: 20,
+        ),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding: EdgeInsets.all(8),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+            BorderSide(color: Colors.grey.shade100)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide:
+            BorderSide(color: Colors.grey.shade100)),
+      ),
+    ),
+  );
 }

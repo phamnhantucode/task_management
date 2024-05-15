@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/auth/login/component/auth_elavated_loading_button.dart';
@@ -24,9 +25,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final userController = TextEditingController();
   final emailController = TextEditingController();
   final passController = TextEditingController();
   final provider = ValidateProvide();
+  bool _isAgreed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               context: context,
               title: "Login Failed",
               content: state.authException!.errorMessage(context),
-              titleButton: 'CLOSE',
+              titleButton: 'Close',
               colorContent: context.appColors.textBlack,
               rightAction: () {
                 context.pop();
@@ -99,6 +102,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   .read<AuthenticationCubit>()
                                   .setUsername(content);
                             },
+                              controller: userController,
+                              validator: (value) =>
+                                  provider.userValidator(value)
                           ),
                           labelTF(context, context.l10n.label_email),
                           RegisterTF(
@@ -130,7 +136,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               validator: (value) => provider.confirmPass(
                                   value, passController.text)),
                           SizedBox(
-                            height: 26.h,
+                            height: 20.h,
+                          ),
+                          CheckboxListTile(
+                            title: Text(
+                                context.l10n.termandprivacy,
+                              style: context.textTheme.bodySmall
+                                  ?.copyWith(color: context.appColors.textWhite),
+                            ),
+                            value: _isAgreed,
+                            onChanged: (value) {
+                              setState(() {
+                                _isAgreed = value ?? false;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                            activeColor: context.appColors.textWhite,
+                            checkColor: context.appColors.buttonEnable,
+                          ),
+                          SizedBox(
+                            height: 15.h,
                           ),
                           TMElevatedLoadingButton(
                             height: 50,
@@ -140,16 +165,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 color: context.appColors.buttonEnable),
                             color: context.appColors.textWhite,
                             onPressed: () {
-                              _formKey.currentState!.validate();
-                              context.read<AuthenticationCubit>().register();
+                              if (_formKey.currentState!.validate() && _isAgreed) {
+                                context.read<AuthenticationCubit>().register();
+                              } else if (!_isAgreed) {
+                              }
                             },
                           ),
+
                           SizedBox(
-                            height: 16.h,
+                            height: 20.h,
                           ),
                           LabelAuth(
-                              title: context.l10n.dont_have_acc,
-                              labelAuth: context.l10n.label_register,
+                              title: context.l10n.have_acc,
+                              labelAuth: context.l10n.label_login,
                               textStyle: context.textTheme.bodyMedium?.copyWith(
                                   color: context.appColors.textWhite),
                               onPress: () {
