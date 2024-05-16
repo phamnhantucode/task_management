@@ -115,5 +115,8 @@
     "text_someone_have_sent_a_file": "{someone} have sent a file",
     "text_number_tasks": "{number} tasks",
     "text_project_qr_invite_code": "Project QR invite code",
-    "text_content_qr_project_dialog": "Let's your friend scan to join this project"
+    "text_content_qr_project_dialog": "Let's your friend scan to join this project",
+    "text_add_new_project": "Add New Project",
+    "text_short_by": "Short by",
+    "text_filter_by": "Filter by"
 }
