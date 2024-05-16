@@ -96,6 +96,8 @@ dependencies:
   omni_datetime_picker: ^1.1.0
   another_flushbar: ^1.12.30
   badges: ^3.1.2
+  fl_chart: ^0.68.0
+  syncfusion_flutter_charts: ^25.2.4
 
 dev_dependencies:
   flutter_test:

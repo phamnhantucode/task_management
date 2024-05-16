@@ -1,15 +1,10 @@
-import 'dart:developer';
-
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/assets/app_assets.dart';
 import 'package:room_master_app/common/extensions/context.dart';
@@ -19,83 +14,84 @@ import 'package:room_master_app/domain/repositories/project/project_repository.d
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
+import 'package:room_master_app/screens/component/dialog/qr_dialog.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
-import 'package:room_master_app/screens/component/top_header/primary.dart';
+import 'package:room_master_app/screens/component/tm_elevated_button.dart';
 import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
+import '../../domain/service/qr_action.dart';
 import '../../models/domain/project/project.dart';
 import '../../models/dtos/project/project.dart';
 import 'bloc/home_screen_bloc.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          HomeScreenBloc()..add(const HomeScreenEvent.initBloc()),
+      create: (context) => HomeScreenCubit()..init(),
       child: Builder(builder: (context) {
         return SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildTopHeader(context),
-              SpacerComponent.l(),
-              _buildBanner(context),
-              SpacerComponent.l(),
-              _buildProjects(context),
-              SpacerComponent.l(),
-              Container(
-                padding: const EdgeInsets.only(bottom: 10, left: 12, right: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                      bottom: BorderSide(
-                          width: 1, color: context.appColors.borderColor)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      context.l10n.today_task,
-                      style: const TextStyle(
-                          color: Colors.orangeAccent,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(context.l10n.seeall,
-                        style: context.textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: context.mediaQuery.viewPadding.top + 16,
+            ),
+            child: Column(
+              children: [
+                _buildTopBar(context),
+                SpacerComponent.l(),
+                _buildBanner(context),
+                SpacerComponent.l(),
+                _buildProjects(context),
+                SpacerComponent.l(),
+                Container(
+                  padding:
+                      const EdgeInsets.only(bottom: 10, left: 12, right: 12),
+                  decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border(
                         bottom: BorderSide(
-                            width: 1,
-                            color: context.appColors.borderColor)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.appColors.borderColor,
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset:
-                            const Offset(0, 3), // Moves shadow to the top
+                            width: 1, color: context.appColors.borderColor)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        context.l10n.today_task,
+                        style: const TextStyle(
+                            color: Colors.orangeAccent,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
                       ),
-                    ]),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: SizedBox(
-                  height: 400, // fixed height
-                  child: _buildTodayTask(),
+                      Text(context.l10n.seeall,
+                          style: context.textTheme.bodyMedium),
+                    ],
+                  ),
                 ),
-              ),
-              SpacerComponent.l(),
-            ],
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    height: 400, // fixed height
+                    child: _buildTodayTask(),
+                  ),
+                ),
+                SpacerComponent.l(),
+              ],
+            ),
           ),
         );
       }),
@@ -108,10 +104,14 @@ class HomeScreen extends StatelessWidget {
         maxCoverage: 0.3,
         minCoverage: 0.2,
         align: StackAlign.right);
-    return AvatarStack(settings: settings, height: 20, borderWidth: 0,avatars: [
-      for (var n = 0; n < members.length; n++)
-        CachedNetworkImageProvider(members[n].imageUrl ?? getAvatarUrl(n)),
-    ]);
+    return AvatarStack(
+        settings: settings,
+        height: 20,
+        borderWidth: 0,
+        avatars: [
+          for (var n = 0; n < members.length; n++)
+            CachedNetworkImageProvider(members[n].imageUrl ?? getAvatarUrl(n)),
+        ]);
   }
 
   String getAvatarUrl(int n) {
@@ -119,106 +119,76 @@ class HomeScreen extends StatelessWidget {
     return url;
   }
 
-  Widget _buildTopHeader(BuildContext context) {
+  Widget _buildTopBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: TopHeader(
-          title: context.l10n.header_home,
-          rightIcon: Icons.qr_code,
-          leftAction: () {
-            context.read<AuthenticationCubit>().logout();
-          },
-          rightAction: () => {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const QrScannerScreen(),
-                ))
-              }),
-    );
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  width: 54,
+                  height: 54,
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(
+                      context
+                              .watch<AuthenticationCubit>()
+                              .state
+                              .user
+                              ?.photoURL ??
+                          '',
+                    ),
+                  ),
+                ),
+                SpacerComponent.s(
+                  isVertical: false,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Hello'),
+                    Text(
+                        context
+                                .watch<AuthenticationCubit>()
+                                .state
+                                .user
+                                ?.displayName ??
+                            '',
+                        style: context.textTheme.labelLarge),
+                  ],
+                )
+              ],
+            ),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const QrScannerScreen()));
+                  },
+                  icon: const Icon(Icons.qr_code),
+                ),
+                IconButton(
+                  onPressed: () {
+                    //show up notification screen here
+                  },
+                  icon: const Icon(Icons.notifications_outlined),
+                ),
+              ],
+            )
+          ],
+        ));
   }
 
   Widget _buildBanner(BuildContext context) {
-    return Container(
-      height: 200,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      width: double.infinity,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          color: context.appColors.bgGrayLight,
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              context.appColors.buttonEnable,
-              Colors.lightBlueAccent,
-            ],
-          )),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                context.l10n.header_home,
-                style: context.textTheme.titleSmall
-                    ?.copyWith(color: context.appColors.textWhite),
-              ),
-              const Text(
-                "15 task",
-                style: TextStyle(color: Colors.white),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Expanded(child: SizedBox()),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              context.l10n.progress,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white),
-                            ),
-                            const Text(
-                              '40%',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white),
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      SizedBox(
-                        width: 200,
-                        child: LinearProgressIndicator(
-                          value: 0.4,
-                          minHeight: 8,
-                          color: Colors.white,
-                          backgroundColor: context.appColors.bgGrayLight,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              )
-            ]),
-      ),
-    );
+    return const StatisticHomeScreen();
   }
 
   Widget _buildProjects(BuildContext context) {
-    return BlocBuilder<HomeScreenBloc, HomeScreenState>(
+    return BlocBuilder<HomeScreenCubit, HomeScreenState>(
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -227,7 +197,8 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 context.l10n.text_your_project,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.start,
               ),
             ),
@@ -238,12 +209,12 @@ class HomeScreen extends StatelessWidget {
                 enlargeCenterPage: false,
                 height: 210,
               ),
-              items: state.projects
-                  .map((item) {
-                    final bgColor = Colors.blue.shade100;
-                    final color = getContrastColor(bgColor);
+              items: state.projects.map((item) {
+                final bgColor = Colors.blue.shade100;
+                final color = getContrastColor(bgColor);
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: GestureDetector(
                     onTap: () {
                       context.push(NavigationPath.detailProject,
@@ -267,19 +238,25 @@ class HomeScreen extends StatelessWidget {
                           ]),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   item.name,
-                                  style: context.textTheme.labelMedium?.copyWith(color: color),
+                                  style: context.textTheme.labelMedium
+                                      ?.copyWith(color: color),
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    print('Share qr');
+                                    showQrDialog(
+                                        context,
+                                        context
+                                            .l10n.text_project_qr_invite_code,
+                                        context.l10n
+                                            .text_content_qr_project_dialog,
+                                        QrAction.joinProject.encode(item.id));
                                   },
                                   child: const Icon(
                                     Icons.share,
@@ -290,20 +267,22 @@ class HomeScreen extends StatelessWidget {
                             ),
                             Column(
                               children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.access_time_filled,
-                                        size: 16,
-                                        color: color,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        item.endDate?.dateWeeksMonthFormat ?? context.l10n.text_empty,
-                                        style: context.textTheme.bodySmall?.copyWith(color: color),
-                                      ),
-                                    ],
-                                  ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.access_time_filled,
+                                      size: 16,
+                                      color: color,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      item.endDate?.dateWeeksMonthFormat ??
+                                          context.l10n.text_empty,
+                                      style: context.textTheme.bodySmall
+                                          ?.copyWith(color: color),
+                                    ),
+                                  ],
+                                ),
                                 const SizedBox(
                                   height: 2,
                                 ),
@@ -316,17 +295,19 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 6),
                                     StreamBuilder<List<Task>>(
-                                        stream: ProjectRepository.instance.getTasksFromProjectStream(item.id),
+                                        stream: ProjectRepository.instance
+                                            .getTasksFromProjectStream(item.id),
                                         builder: (context, snapshot) {
-                                          if(snapshot.data != null) {
-                                            return Text('${snapshot.data!.length.toString().padLeft(2, '0')} tasks',
-                                              style: context.textTheme.bodyLarge?.copyWith(color: color),
+                                          if (snapshot.data != null) {
+                                            return Text(
+                                              '${snapshot.data!.length.toString().padLeft(2, '0')} tasks',
+                                              style: context.textTheme.bodyLarge
+                                                  ?.copyWith(color: color),
                                             );
                                           } else {
                                             return const Text('00/00');
                                           }
-                                        }
-                                    ),
+                                        }),
                                   ],
                                 ),
                               ],
@@ -334,24 +315,31 @@ class HomeScreen extends StatelessWidget {
                             Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 6),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       StreamBuilder<List<Task>>(
-                                          stream: ProjectRepository.instance.getTasksFromProjectStream(item.id),
+                                          stream: ProjectRepository.instance
+                                              .getTasksFromProjectStream(
+                                                  item.id),
                                           builder: (context, snapshot) {
-                                            if(snapshot.data != null) {
-                                              return Text('${snapshot.data!.where((element) => element.status == TaskStatus.completed).length.toString().padLeft(2, '0')}/${snapshot.data!.length.toString().padLeft(2, '0')}',
-                                                style: context.textTheme.bodySmall?.copyWith(color: color),
+                                            if (snapshot.data != null) {
+                                              return Text(
+                                                '${snapshot.data!.where((element) => element.status == TaskStatus.completed).length.toString().padLeft(2, '0')}/${snapshot.data!.length.toString().padLeft(2, '0')}',
+                                                style: context
+                                                    .textTheme.bodySmall
+                                                    ?.copyWith(color: color),
                                               );
                                             } else {
                                               return const Text('00/00');
                                             }
-                                          }
-                                      ),
-                                      Expanded(child: buildMembers(item.members)),
+                                          }),
+                                      Expanded(
+                                          child: buildMembers(item.members)),
                                     ],
                                   ),
                                 ),
@@ -359,14 +347,18 @@ class HomeScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: FutureBuilder<double>(
-                                        future: ProjectRepository.instance.getProjectProgressFuture(item.id),
-                                        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                                        future: ProjectRepository.instance
+                                            .getProjectProgressFuture(item.id),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<dynamic> snapshot) {
                                           return LinearProgressIndicator(
                                             value: snapshot.data ?? 0,
                                             minHeight: 5,
                                             color: color,
-                                            backgroundColor: Colors.grey.shade200,
-                                            borderRadius: BorderRadius.circular(4),
+                                            backgroundColor:
+                                                Colors.grey.shade200,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
                                           );
                                         },
                                       ),
@@ -386,14 +378,21 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                     Expanded(
                                         child: FutureBuilder<double>(
-                                          future: ProjectRepository.instance.getProjectProgressFuture(item.id),
-                                          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
-                                            return Text(context.l10n.text_percent_with_number(snapshot.data != null ? (snapshot.data! * 100).toStringAsFixed(0) : ''),
-                                              textAlign: TextAlign.end,
-                                              style: context.textTheme.labelSmall,
-                                            );
-                                          },
-                                        ))
+                                      future: ProjectRepository.instance
+                                          .getProjectProgressFuture(item.id),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<double> snapshot) {
+                                        return Text(
+                                          context.l10n.text_percent_with_number(
+                                              snapshot.data != null
+                                                  ? (snapshot.data! * 100)
+                                                      .toStringAsFixed(0)
+                                                  : ''),
+                                          textAlign: TextAlign.end,
+                                          style: context.textTheme.labelSmall,
+                                        );
+                                      },
+                                    ))
                                   ],
                                 ),
                               ],
@@ -402,8 +401,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 );
-              })
-                  .toList(),
+              }).toList(),
             )
           ],
         );
@@ -412,17 +410,204 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildTodayTask() {
-    return ListView.builder(
-      itemBuilder: (context, index) => TaskContainer(
-        context: context,
-        isShadowContainer: false,
-        title: 'Test Title',
-        content: 'Test content',
-        backgroundColor: Colors.blue.shade50,
-        iconBackgroundColor: Colors.blue.shade100,
-        contentColor: Colors.blue.shade500,
-      ),
-      itemCount: 20,
+    return BlocBuilder<HomeScreenCubit, HomeScreenState>(
+      builder: (context, state) {
+        return ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          itemBuilder: (context, index) => TaskContainer(
+            context: context,
+            isShadowContainer: false,
+            title: state.todayTasks[index].name,
+            content: state.todayTasks[index].projectId.name,
+            backgroundColor: Colors.blue.shade50,
+            iconBackgroundColor: Colors.blue.shade100,
+            contentColor: Colors.blue.shade500,
+          ),
+          itemCount: state.todayTasks.length,
+        );
+      },
+    );
+  }
+}
+
+class StatisticHomeScreen extends StatefulWidget {
+  const StatisticHomeScreen({super.key});
+
+  @override
+  State<StatisticHomeScreen> createState() => _StatisticHomeScreenState();
+}
+
+class _StatisticHomeScreenState extends State<StatisticHomeScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  late TooltipBehavior _tooltip;
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 3, vsync: this);
+    _tooltip = TooltipBehavior(
+        enable: true, format: 'point.x : point.y', duration: 500);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: TabBar(
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
+              dividerColor: Colors.transparent,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 20),
+              controller: _tabController,
+              tabs: const [
+                Tab(
+                  text: 'Today',
+                ),
+                Tab(
+                  text: 'Next',
+                ),
+                Tab(
+                  text: 'All',
+                )
+              ],
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 175,
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              buildPieChart(context, 0),
+              buildPieChart(context, 1),
+              buildPieChart(context, 2),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildPieChart(BuildContext context, int index) {
+    return BlocBuilder<HomeScreenCubit, HomeScreenState>(
+      builder: (context, state) {
+        var numbersOfTask = '';
+        var textDescription = '';
+        var data = <TaskPieChartData>[];
+        if (index == 0) {
+          numbersOfTask =
+              context.l10n.text_number_tasks(state.todayTasks.length);
+          data = state.todayTasksPieChartData;
+          textDescription =
+              'Today, you have ${state.todayTasks.length} tasks to work on.';
+          if (state.todayTasks.isEmpty) {
+            textDescription = 'Today, you have no tasks to work on.';
+          }
+        } else if (index == 1) {
+          numbersOfTask =
+              context.l10n.text_number_tasks(state.nextTasks.length);
+          data = state.nextTasksPieChartData;
+          textDescription =
+              'Next, you have ${state.nextTasks.length} tasks to work on.';
+          if (state.nextTasks.isEmpty) {
+            textDescription = 'Next, you have no tasks to work on.';
+          }
+        } else {
+          numbersOfTask = context.l10n.text_number_tasks(state.allTasks.length);
+          data = state.allTasksPieChartData;
+          textDescription =
+              'You have ${state.allTasks.length} tasks to work on for all.';
+          if (state.allTasks.isEmpty) {
+            textDescription = 'You have no tasks to work on for all.';
+          }
+        }
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              data.isNotEmpty
+                  ? SizedBox(
+                      width: 175,
+                      child: SfCircularChart(
+                        margin: EdgeInsets.zero,
+                        annotations: [
+                          CircularChartAnnotation(
+                              widget: Text(numbersOfTask,
+                                  style: context.textTheme.bodyMedium))
+                        ],
+                        series: <CircularSeries>[
+                          DoughnutSeries<TaskPieChartData, String>(
+                            strokeWidth: 2,
+                            dataSource: data,
+                            xValueMapper: (TaskPieChartData data, _) =>
+                                data.status.getLocalizationText(context),
+                            yValueMapper: (TaskPieChartData data, _) =>
+                                data.taskCount,
+                            dataLabelSettings:
+                                const DataLabelSettings(isVisible: true),
+                            pointColorMapper: (TaskPieChartData data, _) =>
+                                data.status.color,
+                          ),
+                        ],
+                        tooltipBehavior: _tooltip,
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          image: DecorationImage(
+                            image: Image.asset(AppAssets.gifCongrats).image,
+                          ),
+                        ),
+                      ),
+                    ),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      textDescription,
+                      style: context.textTheme.bodyMedium,
+                    ),
+                    SpacerComponent.l(),
+                    SizedBox(
+                      width: 120,
+                      child: TMElevatedButton(
+                        onPressed: () {},
+                        label: context.l10n.seeall,
+                        textColor: context.appColors.textWhite,
+                        color: Colors.blue.shade300,
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: context.appColors.textWhite,
+                          size: 16,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
