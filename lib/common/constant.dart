@@ -25,6 +25,7 @@ class AppConstants {
   ];
   static const String dateWeeksMonthFormat = 'EEEE, dd MMMM';
   static const String dateTimeFormat = 'dd MMMM, \'at\' HH:mm';
+  static const String dateWeeksMonthYearFormat = 'EEE, dd MMM yyyy';
 
   static const String imageCloudStoragePath = 'images/';
   static const String fileCloudStoragePath = 'files/';
