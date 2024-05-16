@@ -42,7 +42,7 @@ class TaskContainer extends StatelessWidget {
         HapticFeedback.vibrate();
       },
       child: Container(
-        margin: const EdgeInsets.only(top: 24, left: 4, right: 4),
+        margin: const EdgeInsets.only(top: 16,),
         padding: const EdgeInsets.all(12),
         width: double.infinity,
         height: 80,
@@ -79,7 +79,7 @@ class TaskContainer extends StatelessWidget {
                   width: 12,
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(

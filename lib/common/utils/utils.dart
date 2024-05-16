@@ -7,6 +7,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:from_css_color/from_css_color.dart';
 import 'package:intl/intl.dart';
 import 'package:json_path/json_path.dart';
+import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -83,4 +84,15 @@ Color getBackgroundColor(int current, int max) {
 Color getContrastColor(Color color) {
   double brightness = color.red * 0.2126 + color.green * 0.7152 + color.blue * 0.0772;
   return brightness > 200 ? Colors.black : Colors.white;
+}
+
+
+bool isTodayBetween(DateTime startDate, DateTime endDate) {
+  final now = DateTime.now().cleanHours;
+  return now >= startDate.cleanHours && now <= endDate.cleanHours;
+}
+
+bool isTodayLessThan(DateTime startDate, DateTime endDate) {
+  final now = DateTime.now();
+  return now.isBefore(startDate) && now.isBefore(endDate);
 }

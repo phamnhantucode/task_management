@@ -185,9 +185,9 @@ class ProjectRepository {
       return await Future.wait(snapshot.docs.map((doc) async {
         final taskDto = TaskDto.fromJson(doc.data());
         final assignee = await UsersRepository.instance.getUserById(taskDto.assigneeId ?? '');
-        final author = await UsersRepository.instance.getUserById(taskDto.authorId ?? '');
+        final author = await UsersRepository.instance.getUserById(taskDto.authorId);
         if (author == null) throw Exception('Author not found');
-        final project = await getProject(taskDto.projectId ?? '');
+        final project = await getProject(taskDto.projectId);
         return Task.fromTaskDto(taskDto, project, assignee, author);
       }).toList());
     });
@@ -300,6 +300,23 @@ class ProjectRepository {
         .get();
 
     return querySnapshot.docs.map((doc) => Task.fromJson(doc.data())).toList();
+  }
+
+  Stream<List<Task>> getTasksAssignedToUserStream(String userId) {
+    return FirebaseFirestore.instance
+        .collectionGroup('tasks')
+        .where('assigneeId', isEqualTo: userId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      return await Future.wait(snapshot.docs.map((doc) async {
+        final taskDto = TaskDto.fromJson(doc.data());
+        final assignee = await UsersRepository.instance.getUserById(taskDto.assigneeId ?? '');
+        final author = await UsersRepository.instance.getUserById(taskDto.authorId);
+        if (author == null) throw Exception('Author not found');
+        final project = await getProject(taskDto.projectId);
+        return Task.fromTaskDto(taskDto, project, assignee, author);
+      }).toList());
+    });
   }
 
   Future<double> getProjectProgressFuture(String projectId) async {

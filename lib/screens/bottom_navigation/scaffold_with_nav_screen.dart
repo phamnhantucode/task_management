@@ -22,6 +22,7 @@ class ScaffoldWithNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      backgroundColor: context.appColors.defaultBgContainer,
       body: BlocBuilder<BottomNavCubit, NavFunction>(
         builder: (context, state) => switch (state) {
           NavFunction.home => const HomeScreen(),

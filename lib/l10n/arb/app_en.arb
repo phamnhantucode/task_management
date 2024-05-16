@@ -112,5 +112,8 @@
     "text_you_have_sent_a_message": "You have sent a message",
     "text_someone_have_sent_a_message": "{someone} have sent a message",
     "text_someone_have_sent_an_image": "{someone} have sent an image",
-    "text_someone_have_sent_a_file": "{someone} have sent a file"
+    "text_someone_have_sent_a_file": "{someone} have sent a file",
+    "text_number_tasks": "{number} tasks",
+    "text_project_qr_invite_code": "Project QR invite code",
+    "text_content_qr_project_dialog": "Let's your friend scan to join this project"
 }

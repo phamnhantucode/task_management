@@ -9,6 +9,8 @@ abstract class AppAssets {
   static const iconVietnamFlag = '$iconAsset/ic_vietnam_flag.svg';
   static const iconEnglishFlag = '$iconAsset/ic_english_flag.svg';
   static const iconUser = '$iconAsset/ic_user.svg';
+  static const iconCongrats = '$iconAsset/ic_congrats.svg';
+  static const gifCongrats = '$iconAsset/congrats.gif';
 
   static const imageBgContainer = '$imageAsset/bg_container.png';
 }

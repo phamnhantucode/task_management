@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/blocs/setting/setting_cubit.dart';
 import 'package:room_master_app/common/app_setting.dart';
@@ -15,6 +14,7 @@ import 'package:room_master_app/domain/service/qr_action.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/models/enum/image_picker_type.dart';
 import 'package:room_master_app/navigation/navigation.dart';
+import 'package:room_master_app/screens/component/dialog/qr_dialog.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
 
 import '../../common/assets/app_assets.dart';
@@ -56,9 +56,13 @@ class ProfileScreen extends StatelessWidget {
                         // Add padding around the avatar
                         padding: const EdgeInsets.all(4.0),
                         child: GestureDetector(
-                          onTap: (){
-                            print(context.read<AuthenticationCubit>().state.user?.uid ??
-                            '');
+                          onTap: () {
+                            print(context
+                                    .read<AuthenticationCubit>()
+                                    .state
+                                    .user
+                                    ?.uid ??
+                                '');
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -232,50 +236,12 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void popUpQr(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(
-          child: Container(
-            constraints: BoxConstraints(maxWidth: 300),
-            decoration: BoxDecoration(
-                color: context.appColors.defaultBgContainer,
-                borderRadius: BorderRadius.circular(16)),
-            padding: EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  context.l10n.text_your_qr_code,
-                  style: context.textTheme.labelMedium,
-                ),
-                Text(
-                  context.l10n.text_content_qr_profile_dialog,
-                  style: context.textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: context.appColors.buttonEnable, width: 2),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: QrImageView(
-                    data: QrAction.profile.encode(
-                        context.read<AuthenticationCubit>().state.user?.uid ??
-                            ''),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    showQrDialog(
+        context,
+        context.l10n.text_your_qr_code,
+        context.l10n.text_content_qr_profile_dialog,
+        QrAction.profile
+            .encode(context.read<AuthenticationCubit>().state.user?.uid ?? ''));
   }
 
   Widget _buildListTile({

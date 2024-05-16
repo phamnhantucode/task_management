@@ -2,41 +2,112 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:collection/collection.dart' as collection;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:room_master_app/common/extensions/date_time.dart';
 
+import '../../../common/utils/utils.dart';
 import '../../../domain/repositories/project/project_repository.dart';
 import '../../../models/domain/project/project.dart';
+import '../../../models/dtos/project/project.dart';
 
-part 'home_screen_event.dart';
-part 'home_screen_state.dart';
 part 'home_screen_bloc.freezed.dart';
 
-class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
-  HomeScreenBloc() : super(const HomeScreenState()) {
-    on<InitBloc>(_handleInitBloc);
-    on<FetchProjects>(_handleFetchProjects);
-    on<DeleteProject>(_handleDeleteProject);
-  }
+part 'home_screen_state.dart';
+
+class HomeScreenCubit extends Cubit<HomeScreenState> {
+  HomeScreenCubit() : super(const HomeScreenState());
 
   final userId = FirebaseAuth.instance.currentUser?.uid;
 
+  late StreamSubscription _projectsSubscription;
+  late StreamSubscription _tasksSubscription;
 
-  FutureOr<void> _handleInitBloc(InitBloc event, Emitter<HomeScreenState> emit) async {
-    await for (final projects in ProjectRepository.instance.getProjectsStream(userId ?? '')) {
-      log('projects: $projects');
-      if (!emit.isDone) {
-        emit(state.copyWith(projects: projects));
-      }
+  void init() async {
+    _projectsSubscription = ProjectRepository.instance
+        .getProjectsStream(userId!)
+        .listen((projects) {
+      emit(state.copyWith(projects: projects));
+    });
+    _tasksSubscription = ProjectRepository.instance
+        .getTasksAssignedToUserStream(userId!)
+        .listen((tasks) {
+      final todayTask = tasks.where((task) => isTodayTask(task)).toList();
+      final nextTask = tasks.where((task) => isNextTask(task)).toList();
+      final taskTodayPieChartData = collection
+          .groupBy<Task, TaskStatus>(todayTask, (task) => task.status)
+          .map((key, value) => MapEntry(key, value.length))
+          .entries
+          .map((entry) =>
+              TaskPieChartData(status: entry.key, taskCount: entry.value))
+          .toList();
+      final taskNextPieChartData = collection
+          .groupBy<Task, TaskStatus>(nextTask, (task) => task.status)
+          .map((key, value) => MapEntry(key, value.length))
+          .entries
+          .map((entry) =>
+              TaskPieChartData(status: entry.key, taskCount: entry.value))
+          .toList();
+      final taskAllPieChartData = collection
+          .groupBy<Task, TaskStatus>(tasks, (task) => task.status)
+          .map((key, value) => MapEntry(key, value.length))
+          .entries
+          .map((entry) =>
+              TaskPieChartData(status: entry.key, taskCount: entry.value))
+          .toList();
+      emit(state.copyWith(
+          allTasks: tasks,
+          todayTasks: todayTask,
+          nextTasks: nextTask,
+          todayTasksPieChartData: taskTodayPieChartData,
+          nextTasksPieChartData: taskNextPieChartData,
+          allTasksPieChartData: taskAllPieChartData));
+    });
+  }
+
+  void deleteProject(String projectId) async {
+    try {
+      await ProjectRepository.instance.deleteProject(projectId);
+    } catch (e) {
+      log(e.toString());
     }
   }
 
-
-  FutureOr<void> _handleFetchProjects(FetchProjects event, Emitter<HomeScreenState> emit) {
+  bool isTodayTask(Task task) {
+    if (task.startDate == null && task.endDate == null) {
+      return true;
+    } else if (task.startDate != null) {
+      if (task.endDate != null) {
+        return isTodayBetween(task.startDate!, task.endDate!);
+      } else {
+        return getCurrentTimestamp.cleanHours >= task.startDate!.cleanHours;
+      }
+    } else {
+      return getCurrentTimestamp.cleanHours <= task.endDate!.cleanHours;
+    }
   }
 
-  FutureOr<void> _handleDeleteProject(DeleteProject event, Emitter<HomeScreenState> emit) async {
-    await ProjectRepository.instance.deleteProject(event.projectId);
+  @override
+  Future<void> close() {
+    _projectsSubscription.cancel();
+    return super.close();
   }
+
+  bool isNextTask(Task task) {
+    if (task.startDate == null && task.endDate == null) {
+      return true;
+    } else if (task.startDate != null) {
+      return getCurrentTimestamp.cleanHours < task.startDate!.cleanHours;
+    } else {
+      return getCurrentTimestamp < task.endDate!.cleanHours;
+    }
+  }
+}
+
+class TaskPieChartData {
+  final TaskStatus status;
+  final int taskCount;
+
+  TaskPieChartData({required this.status, required this.taskCount});
 }

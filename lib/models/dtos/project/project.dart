@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/project/project.dart';
@@ -39,7 +40,47 @@ class ProjectDto with _$ProjectDto {
   }
 }
 
-enum TaskStatus { notStarted, inProgress, completed }
+enum TaskStatus { notStarted, inProgress, completed, rejected, restarted, paused, canceled;
+
+  Color get color {
+    switch (this) {
+      case TaskStatus.notStarted:
+        return Colors.grey;
+      case TaskStatus.inProgress:
+        return Colors.blue;
+      case TaskStatus.completed:
+        return Colors.green;
+      case TaskStatus.rejected:
+        return Colors.red;
+      case TaskStatus.restarted:
+        return Colors.orange;
+      case TaskStatus.paused:
+        return Colors.yellow;
+      case TaskStatus.canceled:
+        return Colors.black;
+    }
+  }
+
+  String getLocalizationText(context) {
+    switch (this) {
+      case TaskStatus.notStarted:
+        return "Not Started";
+      case TaskStatus.inProgress:
+        return "In Progress";
+      case TaskStatus.completed:
+        return "Completed";
+      case TaskStatus.rejected:
+        return "Rejected";
+      case TaskStatus.restarted:
+        return "Restarted";
+      case TaskStatus.paused:
+        return "Paused";
+      case TaskStatus.canceled:
+        return "Canceled";
+    }
+
+  }
+}
 
 @freezed
 class TaskDto with _$TaskDto {
