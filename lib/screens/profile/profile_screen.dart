@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -433,7 +434,7 @@ class SettingPage extends StatelessWidget {
                         const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8))),
-                    leading: SvgPicture.asset(AppAssets.iconEnglishFlag),
+                    leading: SvgPicture.asset(AppAssets.iconEnglishFlag, width: 24, height: 24,),
                     title: Text(context
                         .watch<SettingCubit>()
                         .state
@@ -458,6 +459,13 @@ class SettingPage extends StatelessWidget {
                                           i < Language.values.length;
                                           i++)
                                         ListTile(
+                                          onTap: () {
+
+                                            context
+                                                .read<SettingCubit>()
+                                                .setLanguage(
+                                                Language.values[i]);
+                                          },
                                           contentPadding:
                                               const EdgeInsets.symmetric(
                                                   vertical: 4, horizontal: 12),
@@ -466,7 +474,10 @@ class SettingPage extends StatelessWidget {
                                                   Radius.circular(8))),
                                           leading: SvgPicture.asset(Language
                                               .values[i]
-                                              .getAssetPathIconLanguage()),
+                                              .getAssetPathIconLanguage(),
+                                            width: 24,
+                                            height: 24,
+                                          ),
                                           title: Text(Language.values[i]
                                               .getLocalizationText(context)),
                                           trailing: Checkbox(
@@ -530,7 +541,7 @@ class SettingPage extends StatelessWidget {
                       onChanged: onChanged,
                     ),
                   ),
-                  Text(label),
+                  Expanded(child: Text(label, overflow: TextOverflow.ellipsis,)),
                 ],
               )),
         ),

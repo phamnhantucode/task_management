@@ -31,9 +31,9 @@ enum QrAction {
       case 'profile':
         return QrAction.profile;
       case 'joinGroup':
-        return QrAction.profile;
+        return QrAction.joinGroup;
       case 'joinProject':
-        return QrAction.profile;
+        return QrAction.joinProject;
     }
     return QrAction.profile;
   }

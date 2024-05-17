@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +8,11 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_scanner_overlay/qr_scanner_overlay.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/domain/repositories/project/project_repository.dart';
 import 'package:room_master_app/domain/repositories/users/users_repository.dart';
 import 'package:room_master_app/domain/service/qr_action.dart';
 import 'package:room_master_app/l10n/l10n.dart';
+import 'package:room_master_app/screens/project_detail/request_join_project_page.dart';
 import 'package:room_master_app/screens/qr_scanner/scanner_button_widgets.dart';
 import 'package:room_master_app/screens/qr_scanner/scanner_error_widget.dart';
 
@@ -38,6 +41,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       if (value != null && value.rawValue != null) {
         _subscription?.cancel();
         final pair = QrAction.decode(value.rawValue!);
+        log(pair.first.toString());
         switch (pair.first) {
           case QrAction.profile:
             UsersRepository.instance.getUserById(pair.second).then((user) {
@@ -57,6 +61,17 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             });
           case QrAction.joinGroup:
           case QrAction.joinProject:
+          log(pair.second.toString());
+
+            ProjectRepository.instance.getProject(pair.second).then((project) {
+              context.pop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) =>
+                        RequestJoinProjectPage(project: project)),
+                (route) => true,
+              );
+            });
         }
       }
     }
