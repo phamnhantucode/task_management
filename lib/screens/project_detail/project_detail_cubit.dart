@@ -103,7 +103,7 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   }
 
   void addAttachment({required String fileName, required String downloadUrl}) {
-    ProjectRepository.instance.addAttachmentToProject(state.project!.id, Attachment(
+    ProjectRepository.instance.addAttachmentToProject(state.project!.id, AttachmentDto(
         id: uuid.v1(),
         fileName: fileName,
         filePath: downloadUrl,

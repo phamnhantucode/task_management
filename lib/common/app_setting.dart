@@ -12,8 +12,8 @@ enum Language {
 
   String getLocalizationText(BuildContext context) {
     return switch (this) {
-      Language.english => context.l10n.text_vietnamese,
-      Language.vietnamese => context.l10n.text_english,
+      Language.english => context.l10n.text_english,
+      Language.vietnamese => context.l10n.text_vietnamese,
     };
   }
 
@@ -21,6 +21,13 @@ enum Language {
     return switch (this) {
       Language.english => AppAssets.iconEnglishFlag,
       Language.vietnamese => AppAssets.iconVietnamFlag,
+    };
+  }
+
+  String getLanguageCode() {
+    return switch (this) {
+      Language.english => 'en',
+      Language.vietnamese => 'vi',
     };
   }
 }

@@ -21,6 +21,7 @@ class ProjectDto with _$ProjectDto {
     required ProjectStatus status,
     required DateTime createdAt,
     required DateTime updatedAt,
+    int? color,
   }) = _ProjectDto;
 
   factory ProjectDto.fromJson(Map<String, dynamic> json) => _$ProjectDtoFromJson(json);
@@ -112,4 +113,17 @@ class AttachmentDto with _$AttachmentDto {
   }) = _AttachmentDto;
 
   factory AttachmentDto.fromJson(Map<String, dynamic> json) => _$AttachmentDtoFromJson(json);
+}
+
+@freezed
+class CommentDto with _$CommentDto {
+  const factory CommentDto({
+    required String id,
+    required String content,
+    required String taskId,
+    required String authorId,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _CommentDto;
+  factory CommentDto.fromJson(Map<String, dynamic> json) => _$CommentDtoFromJson(json);
 }

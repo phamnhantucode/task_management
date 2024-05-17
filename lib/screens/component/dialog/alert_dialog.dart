@@ -8,6 +8,8 @@ Future<T?> showAlertDialog<T>({
   required String content,
   required void Function() rightAction,
   void Function()? leftAction,
+  MainAxisAlignment? actionsAlignment,
+
 }) async {
   return showDialog<T>(
     context: context,
@@ -15,6 +17,7 @@ Future<T?> showAlertDialog<T>({
       return AlertDialog(
         title: Text(title, style: context.textTheme.titleSmall,),
         content: Text(content, style: context.textTheme.bodyMedium,),
+        actionsAlignment: actionsAlignment,
         actions: [
           TextButton(
               onPressed: rightAction,

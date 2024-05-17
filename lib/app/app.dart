@@ -34,8 +34,8 @@ final class App extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => AuthenticationCubit(context.read())
-              ..login(isAutoLogin: true),
+            create: (context) =>
+                AuthenticationCubit(context.read())..login(isAutoLogin: true),
           ),
           BlocProvider(
             create: (context) => BottomNavCubit(),
@@ -83,7 +83,8 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.bottom]);
     WidgetsBinding.instance.addObserver(this);
     if (themeMode == ThemeMode.system) {
       if (isDarkMode(context)) {
@@ -138,6 +139,8 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: AppRouter.routerConfig,
           themeMode: themeMode,
+          locale: Locale(
+              context.watch<SettingCubit>().state.languageSelected.getLanguageCode()),
         ),
       ),
     );
