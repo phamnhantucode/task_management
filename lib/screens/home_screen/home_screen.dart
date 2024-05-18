@@ -1,21 +1,12 @@
-import 'package:avatar_stack/avatar_stack.dart';
-import 'package:avatar_stack/positions.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/assets/app_assets.dart';
 import 'package:room_master_app/common/extensions/context.dart';
-import 'package:room_master_app/common/extensions/date_time.dart';
-import 'package:room_master_app/common/utils/utils.dart';
-import 'package:room_master_app/domain/repositories/project/project_repository.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
-import 'package:room_master_app/screens/component/dialog/qr_dialog.dart';
 import 'package:room_master_app/screens/component/project_card.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
@@ -23,9 +14,6 @@ import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
-import '../../domain/service/qr_action.dart';
-import '../../models/domain/project/project.dart';
-import '../../models/dtos/project/project.dart';
 import 'bloc/home_screen_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -73,8 +61,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
-                      Text(context.l10n.seeall,
-                          style: context.textTheme.bodyMedium),
+                      GestureDetector(
+                        onTap: () {
+                          context.push(NavigationPath.listTasks);
+                        },
+                        child: Text(
+                          context.l10n.seeall,
+                          style: context.textTheme.bodyMedium,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -186,15 +181,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     context.l10n.text_your_project,
-                    style:
-                        const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.start,
                   ),
                   GestureDetector(
                     onTap: () => context.push(NavigationPath.listProjects),
                     child: Text(
                       context.l10n.seeall,
-                      style: context.textTheme.bodyMedium?.copyWith(color: Colors.grey),),
+                      style: context.textTheme.bodyMedium
+                          ?.copyWith(color: Colors.grey),
+                    ),
                   )
                 ],
               ),

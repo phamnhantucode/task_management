@@ -5,7 +5,6 @@ import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/models/domain/project/project.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
 import 'package:room_master_app/screens/listing/list_projects/list_project_screen.dart';
-import 'package:room_master_app/screens/new_task/new_task_screen.dart';
 import 'package:room_master_app/screens/profile/edit_profile_screen.dart';
 import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/task_detai_real/task_detail.dart';
@@ -14,6 +13,7 @@ import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
+import '../screens/listing/list_tasks/list_tasks_screen.dart';
 import '../screens/profile/change_password_screen.dart';
 import '../screens/project_detail/project_detail_screen.dart';
 
@@ -27,6 +27,7 @@ abstract class NavigationPath {
   static const detailTask = '/detailTask';
   static const detailProject = '/project';
   static const listProjects = '/listProjects';
+  static const listTasks = '/listTasks';
   static const statistic = '/statistic';
   static const profile = '/profile';
   static const editProfile = '/editProfile';
@@ -96,6 +97,10 @@ abstract class AppRouter {
       GoRoute(
         path: NavigationPath.listProjects,
         builder: (_, __) => const ListProjectScreen(),
+      ),
+      GoRoute(
+        path: NavigationPath.listTasks,
+        builder: (_, __) => const ListTasksScreen(),
       ),
       GoRoute(
         path: NavigationPath.login,
