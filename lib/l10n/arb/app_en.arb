@@ -117,11 +117,16 @@
     "text_project_qr_invite_code": "Project QR invite code",
     "text_content_qr_project_dialog": "Let's your friend scan to join this project",
     "text_add_new_project": "Add New Project",
-    "text_short_by": "Short by",
+    "text_sort_by": "Sort by",
     "text_filter_by": "Filter by",
     "text_request_to_join_project": "Request to join project",
     "text_request_already_sent": "Request already sent",
     "text_your_request_have_been_sent_waiting_for_leader_accept_you_join_project": "Your request have been sent. Waiting for leader accept you join project",
     "text_project": "Project",
-    "text_owner": "Owner"
+    "text_owner": "Owner",
+    "text_projects": "Projects",
+    "text_name": "Name",
+    "text_close": "Close",
+    "text_hint_search": "Search...",
+    "text_member": "Member"
 }

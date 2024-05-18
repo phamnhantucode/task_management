@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 
 import '../../domain/repositories/project/project_repository.dart';
 import '../../main.dart';
