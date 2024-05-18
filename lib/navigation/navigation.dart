@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/models/domain/project/project.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
+import 'package:room_master_app/screens/listing/list_projects/list_project_screen.dart';
 import 'package:room_master_app/screens/new_task/new_task_screen.dart';
 import 'package:room_master_app/screens/profile/edit_profile_screen.dart';
 import 'package:room_master_app/screens/statistic/statistic_screen.dart';
@@ -25,6 +26,7 @@ abstract class NavigationPath {
   static const newTask = '/newTask';
   static const detailTask = '/detailTask';
   static const detailProject = '/project';
+  static const listProjects = '/listProjects';
   static const statistic = '/statistic';
   static const profile = '/profile';
   static const editProfile = '/editProfile';
@@ -90,6 +92,10 @@ abstract class AppRouter {
           Task taskINfo = state.extra as Task;
           return TaskDetail(taskInfo: taskINfo);
         },
+      ),
+      GoRoute(
+        path: NavigationPath.listProjects,
+        builder: (_, __) => const ListProjectScreen(),
       ),
       GoRoute(
         path: NavigationPath.login,
