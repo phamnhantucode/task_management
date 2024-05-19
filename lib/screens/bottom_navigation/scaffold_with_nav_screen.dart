@@ -10,8 +10,10 @@ import 'package:room_master_app/screens/home_screen/home_screen.dart';
 import 'package:room_master_app/screens/new_project/new_project_screen.dart';
 import 'package:room_master_app/screens/profile/profile_other_user/profile_other_user_page.dart';
 import 'package:room_master_app/screens/profile/profile_screen.dart';
+import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/upcoming_task/upcoming_task_screen.dart';
 
+import '../statistic/statistic_project_screen.dart';
 import 'bloc/bottom_nav_cubit.dart';
 import 'nav_bar.dart';
 
@@ -26,7 +28,7 @@ class ScaffoldWithNav extends StatelessWidget {
       body: BlocBuilder<BottomNavCubit, NavFunction>(
         builder: (context, state) => switch (state) {
           NavFunction.home => const HomeScreen(),
-          NavFunction.calendar => const UpcomingTaskScreen(),
+          NavFunction.calendar =>  StatisticProject(),
           NavFunction.chat => const RoomsScreen(),
           NavFunction.profile => const ProfileScreen(),
         },
