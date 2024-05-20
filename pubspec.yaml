@@ -98,6 +98,7 @@ dependencies:
   badges: ^3.1.2
   fl_chart: ^0.68.0
   syncfusion_flutter_charts: ^25.2.4
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -151,3 +152,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/ic_app.png"
