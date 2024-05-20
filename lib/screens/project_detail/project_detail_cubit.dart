@@ -2,12 +2,17 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
+import 'package:room_master_app/common/utils/utils.dart';
+import 'package:room_master_app/domain/repositories/notifications/notifications_repository.dart';
+import 'package:room_master_app/domain/service/notification_service.dart';
 
 import '../../domain/repositories/project/project_repository.dart';
 import '../../main.dart';
 import '../../models/domain/project/project.dart';
+import '../../models/dtos/notification/action.dart';
+import '../../models/dtos/notification/notification_dto.dart';
 import '../../models/dtos/project/project.dart';
+import '../../models/dtos/user/user_dto.dart';
 
 part 'project_detail_cubit.freezed.dart';
 part 'project_detail_state.dart';
@@ -29,8 +34,7 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
           projectName: project.name,
           projectDescription: project.description,
           startDate: project.startDate,
-          endDate: project.endDate
-      ));
+          endDate: project.endDate));
     });
     tasksSubscription = ProjectRepository.instance
         .getTasksFromProjectStream(projectId)
@@ -62,13 +66,18 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   }
 
   void updateProject() {
+    handleUpdateProjectNotification();
     ProjectRepository.instance.updateProject(ProjectDto.fromProject(
         state.project!.copyWith(
-            name: state.projectName, description: state.projectDescription, startDate: state.startDate!, endDate: state.endDate)));
+            name: state.projectName,
+            description: state.projectDescription,
+            startDate: state.startDate!,
+            endDate: state.endDate)));
     if (state.tasks.length != state.tasksCopy.length) {
       for (var task in state.tasks) {
         if (!state.tasksCopy.contains(task)) {
-          ProjectRepository.instance.deleteTaskFromProject(task.id, state.project!.id);
+          ProjectRepository.instance
+              .deleteTaskFromProject(task.id, state.project!.id);
         }
       }
     }
@@ -87,7 +96,7 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   }
 
   void cancelUpdateProject() {
-    if(state.project != null) {
+    if (state.project != null) {
       emit(state.copyWith(
         projectName: state.project!.name,
         projectDescription: state.project!.description,
@@ -100,20 +109,52 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
 
   void deleteTask(String taskId) {
     // ProjectRepository.instance.deleteTaskFromProject(taskId, state.project?.id ?? '');
-    emit(state.copyWith(tasksCopy: state.tasksCopy.where((task) => task.id != taskId).toList()));
+    emit(state.copyWith(
+        tasksCopy:
+            state.tasksCopy.where((task) => task.id != taskId).toList()));
   }
 
   void addAttachment({required String fileName, required String downloadUrl}) {
-    ProjectRepository.instance.addAttachmentToProject(state.project!.id, AttachmentDto(
-        id: uuid.v1(),
-        fileName: fileName,
-        filePath: downloadUrl,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now()
-    ));
+    ProjectRepository.instance.addAttachmentToProject(
+        state.project!.id,
+        AttachmentDto(
+            id: uuid.v1(),
+            fileName: fileName,
+            filePath: downloadUrl,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now()));
   }
 
   void removeAttachment(Attachment attachment) {
-    ProjectRepository.instance.deleteAttachmentFromProject(state.project!.id,attachment.id,);
+    ProjectRepository.instance.deleteAttachmentFromProject(
+      state.project!.id,
+      attachment.id,
+    );
+  }
+
+  void handleUpdateProjectNotification() {
+    if (state.projectName != state.project!.name) {
+      final notify = NotifyChangeProjectNameDto(
+          id: '',
+          createdAt: getCurrentTimestamp,
+          authorId: state.project!.owner.id,
+          targetId: state.project!.id,
+          userReceiveNotificationId: '',
+          action: ActionNotification.changeProjectName,
+          targetType: TargetType.project,
+          title: state.project!.name,
+          body: '',
+          isRead: false,
+          content: '',
+          newProjectName: state.project!.name);
+      Future.forEach(state.project!.members, (member) async {
+        final notification = notify.copyWith(
+          id: uuid.v1(),
+          userReceiveNotificationId: member.id,
+        );
+        NotificationRepository.instance.addNotification(notification);
+        NotificationService.instance.pushNotification(state.project!.owner.notificationToken ?? '', notification);
+      });
+    }
   }
 }

@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:room_master_app/domain/repositories/friends/friends_repository.dart';
 import 'package:room_master_app/models/domain/friend/friend.dart';
+
+import '../../../models/dtos/user/user_dto.dart';
 
 part 'user_friends_cubit.freezed.dart';
 part 'user_friends_state.dart';

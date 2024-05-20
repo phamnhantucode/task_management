@@ -1,25 +1,21 @@
-import 'dart:developer';
-
-import 'package:flutter/cupertino.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
-import 'package:path/path.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/l10n/l10n.dart';
-import 'package:badges/badges.dart' as badges;
 
 import '../../common/extensions/extensions.dart';
 import '../../common/utils/utils.dart';
+import '../../models/dtos/user/user_dto.dart';
 import 'bloc/user_friends_cubit.dart';
 import 'chat_page.dart';
 
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
 
-  Widget _buildAvatar(types.User user) {
+  Widget _buildAvatar(UserDto user) {
     final color = getUserAvatarNameColor(user);
     final hasImage = user.imageUrl != null;
     final name = user.firstName ?? '';
@@ -34,18 +30,18 @@ class UsersPage extends StatelessWidget {
         radius: 20,
         child: !hasImage
             ? Text(
-          name.isEmpty ? '' : name[0].toUpperCase(),
-          style: const TextStyle(color: Colors.white),
-        )
+                name.isEmpty ? '' : name[0].toUpperCase(),
+                style: const TextStyle(color: Colors.white),
+              )
             : null,
       ),
     );
   }
 
-  void _handlePressed(types.User otherUser, BuildContext context) async {
+  void _handlePressed(UserDto otherUser, BuildContext context) async {
     final navigator = Navigator.of(context);
-    final room = await FirebaseChatCore.instance.createRoom(otherUser);
-
+    final room =
+        await FirebaseChatCore.instance.createRoom(UserDto.toUser(otherUser));
     navigator.pop();
     await navigator.push(
       MaterialPageRoute(
@@ -69,15 +65,27 @@ class UsersPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: badges.Badge(
                     position: badges.BadgePosition.topEnd(top: 0, end: 0),
-                    showBadge: context.watch<UserFriendsCubit>().state.userWaitingAccepts.isNotEmpty,
+                    showBadge: context
+                        .watch<UserFriendsCubit>()
+                        .state
+                        .userWaitingAccepts
+                        .isNotEmpty,
                     badgeContent: Text(
-                      context.watch<UserFriendsCubit>().state.userWaitingAccepts.length.toString(),
+                      context
+                          .watch<UserFriendsCubit>()
+                          .state
+                          .userWaitingAccepts
+                          .length
+                          .toString(),
                       style: context.textTheme.bodySmall?.copyWith(
                         color: Colors.white,
                       ),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.person_add, size: 30,),
+                      icon: const Icon(
+                        Icons.person_add,
+                        size: 30,
+                      ),
                       onPressed: () {
                         showModalBottomSheet(
                           isScrollControlled: true,
@@ -104,9 +112,7 @@ class UsersPage extends StatelessWidget {
             body: Column(
               children: [
                 _buildSearchField(context),
-                Expanded(
-                  child: _buildUserList(context)
-                  ),
+                Expanded(child: _buildUserList(context)),
               ],
             ),
           );
@@ -308,83 +314,82 @@ class UsersPage extends StatelessWidget {
   }
 
   Widget _buildSearchField(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(
-        top: 16, left: 16, right: 16, bottom: 16),
-    child: TextFormField(
-      style: context.textTheme.bodySmall,
-      onChanged: (value) {
-        context.read<UserFriendsCubit>().searchFriends(value);
-      } ,
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        hintText: "Search...",
-        hintStyle: TextStyle(
-            color: context.appColors.colorDarkGray),
-        prefixIcon: Icon(
-          Icons.search,
-          color: Colors.grey.shade600,
-          size: 20,
+        padding:
+            const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+        child: TextFormField(
+          style: context.textTheme.bodySmall,
+          onChanged: (value) {
+            context.read<UserFriendsCubit>().searchFriends(value);
+          },
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: "Search...",
+            hintStyle: TextStyle(color: context.appColors.colorDarkGray),
+            prefixIcon: Icon(
+              Icons.search,
+              color: Colors.grey.shade600,
+              size: 20,
+            ),
+            filled: true,
+            fillColor: Colors.grey.shade100,
+            contentPadding: EdgeInsets.all(8),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey.shade100)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey.shade100)),
+          ),
         ),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        contentPadding: EdgeInsets.all(8),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:
-            BorderSide(color: Colors.grey.shade100)),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide:
-            BorderSide(color: Colors.grey.shade100)),
-      ),
-    ),
-  );
+      );
 
   Widget _buildUserList(BuildContext context) {
-    return BlocBuilder<UserFriendsCubit, UserFriendsState>(builder: (context, state) {
-
-      if (state.usersFiltered.isEmpty) {
-        return Center(
-          child: Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.only(bottom: 200),
-            child: Text(context.l10n.text_no_users),
-          ),
-        );
-      }
-
-      return ListView.builder(
-        itemCount: state.usersFiltered.length,
-        itemBuilder: (context, index) {
-          final user = state.usersFiltered[index];
-          return GestureDetector(
-            onTap: () {
-              _handlePressed(user, context);
-            },
+    return BlocBuilder<UserFriendsCubit, UserFriendsState>(
+      builder: (context, state) {
+        if (state.usersFiltered.isEmpty) {
+          return Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              child: Row(
-                children: [
-                  _buildAvatar(user),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(user.firstName ?? '',
-                          style: context.textTheme.labelSmall?.copyWith(
-                              color: context.appColors.textBlack)),
-                      const SizedBox(height: 2),
-                      Text("Management",
-                          style: context.textTheme.bodySmall?.copyWith(
-                              color: context.appColors.colorDarkGray)),
-                    ],
-                  ),
-                ],
-              ),
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(bottom: 200),
+              child: Text(context.l10n.text_no_users),
             ),
           );
-                },
-      );
-    },);
+        }
+
+        return ListView.builder(
+          itemCount: state.usersFiltered.length,
+          itemBuilder: (context, index) {
+            final user = state.usersFiltered[index];
+            return GestureDetector(
+              onTap: () {
+                _handlePressed(user, context);
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                child: Row(
+                  children: [
+                    _buildAvatar(user),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(user.firstName ?? '',
+                            style: context.textTheme.labelSmall
+                                ?.copyWith(color: context.appColors.textBlack)),
+                        const SizedBox(height: 2),
+                        Text("Management",
+                            style: context.textTheme.bodySmall?.copyWith(
+                                color: context.appColors.colorDarkGray)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
 

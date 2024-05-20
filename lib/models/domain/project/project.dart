@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 
 import '../../dtos/project/project.dart';
+import '../../dtos/user/user_dto.dart';
 
 part 'project.freezed.dart';
 
@@ -13,10 +13,10 @@ class Project with _$Project {
   const factory Project({
     required String id,
     required String name,
-    required User owner,
+    required UserDto owner,
     required String description,
     required DateTime startDate,
-    required List<User> members,
+    required List<UserDto> members,
     DateTime? endDate,
     required ProjectStatus status,
     required DateTime createdAt,
@@ -24,7 +24,7 @@ class Project with _$Project {
     required Color color,
   }) = _Project;
 
-  factory Project.fromProjectDto(ProjectDto projectDto, User owner, List<User> members,) {
+  factory Project.fromProjectDto(ProjectDto projectDto, UserDto owner, List<UserDto> members,) {
     return Project(
       id: projectDto.id,
       name: projectDto.name,
@@ -50,13 +50,13 @@ class Task with _$Task {
     DateTime? endDate,
     required TaskStatus status,
     required Project projectId,
-    User? assignee,
-    required User author,
+    UserDto? assignee,
+    required UserDto author,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Task;
 
-  factory Task.fromTaskDto(TaskDto taskDto, Project project, User? assignee, User author) {
+  factory Task.fromTaskDto(TaskDto taskDto, Project project, UserDto? assignee, UserDto author) {
     return Task(
       id: taskDto.id,
       name: taskDto.name,
@@ -100,12 +100,12 @@ class Comment with _$Comment {
     required String id,
     required String content,
     required Task task,
-    required User author,
+    required UserDto author,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Comment;
 
-  factory Comment.fromCommentDto(CommentDto commentDto, Task task, User author) {
+  factory Comment.fromCommentDto(CommentDto commentDto, Task task, UserDto author) {
     return Comment(
       id: commentDto.id,
       content: commentDto.content,

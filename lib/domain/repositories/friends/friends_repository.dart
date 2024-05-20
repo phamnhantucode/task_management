@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../../models/domain/friend/friend.dart';
 import '../../../models/dtos/friend/friend.dart';
+import '../../../models/dtos/user/user_dto.dart';
 import '../users/users_repository.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 
 class FriendRepository {
   FriendRepository._privateConstructor();
@@ -143,7 +141,7 @@ class FriendRepository {
     );
   }
 
-  Stream<List<User>>  getListUserFriendsStream(String userId) {
+  Stream<List<UserDto>>  getListUserFriendsStream(String userId) {
     return _friendCollection
         .where('isTargetAccepted', isEqualTo: true)
         .snapshots()

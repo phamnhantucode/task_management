@@ -3,6 +3,7 @@ import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:room_master_app/common/constant.dart';
 import 'package:room_master_app/domain/exception/auth_exception.dart';
 import 'package:room_master_app/domain/repositories/auth/auth_repository.dart';
+import 'package:room_master_app/domain/repositories/users/users_repository.dart';
 import 'package:room_master_app/models/common/pair.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -39,6 +40,7 @@ class AuthRepositoryImpl implements AuthRepository {
       );
       userCredentials.user?..updateDisplayName(displayName)..updatePhotoURL(AppConstants.defaultUriAvatar);
       await FirebaseChatCore.instance.createUserInFirestore(types.User(id: userCredentials.user!.uid, imageUrl: AppConstants.defaultUriAvatar, firstName: displayName));
+      UsersRepository.instance.updateUserId(userCredentials.user!.uid);
       return Pair(null, true);
     } on FirebaseAuthException catch (e) {
       final authException = AuthException.handleFirebaseAuthException(e);

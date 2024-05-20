@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../../models/domain/project/project.dart';
 import '../../../models/dtos/project/project.dart';
+import '../../../models/dtos/user/user_dto.dart';
 import '../users/users_repository.dart';
 
 class ProjectRepository {
@@ -30,7 +32,7 @@ class ProjectRepository {
       if (owner == null) throw Exception('Owner not found');
       var members = (await Future.wait(projectDto.membersId
           .map((id) => UsersRepository.instance.getUserById(id))))
-          .whereType<types.User>()
+          .whereType<UserDto>()
           .toList();
       return Project.fromProjectDto(projectDto, owner, members);
     }).toList());
@@ -46,7 +48,7 @@ class ProjectRepository {
       if (owner == null) throw Exception('Owner not found');
       var members = (await Future.wait(projectDto.membersId
           .map((id) => UsersRepository.instance.getUserById(id))))
-          .whereType<types.User>()
+          .whereType<UserDto>()
           .toList();
       return Project.fromProjectDto(projectDto, owner, members);
     }).toList()));
@@ -68,7 +70,7 @@ class ProjectRepository {
           if (owner == null) throw Exception('Owner not found');
           var members = (await Future.wait(projectDto.membersId
               .map((id) => UsersRepository.instance.getUserById(id))))
-              .whereType<types.User>()
+              .whereType<UserDto>()
               .toList();
 
           return Project.fromProjectDto(projectDto, owner, members);
@@ -86,7 +88,7 @@ class ProjectRepository {
           if (owner == null) throw Exception('Owner not found');
           var members = (await Future.wait(projectDto.membersId
               .map((id) => UsersRepository.instance.getUserById(id))))
-              .whereType<types.User>()
+              .whereType<UserDto>()
               .toList();
           return Project.fromProjectDto(projectDto, owner, members);
         }).toList()));
@@ -104,7 +106,7 @@ class ProjectRepository {
     if (owner == null) throw Exception('Owner not found');
     var members = (await Future.wait(projectDto.membersId
         .map((id) => UsersRepository.instance.getUserById(id))))
-        .whereType<types.User>()
+        .whereType<UserDto>()
         .toList();
     return Project.fromProjectDto(projectDto, owner, members);
   }
@@ -122,7 +124,7 @@ class ProjectRepository {
         if (owner == null) throw Exception('Owner not found');
         var members = (await Future.wait(projectDto.membersId
             .map((id) => UsersRepository.instance.getUserById(id))))
-            .whereType<types.User>()
+            .whereType<UserDto>()
             .toList();
         return Project.fromProjectDto(projectDto, owner, members);
       },
@@ -264,20 +266,20 @@ class ProjectRepository {
         .delete();
   }
 
-  Stream<List<types.User>> getProjectMembers(String projectId) {
+  Stream<List<UserDto>> getProjectMembers(String projectId) {
     return _projectCollection
         .doc(projectId)
         .snapshots()
         .asyncMap((snapshot) => _getProjectMembers(snapshot));
   }
 
-  Future<List<types.User>> _getProjectMembers(DocumentSnapshot snapshot) async {
+  Future<List<UserDto>> _getProjectMembers(DocumentSnapshot snapshot) async {
     final project =
     ProjectDto.fromJson(snapshot.data() as Map<String, dynamic>);
     final membersId = project.membersId;
 
     final usersRepository = UsersRepository.instance;
-    final members = <types.User>[];
+    final members = <UserDto>[];
     for (final memberId in membersId) {
       final member = await usersRepository.getUserById(memberId);
       if (member != null) {

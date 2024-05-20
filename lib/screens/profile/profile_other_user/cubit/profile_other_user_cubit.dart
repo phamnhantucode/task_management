@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:room_master_app/main.dart';
 
 import '../../../../common/utils/utils.dart';
 import '../../../../domain/repositories/friends/friends_repository.dart';
 import '../../../../models/dtos/friend/friend.dart';
+import '../../../../models/dtos/user/user_dto.dart';
 
 part 'profile_other_user_cubit.freezed.dart';
 part 'profile_other_user_state.dart';
@@ -13,7 +13,7 @@ part 'profile_other_user_state.dart';
 class ProfileOtherUserCubit extends Cubit<ProfileOtherUserState> {
   ProfileOtherUserCubit() : super(const ProfileOtherUserState());
 
-  void update(User otherUser, String userId) async {
+  void update(UserDto otherUser, String userId) async {
     final friend =
         await FriendRepository.instance.getFriend(userId, otherUser.id);
     if (friend == null) {
@@ -31,7 +31,7 @@ class ProfileOtherUserCubit extends Cubit<ProfileOtherUserState> {
     }
   }
 
-  void addFriend(User otherUser, String userId) async {
+  void addFriend(UserDto otherUser, String userId) async {
     await FriendRepository.instance.addFriend(FriendDto(
       createdAt: getCurrentTimestamp,
       updatedAt: getCurrentTimestamp,
@@ -43,7 +43,7 @@ class ProfileOtherUserCubit extends Cubit<ProfileOtherUserState> {
     update(otherUser, userId);
   }
 
-  void acceptFriend(User otherUser, String userId) async {
+  void acceptFriend(UserDto otherUser, String userId) async {
     final listWaitedAccept =
         await FriendRepository.instance.getListWaitedAccepted(userId);
     FriendRepository.instance.acceptFriend(listWaitedAccept

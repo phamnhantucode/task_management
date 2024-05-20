@@ -10,6 +10,7 @@ import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 
 import '../../models/domain/project/project.dart';
+import '../../models/dtos/user/user_dto.dart';
 import '../project_detail/project_detail_screen.dart';
 
 class TaskContainer extends StatelessWidget {
@@ -191,7 +192,7 @@ class TaskContainer2 extends StatelessWidget {
     );
   }
 
-  Widget buildMembers(List<types.User?> members, BuildContext context) {
+  Widget buildMembers(List<UserDto?> members, BuildContext context) {
     final settings = RestrictedAmountPositions(
         maxAmountItems: 5,
         maxCoverage: 0.3,
