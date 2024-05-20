@@ -2,8 +2,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:room_master_app/domain/repositories/project/project_repository.dart';
 import 'package:room_master_app/models/domain/project/project.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 import 'package:room_master_app/models/dtos/project/project.dart';
+
+import '../../../models/dtos/user/user_dto.dart';
 
 part 'task_detail_cubit.freezed.dart';
 part 'task_detail_state.dart';
@@ -25,7 +26,7 @@ class TaskDetailCubit extends Cubit<TaskDetailInfoState> {
       ));
     }
 }
-  void assignTaskFor(User user, bool isCurrentAdded) {
+  void assignTaskFor(UserDto user, bool isCurrentAdded) {
     if (isCurrentAdded) {
       emit(state.copyWith(assignee: null));
     } else {

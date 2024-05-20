@@ -17,6 +17,8 @@ import 'package:room_master_app/screens/project_detail/project_detail_screen.dar
 import 'package:room_master_app/screens/task_detai_real/cubit/task_detail_cubit.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
 
+import '../../models/dtos/user/user_dto.dart';
+
 class TaskDetail extends StatefulWidget {
   const TaskDetail({super.key, required this.taskInfo});
   final Task taskInfo;
@@ -101,7 +103,7 @@ class TaskDetailState extends State<TaskDetail> {
   }
 
   buildMembers(BuildContext contextState, TaskDetailInfoState state) {
-    onPressAdd(User user, bool isCurrentAdded) {
+    onPressAdd(UserDto user, bool isCurrentAdded) {
       contextState.read<TaskDetailCubit>().assignTaskFor(user, isCurrentAdded);
     }
 

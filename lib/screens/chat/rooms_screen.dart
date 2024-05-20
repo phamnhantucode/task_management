@@ -63,7 +63,7 @@ class _RoomsScreenState extends State<RoomsScreen> {
           (element) => element.id != _user!.uid,
         );
 
-        color = getUserAvatarNameColor(otherUser);
+        color = Colors.white;
       } catch (e) {
         //
       }

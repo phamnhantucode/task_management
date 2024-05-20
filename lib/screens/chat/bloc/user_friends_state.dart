@@ -4,9 +4,9 @@ part of 'user_friends_cubit.dart';
 class UserFriendsState with _$UserFriendsState {
   const factory UserFriendsState({
     @Default([]) List<Friend> friends,
-    @Default([]) List<User> users,
-    @Default([]) List<User> usersFiltered,
-    @Default([]) List<User> usersSearched,
+    @Default([]) List<UserDto> users,
+    @Default([]) List<UserDto> usersFiltered,
+    @Default([]) List<UserDto> usersSearched,
     @Default([]) List<Friend> userWaitingAccepts,
     @Default(false) bool isLoading,
     @Default(false) bool isSearching,

@@ -12,6 +12,7 @@ import '../blocs/authentication/authentication_cubit.dart';
 import '../blocs/setting/setting_cubit.dart';
 import '../common/di/service_locator.dart';
 import '../domain/repositories/auth/auth_repository.dart';
+import '../domain/service/notification_service.dart';
 import '../l10n/l10n.dart';
 import '../navigation/navigation.dart';
 import '../theme/theme.dart';
@@ -85,6 +86,7 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    NotificationService.instance.requestPermission();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
         overlays: [SystemUiOverlay.bottom]);
     WidgetsBinding.instance.addObserver(this);

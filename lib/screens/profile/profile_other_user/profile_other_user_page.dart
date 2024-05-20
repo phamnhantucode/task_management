@@ -9,10 +9,12 @@ import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
 import 'package:room_master_app/screens/profile/profile_other_user/cubit/profile_other_user_cubit.dart';
 
+import '../../../models/dtos/user/user_dto.dart';
+
 class ProfileOtherUserPage extends StatelessWidget {
   const ProfileOtherUserPage({super.key, required this.otherUser});
 
-  final User otherUser;
+  final UserDto otherUser;
 
   @override
   Widget build(BuildContext context) {

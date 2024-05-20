@@ -5,6 +5,7 @@ import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/models/domain/project/project.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
 import 'package:room_master_app/screens/listing/list_projects/list_project_screen.dart';
+import 'package:room_master_app/screens/notification/notification_screen.dart';
 import 'package:room_master_app/screens/profile/edit_profile_screen.dart';
 import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:room_master_app/screens/task_detai_real/task_detail.dart';
@@ -32,6 +33,7 @@ abstract class NavigationPath {
   static const profile = '/profile';
   static const editProfile = '/editProfile';
   static const changePassword = '/changePassword';
+  static const notification = '/notification';
 }
 
 abstract class AppRouter {
@@ -116,6 +118,9 @@ abstract class AppRouter {
         path: NavigationPath.register,
         builder: (_, __) => const RegisterScreen(),
       ),
+      GoRoute(
+          path: NavigationPath.notification,
+          builder: (_, __) => const NotificationScreen())
     ],
     errorBuilder: (_, __) => const ErrorScreen(),
   );

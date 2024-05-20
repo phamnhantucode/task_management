@@ -128,5 +128,11 @@
     "text_name": "Name",
     "text_close": "Close",
     "text_hint_search": "Search...",
-    "text_member": "Member"
+    "text_member": "Member",
+    "text_someone_had_change_project_name": "{someone} changed the name of {project} to {newName}",
+    "text_notification": "Notification",
+    "text_mark_all_as_read": "Mark all as read",
+    "text_change_project_name": "changed the name of project",
+    "text_to": "to",
+    "text_you_currently_have_no_something": "You currently have no {something}"
 }

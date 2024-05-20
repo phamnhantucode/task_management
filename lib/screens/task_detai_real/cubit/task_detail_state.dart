@@ -3,7 +3,7 @@ part of 'task_detail_cubit.dart';
 @freezed
 class TaskDetailInfoState with _$TaskDetailInfoState {
   const factory TaskDetailInfoState({
-    User? assignee,
+    UserDto? assignee,
     TaskStatus? status,
     @Default('') String taskName,
     @Default('') String description,
