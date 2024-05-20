@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:collection/collection.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
@@ -32,6 +31,7 @@ import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart
 import '../../domain/service/cloud_storage_service.dart';
 import '../../domain/service/file_picker_service.dart';
 import '../../models/domain/project/project.dart';
+import '../../models/dtos/user/user_dto.dart';
 import '../component/bottomsheet/upload_attachment_page.dart';
 import '../component/tm_elevated_button.dart';
 import '../component/tm_text_field.dart';
@@ -724,7 +724,7 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
         ));
   }
 
-  _buildAvatar(types.User user) {
+  _buildAvatar(UserDto user) {
     final color = getUserAvatarNameColor(user);
     final hasImage = user.imageUrl != null;
     final name = user.firstName ?? '';
@@ -750,10 +750,10 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
   buildInvitableList(BuildContext contextProjectDetail) {
     return BlocBuilder<UserFriendsCubit, UserFriendsState>(
       builder: (context, state) {
-        List<types.User> invitableUsers = state.usersFiltered.isEmpty
+        List<UserDto> invitableUsers = state.usersFiltered.isEmpty
             ? []
             : state.usersFiltered.where((user) {
-                String fullName = "${user.firstName} ${user.lastName}";
+                String fullName = "${user.firstName}";
                 return fullName.contains(searchMemberText);
               }).toList();
         if (invitableUsers.isEmpty) {
@@ -770,7 +770,7 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
           itemCount: invitableUsers.length,
           itemBuilder: (context, index) {
             final user = invitableUsers[index];
-            List<types.User> listMember =
+            List<UserDto> listMember =
                 contextProjectDetail.watch<ProjectDetailCubit>().state.members;
             bool isCurrentAdded = listMember
                     .firstWhereOrNull((element) => element.id == user.id) !=

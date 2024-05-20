@@ -97,9 +97,9 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
     emit(state.copyWith(projectDescription: value));
   }
 
-  void updateMembers(User user, bool isCurrentAdded) {
+  void updateMembers(UserDto user, bool isCurrentAdded) {
     if (isCurrentAdded) {
-      List<User> listTmp = List.from(state.members);
+      List<UserDto> listTmp = List.from(state.members);
       listTmp.removeWhere((element) => element.id == user.id);
       emit(state.copyWith(members: listTmp));
     } else {

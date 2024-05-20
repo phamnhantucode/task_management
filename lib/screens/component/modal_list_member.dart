@@ -6,8 +6,9 @@ import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:room_master_app/screens/task_detai_real/cubit/task_detail_cubit.dart';
+
+import '../../models/dtos/user/user_dto.dart';
 
 class ModalListMember extends StatefulWidget {
   const ModalListMember(
@@ -18,7 +19,7 @@ class ModalListMember extends StatefulWidget {
       required this.taskId});
   final String projectId;
   final String taskId;
-  final types.User? assignee;
+  final UserDto? assignee;
   final Function onPressAdd;
   @override
   State<StatefulWidget> createState() => ModalListMemberState();
@@ -74,7 +75,7 @@ class ModalListMemberState extends State<ModalListMember> {
     );
   }
 
-  _buildAvatar(types.User user) {
+  _buildAvatar(UserDto user) {
     final color = getUserAvatarNameColor(user);
     final hasImage = user.imageUrl != null;
     final name = user.firstName ?? '';
@@ -98,12 +99,12 @@ class ModalListMemberState extends State<ModalListMember> {
   }
 
   buildInvitableList(BuildContext contextProjectDetail) {
-    List<types.User> invitableUsers = contextProjectDetail
+    List<UserDto> invitableUsers = contextProjectDetail
         .watch<ProjectDetailCubit>()
         .state
         .members
         .where((user) {
-      String fullName = "${user.firstName} ${user.lastName}";
+      String fullName = "${user.firstName}";
       return fullName.contains(searchMemberText);
     }).toList();
     if (invitableUsers.isEmpty) {

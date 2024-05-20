@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/constant.dart';
@@ -97,24 +98,42 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                                       style: context.textTheme.titleMedium,
                                     ),
                                   ),
-                                  DropdownButton<String>(
-                                    value: 'Week',
-                                    onChanged: (newValue) {
-                                      print(newValue);
-                                    },
-                                    items: <String>[
-                                      'Week',
-                                      'Day',
-                                    ].map<DropdownMenuItem<String>>(
-                                        (String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value,
-                                            style:
-                                                context.textTheme.bodyMedium),
-                                      );
-                                    }).toList(),
-                                    alignment: Alignment.centerLeft,
+                                  Container(
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[100],
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 15,
+                                          right: 15,
+                                          top: 5,
+                                          bottom: 5),
+                                      child: DropdownButton<String>(
+                                          value: 'Week',
+                                          onChanged: (newValue) {
+                                            print(newValue);
+                                          },
+                                          items: <String>[
+                                            'Week',
+                                            'Day',
+                                          ].map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value,
+                                                  style: context
+                                                      .textTheme.bodyMedium),
+                                            );
+                                          }).toList(),
+                                          alignment: Alignment.centerLeft,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          underline: Container(),
+                                          icon:
+                                              Icon(Icons.keyboard_arrow_down)),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -140,7 +159,7 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                                           width: 180,
                                           child: LinearProgressIndicator(
                                             value: amountTask / maxNumber,
-                                            minHeight: 12,
+                                            minHeight: 20,
                                             color: context.appColors.primary,
                                             backgroundColor:
                                                 context.appColors.bgGrayLight,
@@ -158,12 +177,14 @@ class TaskDetailScreenState extends State<StatisticScreen> {
                             ],
                           ),
                         ),
+                        Container(),
                         SpacerComponent.m(),
                         Text(
                           context.l10n.latest_activities,
                           style: context.textTheme.titleMedium,
                         ),
                         ListView.builder(
+                          shrinkWrap: true,
                           itemBuilder: (context, index) => TaskContainer(
                             context: context,
                             isShadowContainer: false,
@@ -183,3 +204,20 @@ class TaskDetailScreenState extends State<StatisticScreen> {
     );
   }
 }
+
+class ChartColumnData {
+  ChartColumnData(this.x, this.y, this.y1);
+  final String x;
+  final double? y;
+  final double? y1;
+}
+
+final List<ChartColumnData> chartData = <ChartColumnData>[
+  ChartColumnData("Mo", 2, 1),
+  ChartColumnData("Tu", 2, 0.5),
+  ChartColumnData("We", 2, 1.5),
+  ChartColumnData("Th", 2, 0.8),
+  ChartColumnData("Fr", 2, 1.3),
+  ChartColumnData("Sa", 2, 1.8),
+  ChartColumnData("Su", 2, 0.9)
+];
