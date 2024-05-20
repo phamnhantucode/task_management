@@ -4,15 +4,11 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:from_css_color/from_css_color.dart';
-import 'package:intl/intl.dart';
-import 'package:json_path/json_path.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../app/app.dart';
+import '../../models/dtos/user/user_dto.dart';
 
 void _setTimeAgoLocales() {
   timeago.setLocaleMessages('en', timeago.EnMessages());
@@ -65,7 +61,7 @@ void showSnackbar(
   );
 }
 
-Color getUserAvatarNameColor(types.User user) {
+Color getUserAvatarNameColor(UserDto user) {
   final index = user.id.hashCode % colors.length;
   return colors[index];
 }

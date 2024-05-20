@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/assets/app_assets.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
@@ -14,6 +15,10 @@ import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
+import '../../domain/service/notification_service.dart';
+import '../../main.dart';
+import '../../models/dtos/notification/action.dart';
+import '../../models/dtos/notification/notification_dto.dart';
 import 'bloc/home_screen_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -154,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 IconButton(
                   onPressed: () {
-                    //show up notification screen here
+                    context.push(NavigationPath.notification);
                   },
                   icon: const Icon(Icons.notifications_outlined),
                 ),

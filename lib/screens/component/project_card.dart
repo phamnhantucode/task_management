@@ -14,6 +14,7 @@ import '../../domain/repositories/project/project_repository.dart';
 import '../../domain/service/qr_action.dart';
 import '../../models/domain/project/project.dart';
 import '../../models/dtos/project/project.dart';
+import '../../models/dtos/user/user_dto.dart';
 import '../../navigation/navigation.dart';
 import '../project_detail/project_detail_screen.dart';
 import 'dialog/qr_dialog.dart';
@@ -219,7 +220,7 @@ class ProjectCard extends StatelessWidget {
   }
 
 
-  Widget buildMembers(List<types.User> members) {
+  Widget buildMembers(List<UserDto> members) {
     final settings = RestrictedAmountPositions(
         maxAmountItems: 5,
         maxCoverage: 0.3,

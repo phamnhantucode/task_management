@@ -2,7 +2,6 @@ import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
@@ -12,6 +11,7 @@ import 'package:room_master_app/screens/component/tm_elevated_button.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_screen.dart';
 
 import '../../models/domain/project/project.dart';
+import '../../models/dtos/user/user_dto.dart';
 
 class RequestJoinProjectPage extends StatelessWidget {
   const RequestJoinProjectPage({super.key, required this.project});
@@ -149,7 +149,7 @@ class RequestJoinProjectPage extends StatelessWidget {
     );
   }
 
-  Widget buildMembers(List<types.User?> members, BuildContext context) {
+  Widget buildMembers(List<UserDto?> members, BuildContext context) {
     final settings = RestrictedAmountPositions(
         maxAmountItems: 5,
         maxCoverage: 0.3,

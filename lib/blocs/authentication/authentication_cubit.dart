@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/domain/repositories/auth/auth_repository.dart';
+import 'package:room_master_app/domain/repositories/users/users_repository.dart';
 
 import '../../domain/exception/auth_exception.dart';
 
@@ -23,13 +24,15 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
         emit(state.copyWith(
             status: LoginStatus.success,
             isAuthenticated: result.second,
-            expireTime: isAutoLogin ? state.expireTime :
-                getCurrentTimestamp.add(const Duration(days: 1))));
+            expireTime: isAutoLogin
+                ? state.expireTime
+                : getCurrentTimestamp.add(const Duration(days: 1))));
         setUser();
       } else {
         emit(state.copyWith(
             status: LoginStatus.failure,
-            authException: result.first, isAuthenticated: result.second));
+            authException: result.first,
+            isAuthenticated: result.second));
       }
     }
   }
@@ -46,7 +49,8 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
     } else {
       emit(state.copyWith(
           status: LoginStatus.failure,
-          authException: result.first, isAuthenticated: result.second));
+          authException: result.first,
+          isAuthenticated: result.second));
     }
     setUser();
     reloadUser();
@@ -79,10 +83,16 @@ final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
       AuthenticationState.fromJson(json);
 
   @override
-  Map<String, dynamic>? toJson(AuthenticationState state) =>state.toJson();
+  Map<String, dynamic>? toJson(AuthenticationState state) => state.toJson();
 
   void clean() {
     emit(state.copyWith(authException: null, status: LoginStatus.unknown));
+  }
+
+  void updateDeviceToken(String token) {
+    UsersRepository.instance
+        .updateUserNotificationToken(state.user?.uid ?? '', token);
+    UsersRepository.instance.updateUserId(state.user?.uid ?? '');
   }
 }
 

@@ -1,10 +1,9 @@
 import 'dart:io';
-
+import 'package:collection/collection.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +19,7 @@ import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/models/dtos/project/project.dart';
+import 'package:room_master_app/screens/chat/bloc/user_friends_cubit.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
@@ -31,6 +31,7 @@ import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart
 import '../../domain/service/cloud_storage_service.dart';
 import '../../domain/service/file_picker_service.dart';
 import '../../models/domain/project/project.dart';
+import '../../models/dtos/user/user_dto.dart';
 import '../component/bottomsheet/upload_attachment_page.dart';
 import '../component/tm_elevated_button.dart';
 import '../component/tm_text_field.dart';
@@ -47,6 +48,8 @@ class ProjectDetailScreen extends StatefulWidget {
 
 class ProjectDetailScreenState extends State<ProjectDetailScreen> {
   bool _isEditing = false;
+  String searchMemberText = '';
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -569,6 +572,8 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
               child: TMIconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {
+                  BuildContext contextProject = context;
+
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
@@ -581,13 +586,17 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                             children: [
                               SpacerComponent.l(),
                               buildSearch(),
-                              UserDialog()
+                              SpacerComponent.l(),
+                              Expanded(
+                                  child: buildInvitableList(contextProject))
                             ],
                           ),
                         ),
                       );
                     },
-                  );
+                  ).then((value) {
+                    contextProject.read<ProjectDetailCubit>().updateProject();
+                  });
                 },
                 backgroundColor: context.appColors.buttonEnable.withAlpha(20),
               )),
@@ -598,13 +607,20 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
   buildSearch() {
     return SearchBar(
+      controller: _searchController,
       padding: const MaterialStatePropertyAll<EdgeInsets>(
           EdgeInsets.symmetric(horizontal: 16.0)),
-      onTap: () {},
-      onChanged: (_) {},
-      leading: const Icon(Icons.search),
+      onChanged: (text) {
+        setState(() {
+          searchMemberText = text;
+        });
+      },
+      trailing: <Widget>[
+        IconButton(onPressed: () {}, icon: const Icon(Icons.search))
+      ],
     );
   }
+
   bool _isUploading = false;
 
   void _handleFileSelection(BuildContext context) async {
@@ -652,7 +668,9 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
             ],
           );
         } else {
-          return Text('There is nothing here', style: context.textTheme.bodyMedium?.copyWith(color: context.appColors.textGray));
+          return Text('There is nothing here',
+              style: context.textTheme.bodyMedium
+                  ?.copyWith(color: context.appColors.textGray));
         }
       },
     );
@@ -704,6 +722,102 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                   size: 20,
                 ),
         ));
+  }
+
+  _buildAvatar(UserDto user) {
+    final color = getUserAvatarNameColor(user);
+    final hasImage = user.imageUrl != null;
+    final name = user.firstName ?? '';
+
+    return Container(
+      width: 48,
+      height: 48,
+      margin: const EdgeInsets.only(right: 16),
+      child: CircleAvatar(
+        backgroundColor: hasImage ? Colors.transparent : color,
+        backgroundImage: hasImage ? NetworkImage(user.imageUrl!) : null,
+        radius: 20,
+        child: !hasImage
+            ? Text(
+                name.isEmpty ? '' : name[0].toUpperCase(),
+                style: const TextStyle(color: Colors.white),
+              )
+            : null,
+      ),
+    );
+  }
+
+  buildInvitableList(BuildContext contextProjectDetail) {
+    return BlocBuilder<UserFriendsCubit, UserFriendsState>(
+      builder: (context, state) {
+        List<UserDto> invitableUsers = state.usersFiltered.isEmpty
+            ? []
+            : state.usersFiltered.where((user) {
+                String fullName = "${user.firstName}";
+                return fullName.contains(searchMemberText);
+              }).toList();
+        if (invitableUsers.isEmpty) {
+          return Center(
+            child: Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(bottom: 200),
+              child: Text(context.l10n.text_no_users),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: invitableUsers.length,
+          itemBuilder: (context, index) {
+            final user = invitableUsers[index];
+            List<UserDto> listMember =
+                contextProjectDetail.watch<ProjectDetailCubit>().state.members;
+            bool isCurrentAdded = listMember
+                    .firstWhereOrNull((element) => element.id == user.id) !=
+                null;
+            return GestureDetector(
+              onTap: () {},
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                child: Row(
+                  children: [
+                    _buildAvatar(user),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(user.firstName ?? '',
+                              style: context.textTheme.labelSmall?.copyWith(
+                                  color: context.appColors.textBlack)),
+                          const SizedBox(height: 2),
+                          Text("Management",
+                              style: context.textTheme.bodySmall?.copyWith(
+                                  color: context.appColors.colorDarkGray)),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          contextProjectDetail
+                              .read<ProjectDetailCubit>()
+                              .updateMembers(user, isCurrentAdded);
+                          print(contextProjectDetail
+                              .read<ProjectDetailCubit>()
+                              .state
+                              .members);
+                        },
+                        icon: Icon(isCurrentAdded
+                            ? Icons.remove_circle_outline
+                            : Icons.add_circle_outline))
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
 
