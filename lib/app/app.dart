@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:room_master_app/domain/repositories/test_repository.dart';
 import 'package:room_master_app/screens/bottom_navigation/bloc/bottom_nav_cubit.dart';
+import 'package:room_master_app/screens/chat/bloc/user_friends_cubit.dart';
 import 'package:room_master_app/theme/app_colors.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
@@ -44,6 +45,7 @@ final class App extends StatelessWidget {
           BlocProvider(
             create: (context) => SettingCubit(),
           ),
+          BlocProvider(create: (context) => UserFriendsCubit()..init())
         ],
         child: const AppView(),
       ),

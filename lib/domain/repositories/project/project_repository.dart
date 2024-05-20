@@ -44,7 +44,7 @@ class ProjectRepository {
     projects.addAll(await Future.wait(memberProjects.docs.map((doc) async {
       var projectDto = ProjectDto.fromJson(doc.data() as Map<String, dynamic>);
       var owner =
-      await UsersRepository.instance.getUserById(projectDto.ownerId);
+          await UsersRepository.instance.getUserById(projectDto.ownerId);
       if (owner == null) throw Exception('Owner not found');
       var members = (await Future.wait(projectDto.membersId
           .map((id) => UsersRepository.instance.getUserById(id))))
@@ -61,7 +61,7 @@ class ProjectRepository {
         .where('ownerId', isEqualTo: userId)
         .snapshots()
         .asyncMap(
-          (snapshot) async {
+      (snapshot) async {
         var projects = await Future.wait(snapshot.docs.map((doc) async {
           var projectDto =
           ProjectDto.fromJson(doc.data() as Map<String, dynamic>);
@@ -82,9 +82,9 @@ class ProjectRepository {
 
         projects.addAll(await Future.wait(memberProjects.docs.map((doc) async {
           var projectDto =
-          ProjectDto.fromJson(doc.data() as Map<String, dynamic>);
+              ProjectDto.fromJson(doc.data() as Map<String, dynamic>);
           var owner =
-          await UsersRepository.instance.getUserById(projectDto.ownerId);
+              await UsersRepository.instance.getUserById(projectDto.ownerId);
           if (owner == null) throw Exception('Owner not found');
           var members = (await Future.wait(projectDto.membersId
               .map((id) => UsersRepository.instance.getUserById(id))))
@@ -113,14 +113,14 @@ class ProjectRepository {
 
   Stream<Project> getProjectStream(String projectId) {
     return _projectCollection.doc(projectId).snapshots().asyncMap(
-          (snapshot) async {
+      (snapshot) async {
         var data = snapshot.data();
         if (data == null) {
           throw Exception('Project not found');
         }
         var projectDto = ProjectDto.fromJson(data as Map<String, dynamic>);
         var owner =
-        await UsersRepository.instance.getUserById(projectDto.ownerId);
+            await UsersRepository.instance.getUserById(projectDto.ownerId);
         if (owner == null) throw Exception('Owner not found');
         var members = (await Future.wait(projectDto.membersId
             .map((id) => UsersRepository.instance.getUserById(id))))
@@ -146,16 +146,14 @@ class ProjectRepository {
         .doc(projectId)
         .collection('attachments')
         .snapshots()
-        .map((snapshot) =>
-        snapshot.docs
-            .map((doc) =>
-            Attachment.fromAttachmentDto(
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Attachment.fromAttachmentDto(
                 AttachmentDto.fromJson(doc.data())))
             .toList());
   }
 
-  Future<void> updateAttachmentInProject(String projectId,
-      AttachmentDto attachment) {
+  Future<void> updateAttachmentInProject(
+      String projectId, AttachmentDto attachment) {
     return _projectCollection
         .doc(projectId)
         .collection('attachments')
@@ -163,8 +161,8 @@ class ProjectRepository {
         .update(attachment.toJson());
   }
 
-  Future<void> deleteAttachmentFromProject(String projectId,
-      String attachmentId) {
+  Future<void> deleteAttachmentFromProject(
+      String projectId, String attachmentId) {
     return _projectCollection
         .doc(projectId)
         .collection('attachments')
@@ -189,10 +187,10 @@ class ProjectRepository {
         .asyncMap((snapshot) async {
       return await Future.wait(snapshot.docs.map((doc) async {
         final taskDto = TaskDto.fromJson(doc.data());
-        final assignee = await UsersRepository.instance.getUserById(
-            taskDto.assigneeId ?? '');
-        final author = await UsersRepository.instance.getUserById(
-            taskDto.authorId);
+        final assignee = await UsersRepository.instance
+            .getUserById(taskDto.assigneeId ?? '');
+        final author =
+            await UsersRepository.instance.getUserById(taskDto.authorId);
         if (author == null) throw Exception('Author not found');
         final project = await getProject(taskDto.projectId);
         return Task.fromTaskDto(taskDto, project, assignee, author);
@@ -217,8 +215,8 @@ class ProjectRepository {
   }
 
   // CRUD for Attachments in Task
-  Future<void> addAttachmentToTask(String projectId, String taskId,
-      AttachmentDto attachment) {
+  Future<void> addAttachmentToTask(
+      String projectId, String taskId, AttachmentDto attachment) {
     return _projectCollection
         .doc(projectId)
         .collection('tasks')
@@ -228,24 +226,22 @@ class ProjectRepository {
         .set(attachment.toJson());
   }
 
-  Stream<List<Attachment>> getAttachmentsFromTaskStream(String projectId,
-      String taskId) {
+  Stream<List<Attachment>> getAttachmentsFromTaskStream(
+      String projectId, String taskId) {
     return _projectCollection
         .doc(projectId)
         .collection('tasks')
         .doc(taskId)
         .collection('attachments')
         .snapshots()
-        .map((snapshot) =>
-        snapshot.docs
-            .map((doc) =>
-            Attachment.fromAttachmentDto(
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Attachment.fromAttachmentDto(
                 AttachmentDto.fromJson(doc.data())))
             .toList());
   }
 
-  Future<void> updateAttachmentInTask(String projectId, String taskId,
-      AttachmentDto attachment) {
+  Future<void> updateAttachmentInTask(
+      String projectId, String taskId, AttachmentDto attachment) {
     return _projectCollection
         .doc(projectId)
         .collection('tasks')
@@ -255,8 +251,8 @@ class ProjectRepository {
         .update(attachment.toJson());
   }
 
-  Future<void> deleteAttachmentFromTask(String projectId, String taskId,
-      String attachmentId) {
+  Future<void> deleteAttachmentFromTask(
+      String projectId, String taskId, String attachmentId) {
     return _projectCollection
         .doc(projectId)
         .collection('tasks')
@@ -275,7 +271,7 @@ class ProjectRepository {
 
   Future<List<UserDto>> _getProjectMembers(DocumentSnapshot snapshot) async {
     final project =
-    ProjectDto.fromJson(snapshot.data() as Map<String, dynamic>);
+        ProjectDto.fromJson(snapshot.data() as Map<String, dynamic>);
     final membersId = project.membersId;
 
     final usersRepository = UsersRepository.instance;
@@ -302,20 +298,43 @@ class ProjectRepository {
     });
   }
 
+  Future<Task?> getTaskDetail(String projectId, String taskId) async {
+    final querySnapshot = await _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .get();
+    if (querySnapshot != null) {
+      TaskDto taskDto =
+          TaskDto.fromJson(querySnapshot.data() as Map<String, dynamic>);
+
+      final project = await getProject(taskDto.projectId);
+      final author =
+          await UsersRepository.instance.getUserById(taskDto.authorId);
+      final assignee =
+          await UsersRepository.instance.getUserById(taskDto.assigneeId ?? '');
+      if (author == null) throw Exception('Author not found');
+
+      return Task.fromTaskDto(taskDto, project, assignee, author);
+    } else {
+      print("No task found with the given ID");
+    }
+
+    return null;
+  }
+
   Future<List<Task>> getTasksAssignedToUser(String userId) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collectionGroup('tasks')
         .where('assigneeId', isEqualTo: userId)
         .get();
 
-
-    return Future.wait(querySnapshot.docs.map((doc) async
-    {
+    return Future.wait(querySnapshot.docs.map((doc) async {
       final taskDto = TaskDto.fromJson(doc.data());
-      final assignee = await UsersRepository.instance.getUserById(
-          taskDto.assigneeId ?? '');
-      final author = await UsersRepository.instance.getUserById(
-          taskDto.authorId);
+      final assignee =
+          await UsersRepository.instance.getUserById(taskDto.assigneeId ?? '');
+      final author =
+          await UsersRepository.instance.getUserById(taskDto.authorId);
       if (author == null) throw Exception('Author not found');
       final project = await getProject(taskDto.projectId);
 
@@ -332,10 +351,10 @@ class ProjectRepository {
         .asyncMap((snapshot) async {
       return await Future.wait(snapshot.docs.map((doc) async {
         final taskDto = TaskDto.fromJson(doc.data());
-        final assignee = await UsersRepository.instance.getUserById(
-            taskDto.assigneeId ?? '');
-        final author = await UsersRepository.instance.getUserById(
-            taskDto.authorId);
+        final assignee = await UsersRepository.instance
+            .getUserById(taskDto.assigneeId ?? '');
+        final author =
+            await UsersRepository.instance.getUserById(taskDto.authorId);
         if (author == null) throw Exception('Author not found');
         final project = await getProject(taskDto.projectId);
         return Task.fromTaskDto(taskDto, project, assignee, author);

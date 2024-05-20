@@ -32,9 +32,11 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
       emit(state.copyWith(
           project: project,
           projectName: project.name,
+          members: project.members,
           projectDescription: project.description,
           startDate: project.startDate,
-          endDate: project.endDate));
+          endDate: project.endDate
+      ));
     });
     tasksSubscription = ProjectRepository.instance
         .getTasksFromProjectStream(projectId)
@@ -71,13 +73,13 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
         state.project!.copyWith(
             name: state.projectName,
             description: state.projectDescription,
+            members: state.members,
             startDate: state.startDate!,
             endDate: state.endDate)));
     if (state.tasks.length != state.tasksCopy.length) {
       for (var task in state.tasks) {
         if (!state.tasksCopy.contains(task)) {
-          ProjectRepository.instance
-              .deleteTaskFromProject(task.id, state.project!.id);
+          ProjectRepository.instance.deleteTaskFromProject(task.id, state.project!.id);
         }
       }
     }
@@ -95,8 +97,18 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
     emit(state.copyWith(projectDescription: value));
   }
 
+  void updateMembers(User user, bool isCurrentAdded) {
+    if (isCurrentAdded) {
+      List<User> listTmp = List.from(state.members);
+      listTmp.removeWhere((element) => element.id == user.id);
+      emit(state.copyWith(members: listTmp));
+    } else {
+      emit(state.copyWith(members: [...state.members, user]));
+    }
+  }
+
   void cancelUpdateProject() {
-    if (state.project != null) {
+    if(state.project != null) {
       emit(state.copyWith(
         projectName: state.project!.name,
         projectDescription: state.project!.description,
@@ -109,20 +121,17 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
 
   void deleteTask(String taskId) {
     // ProjectRepository.instance.deleteTaskFromProject(taskId, state.project?.id ?? '');
-    emit(state.copyWith(
-        tasksCopy:
-            state.tasksCopy.where((task) => task.id != taskId).toList()));
+    emit(state.copyWith(tasksCopy: state.tasksCopy.where((task) => task.id != taskId).toList()));
   }
 
   void addAttachment({required String fileName, required String downloadUrl}) {
-    ProjectRepository.instance.addAttachmentToProject(
-        state.project!.id,
-        AttachmentDto(
-            id: uuid.v1(),
-            fileName: fileName,
-            filePath: downloadUrl,
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now()));
+    ProjectRepository.instance.addAttachmentToProject(state.project!.id, AttachmentDto(
+        id: uuid.v1(),
+        fileName: fileName,
+        filePath: downloadUrl,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now()
+    ));
   }
 
   void removeAttachment(Attachment attachment) {
