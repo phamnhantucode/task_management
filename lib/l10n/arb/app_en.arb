@@ -134,5 +134,8 @@
     "text_mark_all_as_read": "Mark all as read",
     "text_change_project_name": "changed the name of project",
     "text_to": "to",
-    "text_you_currently_have_no_something": "You currently have no {something}"
+    "text_you_currently_have_no_something": "You currently have no {something}",
+    "text_invite": "Invite",
+    "text_notes": "Notes",
+    "text_add_attachment": "Add attachment"
 }

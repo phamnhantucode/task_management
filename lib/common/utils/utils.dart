@@ -92,3 +92,10 @@ bool isTodayLessThan(DateTime startDate, DateTime endDate) {
   final now = DateTime.now();
   return now.isBefore(startDate) && now.isBefore(endDate);
 }
+
+bool isImageFile(String path) {
+  final ext = path.split('.').last;
+  return imageExt.contains(ext);
+}
+
+const List<String> imageExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];

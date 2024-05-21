@@ -4,9 +4,10 @@ import 'package:room_master_app/common/assets/app_assets.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 
 class EmptyPage extends StatelessWidget {
-  const EmptyPage({super.key, this.object});
+  const EmptyPage({super.key, this.object, this.height = 450});
 
   final String? object;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +15,17 @@ class EmptyPage extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(AppAssets.iconEmpty, width: 150, height: 150,),
+          SvgPicture.asset(
+            AppAssets.iconEmpty,
+            width: height / 3,
+            height: height / 3,
+          ),
           const SizedBox(height: 16),
-          Text(object == null ? 'No data found' : context.l10n.text_you_currently_have_no_something(object!), style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+              object == null
+                  ? 'No data found'
+                  : context.l10n.text_you_currently_have_no_something(object!),
+              style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );
