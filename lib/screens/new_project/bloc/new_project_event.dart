@@ -36,3 +36,23 @@ class CleanNewProject extends NewProjectEvent {
 class ClearNewProject extends NewProjectEvent {
   const ClearNewProject();
 }
+
+class DueDateChange extends NewProjectEvent {
+
+  final DateTime endDate;
+
+  const DueDateChange(this.endDate);
+
+  @override
+  List<Object> get props => [endDate];
+}
+
+class DueTimeChange extends NewProjectEvent {
+
+  final DateTime endTime;
+
+  const DueTimeChange(this.endTime);
+
+  @override
+  List<Object> get props => [endTime];
+}

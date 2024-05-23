@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/l10n/l10n.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../common/assets/app_assets.dart';
 import '../../common/utils/utils.dart';
@@ -26,19 +25,16 @@ class ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = Colors.blue.shade100;
+    final bgColor = project.color;
     final color = getContrastColor(bgColor);
     return Padding(
-      padding:
-      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: GestureDetector(
         onTap: () {
-          context.push(NavigationPath.detailProject,
-              extra: project.id);
+          context.push(NavigationPath.detailProject, extra: project.id);
         },
         child: Container(
-          padding: const EdgeInsets.symmetric(
-              vertical: 16, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           decoration: BoxDecoration(
               color: bgColor,
               image: const DecorationImage(
@@ -57,21 +53,24 @@ class ProjectCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      project.name,
-                      style: context.textTheme.labelMedium
-                          ?.copyWith(color: color),
+                    Expanded(
+                      child: Text(
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        project.name,
+                        style: context.textTheme.labelMedium
+                            ?.copyWith(color: color),
+                      ),
                     ),
                     GestureDetector(
                       onTap: () {
                         showQrDialog(
                             context,
-                            context
-                                .l10n.text_project_qr_invite_code,
-                            context.l10n
-                                .text_content_qr_project_dialog,
+                            context.l10n.text_project_qr_invite_code,
+                            context.l10n.text_content_qr_project_dialog,
                             QrAction.joinProject.encode(project.id));
                       },
                       child: const Icon(
@@ -131,31 +130,26 @@ class ProjectCard extends StatelessWidget {
                 Column(
                   children: [
                     Padding(
-                      padding:
-                      const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           StreamBuilder<List<Task>>(
                               stream: ProjectRepository.instance
-                                  .getTasksFromProjectStream(
-                                  project.id),
+                                  .getTasksFromProjectStream(project.id),
                               builder: (context, snapshot) {
                                 if (snapshot.data != null) {
                                   return Text(
                                     '${snapshot.data!.where((element) => element.status == TaskStatus.completed).length.toString().padLeft(2, '0')}/${snapshot.data!.length.toString().padLeft(2, '0')}',
-                                    style: context
-                                        .textTheme.bodySmall
+                                    style: context.textTheme.bodySmall
                                         ?.copyWith(color: color),
                                   );
                                 } else {
                                   return const Text('00/00');
                                 }
                               }),
-                          Expanded(
-                              child: buildMembers(project.members)),
+                          Expanded(child: buildMembers(project.members)),
                         ],
                       ),
                     ),
@@ -171,10 +165,8 @@ class ProjectCard extends StatelessWidget {
                                 value: snapshot.data ?? 0,
                                 minHeight: 5,
                                 color: color,
-                                backgroundColor:
-                                Colors.grey.shade200,
-                                borderRadius:
-                                BorderRadius.circular(4),
+                                backgroundColor: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(4),
                               );
                             },
                           ),
@@ -194,21 +186,21 @@ class ProjectCard extends StatelessWidget {
                         ),
                         Expanded(
                             child: FutureBuilder<double>(
-                              future: ProjectRepository.instance
-                                  .getProjectProgressFuture(project.id),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<double> snapshot) {
-                                return Text(
-                                  context.l10n.text_percent_with_number(
-                                      snapshot.data != null
-                                          ? (snapshot.data! * 100)
+                          future: ProjectRepository.instance
+                              .getProjectProgressFuture(project.id),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<double> snapshot) {
+                            return Text(
+                              context.l10n.text_percent_with_number(
+                                  snapshot.data != null
+                                      ? (snapshot.data! * 100)
                                           .toStringAsFixed(0)
-                                          : ''),
-                                  textAlign: TextAlign.end,
-                                  style: context.textTheme.labelSmall,
-                                );
-                              },
-                            ))
+                                      : ''),
+                              textAlign: TextAlign.end,
+                              style: context.textTheme.labelSmall,
+                            );
+                          },
+                        ))
                       ],
                     ),
                   ],
@@ -218,7 +210,6 @@ class ProjectCard extends StatelessWidget {
       ),
     );
   }
-
 
   Widget buildMembers(List<UserDto> members) {
     final settings = RestrictedAmountPositions(

@@ -20,7 +20,6 @@ class ScaffoldWithNav extends StatefulWidget {
 }
 
 class _ScaffoldWithNavState extends State<ScaffoldWithNav> {
-
   @override
   void initState() {
     NotificationService.instance.foregroundMessage();
@@ -33,18 +32,24 @@ class _ScaffoldWithNavState extends State<ScaffoldWithNav> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: context.appColors.defaultBgContainer,
-      body: BlocBuilder<BottomNavCubit, NavFunction>(
-        builder: (context, state) => switch (state) {
-          NavFunction.home => const HomeScreen(),
-          NavFunction.calendar => const UpcomingTaskScreen(),
-          NavFunction.chat => const RoomsScreen(),
-          NavFunction.profile => const ProfileScreen(),
+      body: BlocListener<BottomNavCubit, NavFunction>(
+        listener: (context, state) {
+          context.read<AuthenticationCubit>().reloadUser();
         },
+        child: BlocBuilder<BottomNavCubit, NavFunction>(
+          builder: (context, state) => switch (state) {
+            NavFunction.home => const HomeScreen(),
+            NavFunction.calendar => const UpcomingTaskScreen(),
+            NavFunction.chat => const RoomsScreen(),
+            NavFunction.profile => const ProfileScreen(),
+          },
+        ),
       ),
       bottomNavigationBar: const NavBar(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

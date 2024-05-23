@@ -6,6 +6,7 @@ import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
+import 'package:room_master_app/screens/component/empty_page.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/upcoming_task/bloc/upcoming_task_cubit.dart';
 
@@ -52,6 +53,7 @@ final class UpcomingTaskScreen extends StatelessWidget {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,7 +100,8 @@ final class UpcomingTaskScreen extends StatelessWidget {
                             ],
                           ),
                           SpacerComponent.l(),
-                          buildListTask(context)
+                          Expanded(child: buildListTask(context)),
+                          SpacerComponent.l(),
                         ],
                       ),
                     ),
@@ -119,14 +122,22 @@ final class UpcomingTaskScreen extends StatelessWidget {
           return const Center(
             child: CircularProgressIndicator(),
           );
-        } else {
-          return Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) =>
-                    TaskContainer2(task: state.selectedDateTasks[index]),
-                itemCount: state.selectedDateTasks.length,
-              ));
         }
+
+        if (state.selectedDateTasks.isEmpty) {
+          return const Center(child: EmptyPage(object: 'tasks',));
+        }
+
+
+        return Expanded(
+            child: ListView.builder(
+              itemBuilder: (context, index) =>
+                  Padding(            padding: const EdgeInsets.only(bottom: 16),
+
+                    child: TaskContainer2(task: state.selectedDateTasks[index]),
+                  ),
+              itemCount: state.selectedDateTasks.length,
+            ));
       },
     );
   }

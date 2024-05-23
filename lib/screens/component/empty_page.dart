@@ -17,8 +17,8 @@ class EmptyPage extends StatelessWidget {
         children: [
           SvgPicture.asset(
             AppAssets.iconEmpty,
-            width: height / 3,
-            height: height / 3,
+            width: height / 4,
+            height: height / 4,
           ),
           const SizedBox(height: 16),
           Text(
@@ -31,3 +31,33 @@ class EmptyPage extends StatelessWidget {
     );
   }
 }
+
+class EmptyPage2 extends StatelessWidget {
+  const EmptyPage2({super.key, this.object, this.height = 450});
+
+  final String? object;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            AppAssets.iconDinosaur,
+            width: height / 4,
+            height: height / 4,
+          ),
+          const SizedBox(height: 8),
+          Text(
+              object == null
+                  ? 'No data found'
+                  : context.l10n.text_you_currently_have_no_something(object!),
+              style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+

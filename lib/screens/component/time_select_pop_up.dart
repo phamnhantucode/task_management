@@ -33,7 +33,7 @@ final class TMSelectTime extends StatelessWidget {
           border: Border.all(color: context.appColors.borderColor),
         ),
         padding:
-        EdgeInsetsDirectional.symmetric(vertical: 16.h, horizontal: 24.w),
+        EdgeInsetsDirectional.symmetric(vertical: 16.h, horizontal: 16.w),
         child: Row(
           children: [
             Expanded(child: Text(time.timeFormat)),

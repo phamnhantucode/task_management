@@ -45,7 +45,6 @@ final class App extends StatelessWidget {
           BlocProvider(
             create: (context) => SettingCubit(),
           ),
-          BlocProvider(create: (context) => UserFriendsCubit()..init())
         ],
         child: const AppView(),
       ),

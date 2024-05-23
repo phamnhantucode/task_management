@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -23,6 +25,8 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
   late StreamSubscription<Project> projectSubscription;
   late StreamSubscription<List<Task>> tasksSubscription;
   late StreamSubscription<List<Attachment>> attachmentsSubscription;
+
+  late StreamSubscription<List<Notes>> notesSubscription;
   late StreamSubscription<double> progressSubscription;
 
   void init(String projectId) async {
@@ -37,6 +41,11 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
           startDate: project.startDate,
           endDate: project.endDate
       ));
+    });
+    notesSubscription = ProjectRepository.instance
+        .getAllNotes(projectId)
+        .listen((notes) {
+      emit(state.copyWith(notes: notes));
     });
     tasksSubscription = ProjectRepository.instance
         .getTasksFromProjectStream(projectId)
@@ -97,13 +106,13 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
     emit(state.copyWith(projectDescription: value));
   }
 
-  void updateMembers(UserDto user, bool isCurrentAdded) {
-    if (isCurrentAdded) {
-      List<UserDto> listTmp = List.from(state.members);
-      listTmp.removeWhere((element) => element.id == user.id);
-      emit(state.copyWith(members: listTmp));
+  void updateMembers(List<UserDto> users, bool isAdd) {
+    if (isAdd) {
+      emit(state.copyWith(members: state.members + users));
+      updateProject();
     } else {
-      emit(state.copyWith(members: [...state.members, user]));
+      emit(state.copyWith(members: state.members.where((member) => !users.contains(member)).toList()));
+      updateProject();
     }
   }
 
@@ -165,5 +174,30 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
         NotificationService.instance.pushNotification(state.project!.owner.notificationToken ?? '', notification);
       });
     }
+  }
+
+  void updateProjectColor(Color color) {
+    ProjectRepository.instance.updateProjectColor(state.project!.id, color);
+  }
+
+  void addProjectNote(String note) async {
+    ProjectRepository.instance.addProjectNote(state.project!.id, NotesDto(
+        id: uuid.v1(),
+        content: note,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now()
+    ));
+  }
+
+  void onChangeDueDate(DateTime e) {
+    ProjectRepository.instance.updateProjectDueDate(state.project!.id, e);
+  }
+
+  void leaveProject(String? uid) {
+    ProjectRepository.instance.leaveProject(state.project!.id, uid);
+  }
+
+  void deleteProject() {
+      ProjectRepository.instance.deleteProject(state.project!.id);
   }
 }

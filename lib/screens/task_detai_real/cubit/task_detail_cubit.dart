@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:bloc/bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:room_master_app/domain/repositories/project/project_repository.dart';
 import 'package:room_master_app/models/domain/project/project.dart';
 import 'package:room_master_app/models/dtos/project/project.dart';
@@ -20,17 +21,17 @@ class TaskDetailCubit extends Cubit<TaskDetailInfoState> {
         taskName: task.name,
         description: task.description,
         status: task.status,
-        assignee: task.assignee,
+        assignees: task.assignees,
         startDate: task.startDate,
         endDate: task.endDate,
       ));
     }
 }
   void assignTaskFor(UserDto user, bool isCurrentAdded) {
-    if (isCurrentAdded) {
-      emit(state.copyWith(assignee: null));
-    } else {
-      emit(state.copyWith(assignee: user));
-    }
+    // if (isCurrentAdded) {
+    //   emit(state.copyWith(assignee: null));
+    // } else {
+    //   emit(state.copyWith(assignee: user));
+    // }
   }
 }

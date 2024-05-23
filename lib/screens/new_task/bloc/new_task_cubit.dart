@@ -46,13 +46,13 @@ class NewTaskCubit extends Cubit<NewTaskState> {
               description: state.description,
               status: TaskStatus.notStarted,
               projectId: projectId,
-              assigneeId: state.assigneeId,
               authorId: FirebaseAuth.instance.currentUser!.uid,
               startDate: state.startDate ?? getCurrentTimestamp,
               endDate: state.endDate ??
                   getCurrentTimestamp.add(const Duration(days: 1)),
               createdAt: getCurrentTimestamp,
-              updatedAt: getCurrentTimestamp));
+              updatedAt: getCurrentTimestamp,
+              assigneeIds: []));
       emit(state.copyWith(status: NewTaskSubmitStatus.success));
     } catch (e) {
       emit(state.copyWith(

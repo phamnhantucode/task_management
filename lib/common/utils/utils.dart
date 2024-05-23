@@ -79,7 +79,7 @@ Color getBackgroundColor(int current, int max) {
 
 Color getContrastColor(Color color) {
   double brightness = color.red * 0.2126 + color.green * 0.7152 + color.blue * 0.0772;
-  return brightness > 200 ? Colors.black : Colors.white;
+  return brightness > 180 ? Colors.black : Colors.white;
 }
 
 

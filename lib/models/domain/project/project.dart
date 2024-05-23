@@ -50,13 +50,13 @@ class Task with _$Task {
     DateTime? endDate,
     required TaskStatus status,
     required Project projectId,
-    UserDto? assignee,
+    required List<UserDto> assignees,
     required UserDto author,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Task;
 
-  factory Task.fromTaskDto(TaskDto taskDto, Project project, UserDto? assignee, UserDto author) {
+  factory Task.fromTaskDto(TaskDto taskDto, Project project, List<UserDto?> assignees, UserDto author) {
     return Task(
       id: taskDto.id,
       name: taskDto.name,
@@ -65,7 +65,7 @@ class Task with _$Task {
       endDate: taskDto.endDate,
       status: taskDto.status,
       projectId: project,
-      assignee: assignee,
+      assignees: assignees.where((element) => element != null).toList().cast<UserDto>(),
       author: author,
       createdAt: taskDto.createdAt,
       updatedAt: taskDto.updatedAt,
@@ -113,6 +113,25 @@ class Comment with _$Comment {
       author: author,
       createdAt: commentDto.createdAt,
       updatedAt: commentDto.updatedAt,
+    );
+  }
+}
+
+@freezed
+class Notes with _$Notes {
+  const factory Notes({
+    required String id,
+    required String content,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _Notes;
+
+  factory Notes.fromNotesDto(NotesDto notesDto,) {
+    return Notes(
+      id: notesDto.id,
+      content: notesDto.content,
+      createdAt: notesDto.createdAt,
+      updatedAt: notesDto.updatedAt,
     );
   }
 }

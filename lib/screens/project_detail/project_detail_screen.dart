@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,7 @@ import 'package:room_master_app/screens/component/empty_page.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/tm_icon_button.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart';
+import 'package:room_master_app/screens/project_detail/project_menu_action_page.dart';
 
 import '../../domain/service/cloud_storage_service.dart';
 import '../../domain/service/file_picker_service.dart';
@@ -110,7 +112,7 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
               ),
             ],
           ),
-          endDrawer: const Placeholder(),
+          endDrawer: const ProjectMenuActionPage(),
           body: SafeArea(
               child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -202,10 +204,12 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
       children: [
         Row(
           children: [
-            Text(
-              context.watch<ProjectDetailCubit>().state.projectName,
-              style:
-                  context.textTheme.titleLarge?.copyWith(color: contrastColor),
+            Expanded(
+              child: Text(
+                context.watch<ProjectDetailCubit>().state.projectName,
+                style:
+                    context.textTheme.titleLarge?.copyWith(color: contrastColor),
+              ),
             ),
             _isEditing
                 ? buildEditIcon(
@@ -255,11 +259,11 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
             ),
             GestureDetector(
               onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (context) => buildInvitableList(context),
-                );
+                // showModalBottomSheet(
+                //   context: context,
+                //   isScrollControlled: true,
+                //   builder: (context) => buildInvitableList(context),
+                // );
               },
               child: Container(
                 padding:
@@ -813,76 +817,26 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
     );
   }
 
-  buildInvitableList(BuildContext contextProjectDetail) {
-    return BlocBuilder<UserFriendsCubit, UserFriendsState>(
-      builder: (context, state) {
-        List<UserDto> invitableUsers = state.usersFiltered.isEmpty
-            ? []
-            : state.usersFiltered.where((user) {
-                String fullName = "${user.firstName}";
-                return fullName.contains(searchMemberText);
-              }).toList();
-        if (invitableUsers.isEmpty) {
-          return Center(
-            child: Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(bottom: 200),
-              child: Text(context.l10n.text_no_users),
-            ),
-          );
-        }
+  Widget buildNote(BuildContext context, Notes note, Color color) {
+    return Material(
+      color: Colors.transparent,
+      clipBehavior: Clip.antiAlias,
+      shape: const BeveledRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0))),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          note.content,
+          style: context.textTheme.bodySmall?.copyWith(color: getContrastColor(color.withOpacity(0.5))),
 
-        return ListView.builder(
-          itemCount: invitableUsers.length,
-          itemBuilder: (context, index) {
-            final user = invitableUsers[index];
-            List<UserDto> listMember =
-                contextProjectDetail.watch<ProjectDetailCubit>().state.members;
-            bool isCurrentAdded = listMember
-                    .firstWhereOrNull((element) => element.id == user.id) !=
-                null;
-            return GestureDetector(
-              onTap: () {},
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                child: Row(
-                  children: [
-                    _buildAvatar(user),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(user.firstName ?? '',
-                              style: context.textTheme.labelSmall?.copyWith(
-                                  color: context.appColors.textBlack)),
-                          const SizedBox(height: 2),
-                          Text("Management",
-                              style: context.textTheme.bodySmall?.copyWith(
-                                  color: context.appColors.colorDarkGray)),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          contextProjectDetail
-                              .read<ProjectDetailCubit>()
-                              .updateMembers(user, isCurrentAdded);
-                          print(contextProjectDetail
-                              .read<ProjectDetailCubit>()
-                              .state
-                              .members);
-                        },
-                        icon: Icon(isCurrentAdded
-                            ? Icons.remove_circle_outline
-                            : Icons.add_circle_outline))
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -939,13 +893,34 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
         Expanded(
           child: TabBarView(controller: _tabController, children: [
             buildTasks(),
-            EmptyPage(
-              height: 300,
-              object: context.l10n.text_notes,
-            )
+            buildNotes(context)
           ]),
         ),
       ],
+    );
+  }
+
+  Widget buildNotes(BuildContext context) {
+    return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
+      builder: (context, state) {
+        if (state.notes.isEmpty) {
+          return EmptyPage(
+            height: 300,
+            object: context.l10n.text_tasks,
+          );
+        } else {
+          return Container(
+            color: Colors.grey.shade100,
+            child: ListView.builder(
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: buildNote(context, state.notes[index], getBackgroundColor(index, state.notes.length)),
+              ),
+              itemCount: state.notes.length,
+            ),
+          );
+        }
+      },
     );
   }
 }
