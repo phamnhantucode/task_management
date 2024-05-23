@@ -47,7 +47,7 @@ dependencies:
   get_it: ^7.2.0
 
   # Network
-  dio: ^5.4.3+1
+  dio: ^5.0.0
 
   # Logging
   logger: ^2.0.2+1
@@ -101,6 +101,7 @@ dependencies:
   firebase_messaging: ^14.9.2
   app_settings: ^5.1.1
   flutter_local_notifications: ^17.1.2
+  flutter_launcher_icons: ^0.13.1
   flutter_colorpicker: ^1.1.0
   popover: ^0.3.0+1
   modal_bottom_sheet: ^3.0.0
@@ -157,3 +158,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/ic_app.png"
