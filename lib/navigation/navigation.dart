@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/models/domain/project/project.dart';
+import 'package:room_master_app/screens/add_member/add_member_page.dart';
 import 'package:room_master_app/screens/bottom_navigation/scaffold_with_nav_screen.dart';
 import 'package:room_master_app/screens/listing/list_projects/list_project_screen.dart';
 import 'package:room_master_app/screens/notification/notification_screen.dart';
@@ -12,6 +13,7 @@ import 'package:room_master_app/screens/task_detai_real/task_detail.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
+import '../models/dtos/user/user_dto.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
 import '../screens/listing/list_tasks/list_tasks_screen.dart';
@@ -34,6 +36,7 @@ abstract class NavigationPath {
   static const editProfile = '/editProfile';
   static const changePassword = '/changePassword';
   static const notification = '/notification';
+  static const addMember = '/addMember';
 }
 
 abstract class AppRouter {
@@ -120,7 +123,10 @@ abstract class AppRouter {
       ),
       GoRoute(
           path: NavigationPath.notification,
-          builder: (_, __) => const NotificationScreen())
+          builder: (_, __) => const NotificationScreen()),
+      GoRoute(
+          path: NavigationPath.addMember,
+          builder: (context, state) => AddMemberPage(usersAlreadySelected: GoRouterState.of(context).extra! as List<UserDto>,)),
     ],
     errorBuilder: (_, __) => const ErrorScreen(),
   );

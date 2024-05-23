@@ -93,7 +93,7 @@ class TaskDto with _$TaskDto {
     DateTime? endDate,
     required TaskStatus status,
     required String projectId,
-    String? assigneeId,
+    required List<String> assigneeIds,
     required String authorId,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -126,4 +126,17 @@ class CommentDto with _$CommentDto {
     required DateTime updatedAt,
   }) = _CommentDto;
   factory CommentDto.fromJson(Map<String, dynamic> json) => _$CommentDtoFromJson(json);
+}
+
+@freezed
+class NotesDto with _$NotesDto {
+  const factory NotesDto({
+    required String id,
+    required String content,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _NotesDto;
+
+  factory NotesDto.fromJson(Map<String, dynamic> json) => _$NotesDtoFromJson(json);
+
 }

@@ -41,7 +41,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.text_edit_profile),
+        title: Text(context.l10n.text_change_password),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

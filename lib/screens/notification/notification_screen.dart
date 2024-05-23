@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -284,20 +285,26 @@ class _NotificationScreenState extends State<NotificationScreen>
                         color: context.appColors.textGray,
                       ),
                     ),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          AppAssets.iconFolder,
-                          width: 14,
-                          color: context.appColors.textGray,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          notification.target.name,
-                          style: context.textTheme.bodySmall
-                              ?.copyWith(color: context.appColors.textGray),
-                        )
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            AppAssets.iconFolder,
+                            width: 14,
+                            color: context.appColors.textGray,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              notification.target.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: context.textTheme.bodySmall
+                                  ?.copyWith(color: context.appColors.textGray),
+                            ),
+                          )
+                        ],
+                      ),
                     )
                   ],
                 )

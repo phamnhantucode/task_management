@@ -30,6 +30,7 @@ class NewProjectBloc extends Bloc<NewProjectEvent, NewProjectState> {
           ownerId: FirebaseAuth.instance.currentUser!.uid,
           description: state.description,
           startDate: state.startDate,
+          endDate: state.endDate,
           membersId: [FirebaseAuth.instance.currentUser!.uid],
           status: ProjectStatus.notStarted,
           createdAt: getCurrentTimestamp,
@@ -58,5 +59,14 @@ class NewProjectBloc extends Bloc<NewProjectEvent, NewProjectState> {
     on<ClearNewProject>((event, emit) {
       emit(NewProjectState(startDate: getCurrentTimestamp));
     });
+
+    on<DueDateChange>((event, emit) {
+      emit(state.copyWith(endDate: state.endDate?.copyWith(year: event.endDate.year, month: event.endDate.month, day: event.endDate.day) ?? event.endDate));
+    },);
+
+
+    on<DueTimeChange>((event, emit) {
+      emit(state.copyWith(endDate: state.endDate?.copyWith(hour: event.endTime.hour, minute: event.endTime.minute)));
+    },);
   }
 }

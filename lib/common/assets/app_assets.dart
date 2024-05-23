@@ -13,6 +13,18 @@ abstract class AppAssets {
   static const iconFolder = '$iconAsset/ic_folder.svg';
   static const iconEmpty = '$iconAsset/ic_empty.svg';
   static const iconDoubleCheck = '$iconAsset/ic_double_check.svg';
+  static const iconAddMembers = '$iconAsset/ic_add_members.svg';
+  static const iconBrush = '$iconAsset/ic_brush.svg';
+  static const iconAcceptUser = '$iconAsset/ic_accept_user.svg';
+  static const iconQr = '$iconAsset/ic_qr.svg';
+  static const iconMembers = '$iconAsset/ic_members.svg';
+  static const iconNotifications = '$iconAsset/ic_notifications.svg';
+  static const iconNote = '$iconAsset/ic_note.svg';
+  static const iconDelete = '$iconAsset/ic_delete.svg';
+  static const iconDisable = '$iconAsset/ic_disable.svg';
+  static const iconLeaving = '$iconAsset/ic_leaving.svg';
+  static const iconDueDate = '$iconAsset/ic_due_date.svg';
+  static const iconDinosaur = '$iconAsset/ic_dinosaur.svg';
   static const gifCongrats = '$iconAsset/congrats.gif';
 
   static const imageBgContainer = '$imageAsset/bg_container.png';

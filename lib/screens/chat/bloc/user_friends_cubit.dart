@@ -18,7 +18,7 @@ class UserFriendsCubit extends Cubit<UserFriendsState> {
   late StreamSubscription usersSubscription;
   late StreamSubscription userWaitingAcceptsSubscription;
 
-  void init() {
+  void init({List<UserDto>? userAlreadySelected}) {
     usersSubscription = FriendRepository.instance
         .getAcceptedFriendsStream(
             firebase_auth.FirebaseAuth.instance.currentUser?.uid ?? '')
@@ -40,6 +40,7 @@ class UserFriendsCubit extends Cubit<UserFriendsState> {
                   : true)
               .toList()));
     });
+    emit(state.copyWith(usersSelected: userAlreadySelected?.toList() ?? []));
     userWaitingAcceptsSubscription = FriendRepository.instance
         .getListWaitedAcceptedStream(
             firebase_auth.FirebaseAuth.instance.currentUser?.uid ?? '')
@@ -86,5 +87,16 @@ class UserFriendsCubit extends Cubit<UserFriendsState> {
         usersFiltered: state.users
             .where((element) => element.firstName!.toLowerCase().contains(value.toLowerCase()))
             .toList()));
+  }
+
+  void selectUser(UserDto user) {
+    if (state.usersSelected.contains(user)) {
+      // Cannot add to an unmodifiable list
+      emit(state.copyWith(
+          usersSelected: state.usersSelected.toList()..remove(user)));
+    } else {
+      emit(state.copyWith(
+          usersSelected: state.usersSelected.toList()..add(user)));
+    }
   }
 }

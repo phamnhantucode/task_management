@@ -1,16 +1,20 @@
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/common/utils/utils.dart';
+import 'package:room_master_app/domain/repositories/project/project_repository.dart';
+import 'package:room_master_app/l10n/l10n.dart';
 
 import '../../models/domain/project/project.dart';
 import '../../models/dtos/user/user_dto.dart';
+import '../project_detail/members_page.dart';
 import '../project_detail/project_detail_screen.dart';
 
 class TaskContainer extends StatelessWidget {
@@ -126,68 +130,156 @@ class TaskContainer2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.appColors.defaultBgContainer,
+    return Material(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  overflow: TextOverflow.ellipsis,
-                  task.name,
-                  style: context.textTheme.labelMedium,
-                ),
+      color: context.appColors.defaultBgContainer,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onLongPress: () {
+          //vibrate
+          HapticFeedback.vibrate();
+          showMaterialModalBottomSheet(
+            context: context,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: task.status.color,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 4),
-                child: Text(
-                  task.status.getLocalizationText(context),
-                  style: context.textTheme.bodySmall
-                      ?.copyWith(color: getContrastColor(task.status.color), fontSize: 12),
-                ),
+            ),
+            builder: (context) {
+              return buildTaskActionsBottomSheet(context);
+            },
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      task.name,
+                      style: context.textTheme.labelMedium,
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: task.status.color,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Text(
+                      task.status.getLocalizationText(context),
+                      style: context.textTheme.bodySmall?.copyWith(
+                          color: getContrastColor(task.status.color),
+                          fontSize: 12),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 6,
+              ),
+              Text(
+                task.projectId.name,
+                style: context.textTheme.bodySmall
+                    ?.copyWith(color: context.appColors.buttonEnable),
+              ),
+              buildStartDateEndDate(context),
+              const SizedBox(
+                height: 6,
+              ),
+              Divider(
+                color: context.appColors.borderColor,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                      child: buildMembers(
+                          [...task.assignees, task.author], context)),
+                  const Icon(
+                    Icons.access_time,
+                    color: Colors.grey,
+                    size: 16,
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    '${task.startDate?.timeFormat ?? ' ?? '} - ${task.endDate?.timeFormat ?? ' ?? '}',
+                    style: context.textTheme.bodySmall
+                        ?.copyWith(color: Colors.grey),
+                  ),
+                ],
               )
             ],
           ),
-          Text(
-            task.projectId.name,
-            style: context.textTheme.bodySmall
-                ?.copyWith(color: context.appColors.buttonEnable),
-          ),
-          buildStartDateEndDate(context),
-          Divider(
-            color: context.appColors.borderColor,
-          ),
-          Row(
-            children: [
-              Expanded(
-                  child: buildMembers([task.assignee, task.author], context)),
-              const Icon(
-                Icons.access_time,
-                color: Colors.grey,
-                size: 16,
+        ),
+      ),
+    );
+  }
+
+  SafeArea buildTaskActionsBottomSheet(BuildContext context) {
+    final isOwner =
+        task.author.id == context.read<AuthenticationCubit>().state.user?.uid;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.edit),
               ),
-              const SizedBox(
-                width: 4,
+              title: Text(context.l10n.text_edit_task),
+              onTap: () {},
+            ),
+            if (isOwner)
+              ListTile(
+                leading: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Icon(Icons.delete),
+                ),
+                title: Text(context.l10n.text_delete_task),
+                onTap: () {
+                  ProjectRepository.instance
+                      .deleteTaskFromProject(task.id, task.projectId.id);
+                },
               ),
-              Text(
-                '${task.startDate?.timeFormat ?? ' ?? '} - ${task.endDate?.timeFormat ?? ' ?? '}',
-                style:
-                    context.textTheme.bodySmall?.copyWith(color: Colors.grey),
+            ListTile(
+              leading: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                child: Icon(Icons.supervised_user_circle_outlined),
               ),
-            ],
-          )
-        ],
+              title: Text(isOwner
+                  ? context.l10n.text_add_assignee
+                  : context.l10n.text_assign_to_me),
+              onTap: () async {
+                final newAssignees = await Navigator.of(context).push<List<UserDto>>(
+                  MaterialPageRoute(
+                      //add transition
+                      builder: (innerContext) =>
+                          MembersPage(projectId: task.projectId.id, selectedUsers: task.assignees,)),
+                );
+                if (newAssignees != null && newAssignees.isNotEmpty) {
+                  ProjectRepository.instance.addTaskAssignees(
+                      task.id, task.projectId.id, newAssignees);
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

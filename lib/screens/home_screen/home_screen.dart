@@ -1,13 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/assets/app_assets.dart';
 import 'package:room_master_app/common/extensions/context.dart';
-import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
+import 'package:room_master_app/screens/component/empty_page.dart';
 import 'package:room_master_app/screens/component/project_card.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
@@ -15,10 +17,6 @@ import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
-import '../../domain/service/notification_service.dart';
-import '../../main.dart';
-import '../../models/dtos/notification/action.dart';
-import '../../models/dtos/notification/notification_dto.dart';
 import 'bloc/home_screen_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,66 +32,71 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocProvider(
       create: (context) => HomeScreenCubit()..init(),
       child: Builder(builder: (context) {
-        return SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: context.mediaQuery.viewPadding.top + 16,
-            ),
-            child: Column(
-              children: [
-                _buildTopBar(context),
-                SpacerComponent.l(),
-                _buildBanner(context),
-                SpacerComponent.l(),
-                _buildProjects(context),
-                SpacerComponent.l(),
-                Container(
-                  padding:
-                      const EdgeInsets.only(bottom: 10, left: 12, right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                        bottom: BorderSide(
-                            width: 1, color: context.appColors.borderColor)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Padding(
+          padding: EdgeInsets.only(
+            top: context.mediaQuery.viewPadding.top + 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              _buildTopBar(context),
+              SpacerComponent.l(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      Text(
-                        context.l10n.today_task,
-                        style: const TextStyle(
-                            color: Colors.orangeAccent,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context.push(NavigationPath.listTasks);
-                        },
-                        child: Text(
-                          context.l10n.seeall,
-                          style: context.textTheme.bodyMedium,
+                      _buildBanner(context),
+                      SpacerComponent.l(),
+                      _buildProjects(context),
+                      SpacerComponent.l(),
+                      Container(
+                        padding:
+                        const EdgeInsets.only(bottom: 10, left: 12, right: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                              bottom: BorderSide(
+                                  width: 1, color: context.appColors.borderColor)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              context.l10n.today_task,
+                              style: const TextStyle(
+                                  color: Colors.orangeAccent,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                context.push(NavigationPath.listTasks);
+                              },
+                              child: Text(
+                                context.l10n.seeall,
+                                style: context.textTheme.bodyMedium,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                        ),
+                      ),
+                      Container(
+                        color: Colors.grey.shade100,
+                        height: 400, // fixed height
+                        child: _buildTodayTask(),
+                      ),
+                      SpacerComponent.l(),
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: SizedBox(
-                    height: 400, // fixed height
-                    child: _buildTodayTask(),
-                  ),
-                ),
-                SpacerComponent.l(),
-              ],
-            ),
+              )
+            ],
           ),
         );
       }),
@@ -182,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
+                mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
@@ -201,17 +205,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            CarouselSlider(
-              options: CarouselOptions(
-                disableCenter: true,
-                viewportFraction: 0.88,
-                enlargeCenterPage: false,
-                height: 210,
-              ),
-              items: state.projects.map((item) {
-                return ProjectCard(project: item);
-              }).toList(),
-            )
+            state.projects.isEmpty
+                ? const EmptyPage2(
+                    object: 'projects',
+                  )
+                : CarouselSlider(
+                    options: CarouselOptions(
+                      disableCenter: true,
+                      viewportFraction: 0.88,
+                      enlargeCenterPage: false,
+                      height: 210,
+                    ),
+                    items: state.projects.map((item) {
+                      return ProjectCard(project: item);
+                    }).toList(),
+                  )
           ],
         );
       },
@@ -221,17 +229,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTodayTask() {
     return BlocBuilder<HomeScreenCubit, HomeScreenState>(
       builder: (context, state) {
+        if (state.todayTasks.isEmpty) {
+          return const EmptyPage(object: 'tasks',);
+        }
         return ListView.builder(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
-          itemBuilder: (context, index) => TaskContainer(
-            context: context,
-            isShadowContainer: false,
-            title: state.todayTasks[index].name,
-            content: state.todayTasks[index].projectId.name,
-            backgroundColor: Colors.blue.shade50,
-            iconBackgroundColor: Colors.blue.shade100,
-            contentColor: Colors.blue.shade500,
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TaskContainer2(task: state.todayTasks[index]),
           ),
           itemCount: state.todayTasks.length,
         );

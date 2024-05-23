@@ -306,6 +306,7 @@ class EditAvatarPage extends StatelessWidget {
                   context
                       .read<ProfileBloc>()
                       .add(SetAvatarPath(avatarPath: filePath));
+
                   context.pop();
                 }
               },

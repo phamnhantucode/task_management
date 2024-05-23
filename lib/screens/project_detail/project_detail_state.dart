@@ -8,6 +8,7 @@ class ProjectDetailState with _$ProjectDetailState {
     @Default([]) List<Task> tasksCopy,
     @Default([]) List<Attachment> attachments,
     @Default([]) List<UserDto> members,
+    @Default([]) List<Notes> notes,
     @Default(0.0) double progress,
     @Default('') String projectName,
     @Default('') String projectDescription,

@@ -50,13 +50,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           children: [
             TMTextField(
+              initialText: widget.user.displayName ?? '',
               controller: displayNameTxtController,
-              prefixIcon: SvgPicture.asset(AppAssets.iconUser),
+              prefixIcon: Icon(Icons.person_outline),
               hintText: context.l10n.text_email_placeholder,
               borderColor: context.appColors.buttonEnable,
             ),
             const SizedBox(height: 8,),
             TMTextField(
+              initialText: widget.user.email ?? '',
               controller: emailTxtController,
               prefixIcon: const Icon(Icons.email_outlined),
               hintText: context.l10n.text_email_placeholder,

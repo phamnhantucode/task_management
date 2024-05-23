@@ -19,15 +19,15 @@ Future<T?> showAlertDialog<T>({
         content: Text(content, style: context.textTheme.bodyMedium,),
         actionsAlignment: actionsAlignment,
         actions: [
-          TextButton(
-              onPressed: rightAction,
-              child: Text(
-                context.l10n.text_ok, style: context.textTheme.labelMedium,)),
           if (leftAction != null)
             TextButton(
                 onPressed: leftAction,
                 child: Text(context.l10n.text_cancel,
-                  style: context.textTheme.labelMedium,))
+                  style: context.textTheme.labelMedium,)),
+          TextButton(
+              onPressed: rightAction,
+              child: Text(
+                context.l10n.text_ok, style: context.textTheme.labelMedium,)),
         ],
       );
     },

@@ -79,7 +79,7 @@ Color getBackgroundColor(int current, int max) {
 
 Color getContrastColor(Color color) {
   double brightness = color.red * 0.2126 + color.green * 0.7152 + color.blue * 0.0772;
-  return brightness > 200 ? Colors.black : Colors.white;
+  return brightness > 180 ? Colors.black : Colors.white;
 }
 
 
@@ -92,3 +92,10 @@ bool isTodayLessThan(DateTime startDate, DateTime endDate) {
   final now = DateTime.now();
   return now.isBefore(startDate) && now.isBefore(endDate);
 }
+
+bool isImageFile(String path) {
+  final ext = path.split('.').last;
+  return imageExt.contains(ext);
+}
+
+const List<String> imageExt = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];

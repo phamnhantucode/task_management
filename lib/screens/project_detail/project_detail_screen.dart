@@ -1,11 +1,13 @@
 import 'dart:io';
-import 'package:collection/collection.dart';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -17,16 +19,15 @@ import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
-import 'package:room_master_app/navigation/navigation.dart';
 import 'package:room_master_app/models/dtos/project/project.dart';
 import 'package:room_master_app/screens/chat/bloc/user_friends_cubit.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
+import 'package:room_master_app/screens/component/empty_page.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/tm_icon_button.dart';
-import 'package:room_master_app/screens/component/top_header/primary.dart';
-import 'package:room_master_app/screens/component/user_dialog.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart';
+import 'package:room_master_app/screens/project_detail/project_menu_action_page.dart';
 
 import '../../domain/service/cloud_storage_service.dart';
 import '../../domain/service/file_picker_service.dart';
@@ -46,106 +47,115 @@ class ProjectDetailScreen extends StatefulWidget {
   State<StatefulWidget> createState() => ProjectDetailScreenState();
 }
 
-class ProjectDetailScreenState extends State<ProjectDetailScreen> {
+class ProjectDetailScreenState extends State<ProjectDetailScreen>
+    with SingleTickerProviderStateMixin {
   bool _isEditing = false;
   String searchMemberText = '';
   final TextEditingController _searchController = TextEditingController();
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 2, vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ProjectDetailCubit()..init(widget.projectId),
       child: Builder(builder: (context) {
+        final projectColor =
+            context.watch<ProjectDetailCubit>().state.project?.color;
+        final contrastColor = getContrastColor(projectColor ?? Colors.white);
         return Scaffold(
           resizeToAvoidBottomInset: false,
-          body: SafeArea(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              children: [
-                TopHeader(
-                    title: context.l10n.text_project_detail,
-                    leftAction: () {
-                      context.pop();
-                    }),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: Container(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.orange.shade50,
-                            ),
-                            child: buildProjectCard(context),
-                          ),
-                          SpacerComponent.l(
-                            isVertical: true,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                context.l10n.overview,
-                                style: context.textTheme.titleLarge,
-                              ),
-                              _isEditing
-                                  ? buildEditIcon(
-                                      context,
-                                      onTap: () =>
-                                          showModalEditProjectDescription(
-                                              context),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
-                          ),
-                          SafeArea(
-                              child: Text(
-                            context
-                                    .watch<ProjectDetailCubit>()
-                                    .state
-                                    .project
-                                    ?.description ??
-                                '',
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.textTheme.bodyMedium
-                                ?.copyWith(color: context.appColors.textGray),
-                          )),
-                          const SizedBox(height: 20),
-                          Text(
-                            context.l10n.members,
-                            style: context.textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 10),
-                          buildMembers(),
-                          const SizedBox(height: 20),
-                          Text(
-                            context.l10n.text_attachment,
-                            style: context.textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 10),
-                          buildAttachments(context),
-                          const SizedBox(height: 20),
-                          Text(
-                            context.l10n.text_tasks,
-                            style: context.textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 10),
-                          buildTasks(),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
+          appBar: AppBar(
+            backgroundColor: projectColor,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: contrastColor,
+              ),
+              onPressed: () {
+                context.pop();
+              },
             ),
+            actions: [
+              IconButton(
+                icon: Icon(
+                  Icons.chat_bubble_outline,
+                  color: contrastColor,
+                ),
+                onPressed: () {},
+              ),
+              Builder(
+                builder: (context) {
+                  return IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: contrastColor,
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer(
+
+                      );
+                    },
+                  );
+                }
+              ),
+            ],
+          ),
+          endDrawer: const ProjectMenuActionPage(),
+          body: SafeArea(
+              child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(16),
+                              bottomRight: Radius.circular(16)),
+                          color: context
+                              .watch<ProjectDetailCubit>()
+                              .state
+                              .project
+                              ?.color,
+                        ),
+                        child: buildProjectCard(context),
+                      ),
+                      SpacerComponent.m(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: buildDescription(context),
+                      ),
+                      SpacerComponent.m(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: buildAttachments(context),
+                      ),
+                      SpacerComponent.m(),
+                      SizedBox(height: 500, child: buildTabs(context)),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              )
+            ],
           )),
           floatingActionButton: MyFloatingActionButton(
             projectId: widget.projectId,
@@ -165,40 +175,17 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
     return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
       builder: (context, state) {
         if (state.tasksCopy.isEmpty) {
-          return Center(
-              child: Text(
-            'There is nothing here',
-            style: context.textTheme.bodyMedium
-                ?.copyWith(color: context.appColors.textGray),
-          ));
+          return EmptyPage(
+            height: 300,
+            object: context.l10n.text_tasks,
+          );
         } else {
-          return SizedBox(
-            height: 440,
+          return Container(
+            color: Colors.grey.shade100,
             child: ListView.builder(
-              itemBuilder: (context, index) => TaskContainer(
-                context: context,
-                isShadowContainer: false,
-                title: state.tasksCopy[index].name,
-                content: state.tasksCopy[index].description,
-                backgroundColor: Colors.blue.shade50,
-                iconBackgroundColor: Colors.blue.shade100,
-                contentColor: Colors.blue.shade500,
-                onTap: () {
-                  context.push(NavigationPath.detailTask,
-                      extra: state.tasks[index]);
-                },
-                suffix: _isEditing
-                    ? TMIconButton(
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () {
-                          context
-                              .read<ProjectDetailCubit>()
-                              .deleteTask(state.tasksCopy[index].id);
-                        },
-                        backgroundColor:
-                            context.appColors.buttonEnable.withAlpha(20),
-                      )
-                    : null,
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TaskContainer2(task: state.tasksCopy[index]),
               ),
               itemCount: state.tasksCopy.length,
             ),
@@ -209,14 +196,20 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
   }
 
   Column buildProjectCard(BuildContext context) {
+    final projectColor =
+        context.watch<ProjectDetailCubit>().state.project?.color;
+    final contrastColor = getContrastColor(projectColor ?? Colors.white);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text(
-              context.watch<ProjectDetailCubit>().state.projectName,
-              style: context.textTheme.titleLarge,
+            Expanded(
+              child: Text(
+                context.watch<ProjectDetailCubit>().state.projectName,
+                style:
+                    context.textTheme.titleLarge?.copyWith(color: contrastColor),
+              ),
             ),
             _isEditing
                 ? buildEditIcon(
@@ -226,8 +219,76 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                 : const SizedBox.shrink(),
           ],
         ),
-        const SizedBox(height: 20),
-        buildStartEndDateSection(context),
+        const SizedBox(height: 16),
+        // buildStartEndDateSection(context),
+        Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${context.l10n.text_end_date}:',
+                  style: context.textTheme.bodySmall
+                      ?.copyWith(color: contrastColor.withOpacity(0.9)),
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_month,
+                      size: 18,
+                      color: contrastColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      context
+                              .watch<ProjectDetailCubit>()
+                              .state
+                              .endDate
+                              ?.dateTimeFormat ??
+                          '???',
+                      style: context.textTheme.labelSmall
+                          ?.copyWith(color: contrastColor),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            Expanded(child: buildMembers()),
+            const SizedBox(
+              width: 4,
+            ),
+            GestureDetector(
+              onTap: () {
+                // showModalBottomSheet(
+                //   context: context,
+                //   isScrollControlled: true,
+                //   builder: (context) => buildInvitableList(context),
+                // );
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                decoration: BoxDecoration(
+                  color: context.appColors.buttonEnable,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
+                ),
+                child: Text(
+                  context.l10n.text_invite,
+                  style: context.textTheme.bodyMedium
+                      ?.copyWith(color: context.appColors.textWhite),
+                ),
+              ),
+            ),
+          ],
+        ),
+
         const SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -272,10 +333,10 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
             ),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.check_circle,
                   size: 20,
-                  color: Colors.lightBlueAccent,
+                  color: contrastColor,
                 ),
                 const SizedBox(
                   width: 8,
@@ -285,7 +346,7 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     return Text(
                       '${state.tasksCopy.where((element) => element.status == TaskStatus.completed).length}/${state.tasksCopy.length} tasks',
                       style: context.textTheme.bodyMedium
-                          ?.copyWith(color: context.appColors.textGray),
+                          ?.copyWith(color: contrastColor),
                     );
                   },
                 )
@@ -293,7 +354,7 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
             )
           ],
         ),
-        SpacerComponent.m(
+        SpacerComponent.s(
           isVertical: true,
         ),
         Column(
@@ -301,25 +362,35 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
             Row(
               children: [
                 Expanded(
-                  child: LinearProgressIndicator(
-                    value: context.watch<ProjectDetailCubit>().state.progress,
-                    minHeight: 10,
-                    backgroundColor: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 3,
+                          offset: const Offset(0, 1),
+                        )
+                      ],
+                    ),
+                    child: LinearProgressIndicator(
+                      value: context.watch<ProjectDetailCubit>().state.progress,
+                      minHeight: 8,
+                      backgroundColor: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                 )
               ],
             ),
             const SizedBox(
-              height: 8,
+              height: 4,
             ),
             Row(
               children: [
                 Text(
                   context.l10n.progress,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: context.textTheme.labelSmall
+                      ?.copyWith(color: contrastColor.withOpacity(0.8)),
                 ),
                 Expanded(
                     child: Text(
@@ -330,7 +401,8 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
                           .toInt() *
                       100),
                   textAlign: TextAlign.end,
-                  style: context.textTheme.labelSmall,
+                  style: context.textTheme.labelSmall
+                      ?.copyWith(color: contrastColor.withOpacity(0.8)),
                 ))
               ],
             ),
@@ -546,61 +618,27 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
     );
   }
 
-  buildMembers() {
+  Widget buildMembers() {
     final settings = RestrictedAmountPositions(
-      maxAmountItems: 5,
-      maxCoverage: 0.3,
-      minCoverage: 0.2,
-    );
+        maxAmountItems: 5,
+        maxCoverage: 0.3,
+        minCoverage: 0.2,
+        align: StackAlign.right);
     return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
       builder: (context, state) {
-        return Stack(children: [
-          state.project == null
-              ? const SizedBox.shrink()
-              : AvatarStack(
-                  settings: settings,
-                  height: 50,
-                  avatars: [
-                    for (var n = 0; n < state.project!.members.length; n++)
-                      CachedNetworkImageProvider(
-                          state.project!.members[n].imageUrl ??
-                              getAvatarUrl(n)),
-                  ],
-                ),
-          Positioned(
-              right: 0,
-              child: TMIconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  BuildContext contextProject = context;
-
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 20),
-                        child: SafeArea(
-                          child: Column(
-                            children: [
-                              SpacerComponent.l(),
-                              buildSearch(),
-                              SpacerComponent.l(),
-                              Expanded(
-                                  child: buildInvitableList(contextProject))
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ).then((value) {
-                    contextProject.read<ProjectDetailCubit>().updateProject();
-                  });
-                },
-                backgroundColor: context.appColors.buttonEnable.withAlpha(20),
-              )),
-        ]);
+        return state.project == null
+            ? const SizedBox.shrink()
+            : AvatarStack(
+                settings: settings,
+                borderColor: Colors.white,
+                borderWidth: 1,
+                height: 28,
+                avatars: [
+                  for (var n = 0; n < state.project!.members.length; n++)
+                    CachedNetworkImageProvider(
+                        state.project!.members[n].imageUrl ?? getAvatarUrl(n)),
+                ],
+              );
       },
     );
   }
@@ -645,34 +683,79 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
   }
 
   Widget buildAttachments(BuildContext context) {
-    return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
-      builder: (context, state) {
-        if (state.attachments.isNotEmpty) {
-          return Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (var n = 0; n < state.attachments.length; n++)
-                AttachmentDownloadable(
-                  attachment: state.attachments[n],
-                  isRemovable: _isEditing,
-                  onRemove: () {
-                    context
-                        .read<ProjectDetailCubit>()
-                        .removeAttachment(state.attachments[n]);
-                  },
-                ),
-              isOwnerOfProject(context)
-                  ? buildAddAttachmentButton(context)
-                  : const SizedBox.shrink()
-            ],
-          );
-        } else {
-          return Text('There is nothing here',
-              style: context.textTheme.bodyMedium
-                  ?.copyWith(color: context.appColors.textGray));
-        }
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              context.l10n.text_attachment,
+              style: context.textTheme.titleSmall,
+            ),
+            isOwnerOfProject(context)
+                ? buildAddAttachmentButton(context)
+                : const SizedBox.shrink()
+          ],
+        ),
+        BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
+          builder: (context, state) {
+            if (state.attachments.isNotEmpty) {
+              final imageAttachments = state.attachments
+                  .where((attachment) => isImageFile(attachment.fileName))
+                  .toList();
+              final otherAttachments = state.attachments
+                  .where((attachment) => !isImageFile(attachment.fileName))
+                  .toList();
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (var n = 0; n < imageAttachments.length; n++)
+                        AttachmentDownloadable(
+                          attachment: imageAttachments[n],
+                          isRemovable: _isEditing,
+                          isImage: true,
+                          onRemove: () {
+                            context
+                                .read<ProjectDetailCubit>()
+                                .removeAttachment(imageAttachments[n]);
+                          },
+                        ),
+                    ],
+                  ),
+                  SpacerComponent.s(),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (var n = 0; n < otherAttachments.length; n++)
+                        AttachmentDownloadable(
+                          attachment: otherAttachments[n],
+                          isRemovable: _isEditing,
+                          onRemove: () {
+                            context
+                                .read<ProjectDetailCubit>()
+                                .removeAttachment(otherAttachments[n]);
+                          },
+                        ),
+                    ],
+                  ),
+                ],
+              );
+            } else {
+              return Text(
+                  context.l10n.text_you_currently_have_no_something(
+                      context.l10n.text_attachment),
+                  style: context.textTheme.bodyMedium
+                      ?.copyWith(color: context.appColors.textGray));
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -683,45 +766,32 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
 
   GestureDetector buildAddAttachmentButton(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          if (!_isUploading) {
-            showModalBottomSheet<void>(
-              context: context,
-              builder: (BuildContext innerContext) => BlocProvider.value(
-                value: context.read<ProjectDetailCubit>(),
-                child: UploadAttachmentPage(
-                  onFileSelection: () {
-                    _handleFileSelection(context);
-                    context.pop();
-                  },
-                  onCancel: () {
-                    context.pop();
-                  },
-                ),
-              ),
-            );
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),
-            color: Colors.blue.shade50,
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext innerContext) => BlocProvider.value(
+            value: context.read<ProjectDetailCubit>(),
+            child: UploadAttachmentPage(
+              onFileSelection: () {
+                _handleFileSelection(context);
+                context.pop();
+              },
+              onCancel: () {
+                context.pop();
+              },
+            ),
           ),
+        );
+      },
+      child: Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          child: _isUploading
-              ? Container(
-                  width: 16,
-                  height: 16,
-                  padding: const EdgeInsets.all(4),
-                  child: const CircularProgressIndicator(
-                    strokeWidth: 1,
-                  ))
-              : const Icon(
-                  Icons.add,
-                  color: Colors.blue,
-                  size: 20,
-                ),
-        ));
+          child: Text(
+            context.l10n.text_add_attachment,
+            style: context.textTheme.bodySmall
+                ?.copyWith(color: context.appColors.buttonEnable),
+          )),
+    );
   }
 
   _buildAvatar(UserDto user) {
@@ -747,75 +817,109 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen> {
     );
   }
 
-  buildInvitableList(BuildContext contextProjectDetail) {
-    return BlocBuilder<UserFriendsCubit, UserFriendsState>(
+  Widget buildNote(BuildContext context, Notes note, Color color) {
+    return Material(
+      color: Colors.transparent,
+      clipBehavior: Clip.antiAlias,
+      shape: const BeveledRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0))),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          note.content,
+          style: context.textTheme.bodySmall?.copyWith(color: getContrastColor(color.withOpacity(0.5))),
+
+        ),
+      ),
+    );
+  }
+
+  Widget buildDescription(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              context.l10n.text_description,
+              style: context.textTheme.titleMedium,
+            ),
+            _isEditing
+                ? buildEditIcon(
+                    context,
+                    onTap: () => showModalEditProjectDescription(context),
+                  )
+                : const SizedBox.shrink(),
+          ],
+        ),
+        const SizedBox(height: 6),
+        BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
+          builder: (context, state) {
+            return Text(
+              state.projectDescription,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.bodyMedium?.copyWith(
+                  color: context.appColors.textBlack.withOpacity(0.9)),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget buildTabs(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        TabBar(
+          controller: _tabController,
+          indicatorColor: context.appColors.buttonEnable,
+          tabs: [
+            Tab(
+              text: context.l10n.text_tasks,
+            ),
+            Tab(
+              text: context.l10n.text_notes,
+            ),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(controller: _tabController, children: [
+            buildTasks(),
+            buildNotes(context)
+          ]),
+        ),
+      ],
+    );
+  }
+
+  Widget buildNotes(BuildContext context) {
+    return BlocBuilder<ProjectDetailCubit, ProjectDetailState>(
       builder: (context, state) {
-        List<UserDto> invitableUsers = state.usersFiltered.isEmpty
-            ? []
-            : state.usersFiltered.where((user) {
-                String fullName = "${user.firstName}";
-                return fullName.contains(searchMemberText);
-              }).toList();
-        if (invitableUsers.isEmpty) {
-          return Center(
-            child: Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(bottom: 200),
-              child: Text(context.l10n.text_no_users),
+        if (state.notes.isEmpty) {
+          return EmptyPage(
+            height: 300,
+            object: context.l10n.text_tasks,
+          );
+        } else {
+          return Container(
+            color: Colors.grey.shade100,
+            child: ListView.builder(
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: buildNote(context, state.notes[index], getBackgroundColor(index, state.notes.length)),
+              ),
+              itemCount: state.notes.length,
             ),
           );
         }
-
-        return ListView.builder(
-          itemCount: invitableUsers.length,
-          itemBuilder: (context, index) {
-            final user = invitableUsers[index];
-            List<UserDto> listMember =
-                contextProjectDetail.watch<ProjectDetailCubit>().state.members;
-            bool isCurrentAdded = listMember
-                    .firstWhereOrNull((element) => element.id == user.id) !=
-                null;
-            return GestureDetector(
-              onTap: () {},
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                child: Row(
-                  children: [
-                    _buildAvatar(user),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(user.firstName ?? '',
-                              style: context.textTheme.labelSmall?.copyWith(
-                                  color: context.appColors.textBlack)),
-                          const SizedBox(height: 2),
-                          Text("Management",
-                              style: context.textTheme.bodySmall?.copyWith(
-                                  color: context.appColors.colorDarkGray)),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          contextProjectDetail
-                              .read<ProjectDetailCubit>()
-                              .updateMembers(user, isCurrentAdded);
-                          print(contextProjectDetail
-                              .read<ProjectDetailCubit>()
-                              .state
-                              .members);
-                        },
-                        icon: Icon(isCurrentAdded
-                            ? Icons.remove_circle_outline
-                            : Icons.add_circle_outline))
-                  ],
-                ),
-              ),
-            );
-          },
-        );
       },
     );
   }
@@ -935,11 +1039,13 @@ class AttachmentDownloadable extends StatefulWidget {
     required this.attachment,
     this.isRemovable = false,
     this.onRemove,
+    this.isImage = false,
   });
 
   final Attachment attachment;
   final bool isRemovable;
   final void Function()? onRemove;
+  final bool isImage;
 
   @override
   State<AttachmentDownloadable> createState() => _AttachmentDownloadableState();
@@ -965,60 +1071,62 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
           downloadAttachment();
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _isDownloading
-                ? Container(
-                    width: 16,
-                    height: 16,
-                    padding: const EdgeInsets.all(2),
-                    child: CircularProgressIndicator(
-                      color: color,
-                      strokeWidth: 1,
-                    ),
-                  )
-                : Icon(
-                    Icons.attach_file,
-                    color: color,
-                    size: 18,
-                  ),
-            const SizedBox(
-              width: 4,
-            ),
-            Flexible(
+      child: !widget.isImage
+          ? Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: color),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Flexible(
-                    child: Text(
-                      overflow: TextOverflow.ellipsis,
-                      widget.attachment.fileName,
-                      style:
-                          context.textTheme.bodySmall?.copyWith(color: color),
-                    ),
+                  _isDownloading
+                      ? Container(
+                          width: 16,
+                          height: 16,
+                          padding: const EdgeInsets.all(2),
+                          child: CircularProgressIndicator(
+                            color: color,
+                            strokeWidth: 1,
+                          ),
+                        )
+                      : Icon(
+                          Icons.attach_file,
+                          color: color,
+                          size: 18,
+                        ),
+                  const SizedBox(
+                    width: 4,
                   ),
-                  if (widget.isRemovable)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Icon(
-                        Icons.close,
-                        color: color,
-                        size: 16,
-                      ),
-                    )
+                  Flexible(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            overflow: TextOverflow.ellipsis,
+                            widget.attachment.fileName,
+                            style: context.textTheme.bodySmall
+                                ?.copyWith(color: color),
+                          ),
+                        ),
+                        if (widget.isRemovable)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Icon(
+                              Icons.close,
+                              color: color,
+                              size: 16,
+                            ),
+                          )
+                      ],
+                    ),
+                  )
                 ],
               ),
             )
-          ],
-        ),
-      ),
+          : buildImage(),
     );
   }
 
@@ -1039,5 +1147,71 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
       OpenFilex.open(localPath);
     }
     _setDownloadingState(false);
+  }
+
+  Widget buildImage() {
+    return Stack(children: [
+      Padding(
+        padding: const EdgeInsets.only(top: 8.0, right: 4.0),
+        child: CachedNetworkImage(
+          height: 80,
+          width: 80,
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          fit: BoxFit.cover,
+          imageUrl: widget.attachment.filePath,
+          placeholder: (context, url) => const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          ),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ),
+      ),
+      if (widget.isRemovable)
+        Positioned(
+          top: 0,
+          right: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            padding: const EdgeInsets.all(4),
+            child: const Icon(
+              Icons.close,
+              color: Colors.white,
+              size: 16,
+            ),
+          ),
+        ),
+      if (_isDownloading)
+        Positioned.fill(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0, right: 4),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+    ]);
   }
 }
