@@ -59,7 +59,7 @@ class ProjectRepository {
 
   Stream<List<Project>> getProjectsStream(String userId) {
     return _projectCollection
-        .where('ownerId', isEqualTo: userId)
+        .where('membersId', arrayContains: userId)
         .snapshots()
         .asyncMap(
       (snapshot) async {
@@ -73,26 +73,8 @@ class ProjectRepository {
                   .map((id) => UsersRepository.instance.getUserById(id))))
               .whereType<UserDto>()
               .toList();
-
           return Project.fromProjectDto(projectDto, owner, members);
         }).toList());
-
-        var memberProjects = await _projectCollection
-            .where('membersId', arrayContains: userId)
-            .get();
-
-        projects.addAll(await Future.wait(memberProjects.docs.map((doc) async {
-          var projectDto =
-              ProjectDto.fromJson(doc.data() as Map<String, dynamic>);
-          var owner =
-              await UsersRepository.instance.getUserById(projectDto.ownerId);
-          if (owner == null) throw Exception('Owner not found');
-          var members = (await Future.wait(projectDto.membersId
-                  .map((id) => UsersRepository.instance.getUserById(id))))
-              .whereType<UserDto>()
-              .toList();
-          return Project.fromProjectDto(projectDto, owner, members);
-        }).toList()));
 
         return projects;
       },
