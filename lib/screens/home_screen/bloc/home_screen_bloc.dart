@@ -33,6 +33,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     _tasksSubscription = ProjectRepository.instance
         .getTasksAssignedToUserStream(userId!)
         .listen((tasks) {
+          log('tasks: $tasks');
       final todayTask = tasks.where((task) => isTodayTask(task)).toList();
       final nextTask = tasks.where((task) => isNextTask(task)).toList();
       final taskTodayPieChartData = collection
@@ -91,6 +92,7 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   @override
   Future<void> close() {
     _projectsSubscription.cancel();
+    _tasksSubscription.cancel();
     return super.close();
   }
 

@@ -165,5 +165,7 @@
     "text_add_attachment": "Add attachment",
     "text_assign_to_me": "Assign to me",
     "text_caution": "Caution",
-    "text_are_you_sure_to_delete_this_project": "Are you sure to delete this project"
+    "text_are_you_sure_to_delete_this_project": "Are you sure to delete this project",
+    "text_due_date": "Due date",
+    "text_assignees": "Assignees"
 }

@@ -14,6 +14,8 @@ import 'package:room_master_app/l10n/l10n.dart';
 
 import '../../models/domain/project/project.dart';
 import '../../models/dtos/user/user_dto.dart';
+import '../../navigation/navigation.dart';
+import '../new_task/new_task_screen.dart';
 import '../project_detail/members_page.dart';
 import '../project_detail/project_detail_screen.dart';
 
@@ -137,9 +139,12 @@ class TaskContainer2 extends StatelessWidget {
       color: context.appColors.defaultBgContainer,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onLongPress: () {
+        onTap: () {
+          context.push(NavigationPath.taskDetail, extra: '${task.id}__${task.projectId.id}');
+        },
+        onLongPress: () async {
           //vibrate
-          HapticFeedback.vibrate();
+          HapticFeedback.selectionClick();
           showMaterialModalBottomSheet(
             context: context,
             shape: const RoundedRectangleBorder(
@@ -243,7 +248,31 @@ class TaskContainer2 extends StatelessWidget {
                 child: Icon(Icons.edit),
               ),
               title: Text(context.l10n.text_edit_task),
-              onTap: () {},
+              onTap: () {
+                if (!task.assignees.map((e) => e.id).contains(context.read<AuthenticationCubit>().state.user?.uid)){
+                  Flushbar(
+                    message: 'You are not assigned to this task',
+                    duration: const Duration(seconds: 3),
+                  ).show(context);
+                } else {
+                  //action
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => NewTaskScreen(projectId: task.projectId.id, isEdit: true, task: task,),
+                  ).then((value) {
+                    if (value != null && value is bool && value) {
+                      context.pop();
+                      Flushbar(
+                        message: 'Task updated successfully',
+                        duration: const Duration(seconds: 2),
+                        flushbarPosition: FlushbarPosition.TOP,
+                        backgroundColor: Colors.lightBlue,
+                      ).show(context);
+                    }
+                  });
+                }
+              },
             ),
             if (isOwner)
               ListTile(
@@ -257,7 +286,7 @@ class TaskContainer2 extends StatelessWidget {
                       .deleteTaskFromProject(task.id, task.projectId.id);
                 },
               ),
-            ListTile(
+            if (!task.assignees.map((e) => e.id).contains(context.read<AuthenticationCubit>().state.user?.uid)) ListTile(
               leading: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(Icons.supervised_user_circle_outlined),

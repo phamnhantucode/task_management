@@ -1,296 +1,659 @@
-import 'package:avatar_stack/avatar_stack.dart';
-import 'package:avatar_stack/positions.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
+import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/common/extensions/date_time.dart';
+import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
-import 'package:room_master_app/models/domain/project/project.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
-import 'package:room_master_app/screens/component/modal_list_member.dart';
-import 'package:room_master_app/screens/component/tm_icon_button.dart';
-import 'package:room_master_app/screens/component/top_header/primary.dart';
-import 'package:room_master_app/screens/project_detail/project_detail_screen.dart';
+import 'package:room_master_app/screens/component/flushbar/flushbar_alert.dart';
+import 'package:room_master_app/screens/component/tm_text_field.dart';
 import 'package:room_master_app/screens/task_detai_real/cubit/task_detail_cubit.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' show User;
+import 'package:timeago/timeago.dart' as timeago;
 
-import '../../models/dtos/user/user_dto.dart';
+import '../../domain/service/file_picker_service.dart';
+import '../../models/dtos/project/project.dart';
+import '../../models/enum/image_picker_type.dart';
+import '../component/bottomsheet/upload_attachment_page.dart';
+import '../project_detail/project_detail_screen.dart';
 
-class TaskDetail extends StatefulWidget {
-  const TaskDetail({super.key, required this.taskInfo});
+class TaskDetail extends StatelessWidget {
+  const TaskDetail({
+    super.key,
+    required this.taskId,
+    required this.projectId,
+  });
 
-  final Task taskInfo;
+  final String taskId;
+  final String projectId;
 
-  @override
-  State<StatefulWidget> createState() => TaskDetailState();
-}
-
-class TaskDetailState extends State<TaskDetail> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => TaskDetailCubit()
-          ..init(widget.taskInfo.projectId.id, widget.taskInfo.id),
-        child: BlocBuilder<TaskDetailCubit, TaskDetailInfoState>(
-          builder: (contextInner, state) => Scaffold(
+        create: (context) => TaskDetailCubit()..init(projectId, taskId),
+        child: Builder(builder: (context) {
+          return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                  context.l10n.task_detail,
+                  style: context.textTheme.titleSmall,
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.more_vert),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
               body: SingleChildScrollView(
-            child: SafeArea(
-                child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTitle(),
-                    const SizedBox(height: 20),
-                    Text(
-                      contextInner.watch<TaskDetailCubit>().state.taskName,
-                      style: context.textTheme.titleLarge,
-                      textAlign: TextAlign.left,
-                    ),
-                    const SizedBox(height: 25),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 15),
-                              child: Text(
-                                'Start Date ',
-                                style: context.textTheme.labelMedium,
-                              ),
-                            ),
-                            Text(
-                                DateFormat('HH:mm, M/d/y')
-                                    .format(widget.taskInfo.startDate!),
-                                style: context.textTheme.bodyMedium),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 22),
-                              child: Text(
-                                'Due Date ',
-                                style: context.textTheme.labelMedium,
-                              ),
-                            ),
-                            Text(
-                                DateFormat('HH:mm, M/d/y')
-                                    .format(widget.taskInfo.endDate!),
-                                style: context.textTheme.bodyMedium),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 55),
-                              child: Text(
-                                'Status',
-                                style: context.textTheme.labelMedium,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.orangeAccent,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                'On Progress',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
+                child: SafeArea(
+                    child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Assign',
-                          style: context.textTheme.labelMedium,
-                        ),
                         const SizedBox(
-                          width: 55,
+                          height: 20,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildAssigneeAvatar(
-                                'Anh Quan',
-                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwyXpojRvumpsdxXiNOZCtBkU6kVb9zjbScg&usqp=CAU',
-                                context),
-                            _buildAssigneeAvatar(
-                                'CassanoQ',
-                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwyXpojRvumpsdxXiNOZCtBkU6kVb9zjbScg&usqp=CAU',
-                                context),
-                            _buildAssigneeAvatar(
-                                'JustQuan',
-                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwyXpojRvumpsdxXiNOZCtBkU6kVb9zjbScg&usqp=CAU',
-                                context),
-                          ],
+                        Text(
+                          context.watch<TaskDetailCubit>().state.taskName,
+                          style: context.textTheme.titleLarge
+                              ?.copyWith(fontSize: 28),
+                          textAlign: TextAlign.left,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    SpacerComponent.m(),
-                    Text(
-                      context.l10n.text_description,
-                      style: context.textTheme.labelMedium,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      contextInner.watch<TaskDetailCubit>().state.description,
-                      textAlign: TextAlign.justify,
-                      style: context.textTheme.bodyMedium?.copyWith(color: context.appColors.colorDarkGray,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      context.l10n.members,
-                      style: context.textTheme.labelMedium,
-                    ),
-                    const SizedBox(height: 10),
-                    // buildMembers(contextInner,
-                    //     contextInner.watch<TaskDetailCubit>().state),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Comments',
-                      style: context.textTheme.labelMedium,
-                    ),
-                    SpacerComponent.m(),
-                     Row(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwyXpojRvumpsdxXiNOZCtBkU6kVb9zjbScg&usqp=CAU'),
+                        const SizedBox(height: 25),
+                        buildDetailTask(context),
+                        const SizedBox(height: 16),
+                        buildAssignees(context),
+                        buildDescription(context),
+                        const SizedBox(
+                          height: 8,
                         ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 5,top: 2),
-                              child: Text('Nguyen Anh Quan',style: context.textTheme.bodyMedium),
-                            ),
-                            SizedBox(
-                              width: 330, // <-- TextField width
-                              height: 120, // <-- TextField height
-                              child: TextField(
-                                maxLines: null,
-                                expands: true,
-                                keyboardType: TextInputType.multiline,
-                                decoration: InputDecoration(
-                                  suffixIcon: Icon(Icons.attach_file) ,
-                                  filled: true,
-                                  fillColor: Colors.white70,
-                                  hintText: 'Type a comment.....',
-                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.blue),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide(color: Colors.blue),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                                ),
-                                ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                  ]),
-            )),
-          )),
-        ));
+                        buildComments(context)
+                      ]),
+                )),
+              ));
+        }));
   }
 
-  // buildMembers(BuildContext contextState, TaskDetailInfoState state) {
-  //   onPressAdd(UserDto user, bool isCurrentAdded) {
-  //     contextState.read<TaskDetailCubit>().assignTaskFor(user, isCurrentAdded);
-  //   }
-  //
-  //   return Row(children: [
-  //     state.assignee == null
-  //         ? const SizedBox.shrink()
-  //         : CircleAvatar(
-  //             radius: 24,
-  //             backgroundImage: CachedNetworkImageProvider(
-  //                 state.assignee!.imageUrl ?? getAvatarUrl(1)),
-  //           ),
-  //     const Expanded(child: SizedBox()),
-  //     TMIconButton(
-  //       icon: const Icon(Icons.add),
-  //       onPressed: () {
-  //         showModalBottomSheet(
-  //           context: contextState,
-  //           isScrollControlled: true,
-  //           builder: (context) {
-  //             return ModalListMember(
-  //               projectId: widget.taskInfo.projectId.id,
-  //               assignee: state.assignee,
-  //               onPressAdd: onPressAdd,
-  //               taskId: widget.taskInfo.id,
-  //             );
-  //           },
-  //         );
-  //       },
-  //       backgroundColor: context.appColors.buttonEnable.withAlpha(20),
-  //     )
-  //   ]);
-  // }
-
-  _buildTitle() {
-    return TopHeader(
-        title: 'Task detail',
-        leftAction: () {
-          context.pop();
-        },
+  Column buildComments(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Comments',
+          style: context.textTheme.labelMedium,
+        ),
+        SpacerComponent.s(),
+        Container(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 35,
+                    width: 35,
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(context
+                              .read<AuthenticationCubit>()
+                              .state
+                              .user
+                              ?.photoURL ??
+                          ''),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color:
+                                context.appColors.buttonEnable.withOpacity(.8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Stack(children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TMTextField(
+                              borderColor: Colors.transparent,
+                              maxLines: 2,
+                              textStyle: context.textTheme.bodySmall,
+                              onTextChange: (content) => context
+                                  .read<TaskDetailCubit>()
+                                  .onChangeComment(content),
+                            ),
+                            SpacerComponent.s(),
+                            BlocBuilder<TaskDetailCubit, TaskDetailInfoState>(
+                              builder: (context, state) {
+                                if (state.attachmentPaths.isNotEmpty) {
+                                  final imageAttachments = state.attachmentPaths
+                                      .where((attachment) =>
+                                          isImageFile(attachment))
+                                      .toList();
+                                  final otherAttachments = state.attachmentPaths
+                                      .where((attachment) =>
+                                          !isImageFile(attachment))
+                                      .toList();
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: [
+                                            for (var n = 0;
+                                                n < imageAttachments.length;
+                                                n++)
+                                              AttachmentDownloadable(
+                                                isRemovable: true,
+                                                isDownloadable: false,
+                                                filePath: imageAttachments[n],
+                                                isImage: true,
+                                                onRemove: () {
+                                                  context
+                                                      .read<TaskDetailCubit>()
+                                                      .removeAttachment(
+                                                          imageAttachments[n]);
+                                                },
+                                              ),
+                                          ],
+                                        ),
+                                        SpacerComponent.s(),
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: [
+                                            for (var n = 0;
+                                                n < otherAttachments.length;
+                                                n++)
+                                              AttachmentDownloadable(
+                                                filePath: otherAttachments[n],
+                                                isDownloadable: false,
+                                                isRemovable: true,
+                                                onRemove: () {
+                                                  context
+                                                      .read<TaskDetailCubit>()
+                                                      .removeAttachment(
+                                                          otherAttachments[n]);
+                                                },
+                                              ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.attach_file,
+                                    size: 22,
+                                  ),
+                                ),
+                                onTap: () {
+                                  showModalBottomSheet<void>(
+                                    context: context,
+                                    builder: (BuildContext innerContext) =>
+                                        UploadAttachmentPage(
+                                      onImageSelection: () async {
+                                        final state = context
+                                            .read<TaskDetailCubit>()
+                                            .state;
+                                        final imagePath = await FileService
+                                            .instance
+                                            .imageSelection(
+                                                ImagePickerType.gallery);
+                                        if (imagePath != null) {
+                                          if (state.attachmentPaths
+                                              .contains(imagePath)) {
+                                            showAlertFlushBar(context,
+                                                'This image is already added');
+                                          } else {
+                                            context
+                                                .read<TaskDetailCubit>()
+                                                .handleImageSelection(
+                                                    imagePath);
+                                          }
+                                        }
+                                        context.pop();
+                                      },
+                                      onFileSelection: () async {
+                                        final state = context
+                                            .read<TaskDetailCubit>()
+                                            .state;
+                                        final filePath = await FileService
+                                            .instance
+                                            .fileSelection(FileType.any);
+                                        if (filePath != null) {
+                                          if (state.attachmentPaths
+                                              .contains(filePath)) {
+                                            showAlertFlushBar(context,
+                                                'This file is already added');
+                                          } else {
+                                            context
+                                                .read<TaskDetailCubit>()
+                                                .handleFileSelection(filePath);
+                                          }
+                                        }
+                                        context.pop();
+                                      },
+                                      onCancel: () {
+                                        context.pop();
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
+                              GestureDetector(
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.send,
+                                    size: 22,
+                                  ),
+                                ),
+                                onTap: () {
+                                  context.read<TaskDetailCubit>().addComment(
+                                      userId: context
+                                              .read<AuthenticationCubit>()
+                                              .state
+                                              .user
+                                              ?.uid ??
+                                          '',
+                                      taskId: taskId,
+                                      projectId: projectId);
+                                },
+                              ),
+                            ],
+                          ),
+                        )
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              SizedBox(
+                height: 500,
+                child: BlocBuilder<TaskDetailCubit, TaskDetailInfoState>(
+                  builder: (context, state) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        final comment = state.comments[index];
+                        return Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: 35,
+                                  width: 35,
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(context
+                                            .read<AuthenticationCubit>()
+                                            .state
+                                            .user
+                                            ?.photoURL ??
+                                        ''),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: state.project?.color.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              comment.author.firstName ?? '',
+                                              style:
+                                                  context.textTheme.bodySmall,
+                                            ),
+                                            Text(
+                                              timeago.format(comment.createdAt),
+                                              style: context.textTheme.bodySmall
+                                                  ?.copyWith(
+                                                      color: Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                        Divider(
+                                          color: Colors.grey.shade200,
+                                          height: 5,
+                                        ),
+                                        if (comment.content.isEmpty)
+                                          const SizedBox.shrink()
+                                        else
+                                          Text(
+                                            comment.content,
+                                            style: context.textTheme.bodySmall?.copyWith(
+                                                color: Colors.grey,
+                                            fontStyle: FontStyle.italic,),
+                                          ),
+                                        Builder(
+                                          builder: (context) {
+                                            if (comment
+                                                .attachments.isNotEmpty) {
+                                              final imageAttachments = comment
+                                                  .attachments
+                                                  .where((attachment) =>
+                                                      isImageFile(
+                                                          attachment.fileName))
+                                                  .toList();
+                                              final otherAttachments = comment
+                                                  .attachments
+                                                  .where((attachment) =>
+                                                      !isImageFile(
+                                                          attachment.fileName))
+                                                  .toList();
+                                              return Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Wrap(
+                                                    spacing: 8,
+                                                    runSpacing: 8,
+                                                    children: [
+                                                      for (var n = 0;
+                                                          n <
+                                                              imageAttachments
+                                                                  .length;
+                                                          n++)
+                                                        AttachmentDownloadable(
+                                                          attachment:
+                                                              imageAttachments[
+                                                                  n],
+                                                          isRemovable: false,
+                                                          isImage: true,
+                                                        ),
+                                                    ],
+                                                  ),
+                                                  SpacerComponent.s(),
+                                                  Wrap(
+                                                    spacing: 8,
+                                                    runSpacing: 8,
+                                                    children: [
+                                                      for (var n = 0;
+                                                          n <
+                                                              otherAttachments
+                                                                  .length;
+                                                          n++)
+                                                        AttachmentDownloadable(
+                                                          attachment:
+                                                              otherAttachments[
+                                                                  n],
+                                                          isRemovable: false,
+                                                        ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                            return const SizedBox.shrink();
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                          ],
+                        );
+                      },
+                      itemCount: state.comments.length,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
-}
 
-Widget _buildAssigneeAvatar(
-    String name, String imageUrl, BuildContext context) {
-  return Row(
-    children: [
-      Container(
-        width: 30,
-        height: 30,
-        child: CircleAvatar(
-          backgroundImage: NetworkImage(imageUrl),
+  Column buildDescription(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          context.l10n.text_description,
+          style: context.textTheme.labelMedium,
         ),
-      ),
-      const SizedBox(height: 4),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          name,
-          style: context.textTheme.bodyMedium,
+        const SizedBox(
+          height: 8,
         ),
+        Text(
+          context.watch<TaskDetailCubit>().state.description,
+          textAlign: TextAlign.justify,
+          style: context.textTheme.bodyMedium?.copyWith(),
+        ),
+      ],
+    );
+  }
+
+  Column buildAssignees(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.l10n.text_assignees,
+          style: context.textTheme.labelMedium,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        SizedBox(
+          height: 100,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (var assignee
+                    in context.watch<TaskDetailCubit>().state.assignees ?? [])
+                  Builder(builder: (context) {
+                    return _buildAssigneeAvatar(assignee.firstName ?? '',
+                        assignee.imageUrl ?? '', context);
+                  }),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row buildDetailTask(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        IntrinsicWidth(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.text_start_date,
+                style: context.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                context.l10n.text_due_date,
+                style: context.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                'Status',
+                style: context.textTheme.bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(
+          width: 30,
+        ),
+        IntrinsicWidth(
+          child: Column(
+            children: [
+              Text(
+                  (context.watch<TaskDetailCubit>().state.startDate ??
+                          getCurrentTimestamp)
+                      .dateWeeksMonthYearFormat,
+                  style: context.textTheme.bodyMedium),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                  (context.watch<TaskDetailCubit>().state.endDate ??
+                          getCurrentTimestamp)
+                      .dateWeeksMonthYearFormat,
+                  style: context.textTheme.bodyMedium),
+              const SizedBox(
+                height: 8,
+              ),
+              BlocBuilder<TaskDetailCubit, TaskDetailInfoState>(
+                builder: (context, state) {
+                  return DropdownButtonHideUnderline(
+                      child: DropdownButton2<TaskStatus>(
+                        onChanged: (value) {
+                          if (value != null) {
+                            context.read<TaskDetailCubit>().changeTaskStatus(value);
+                          }
+                        },
+                    isExpanded: true,
+                        buttonStyleData: ButtonStyleData(
+                          overlayColor: MaterialStateProperty.all(Colors.transparent),
+                        ),
+                    dropdownStyleData: DropdownStyleData(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      offset: const Offset(0, 0),
+                      scrollbarTheme: ScrollbarThemeData(
+                        radius: const Radius.circular(40),
+                        thickness: MaterialStateProperty.all(6),
+                        thumbVisibility: MaterialStateProperty.all(true),
+                      ),
+                    ),
+                    items: TaskStatus.values.map((e) {
+                      return DropdownMenuItem(
+                        value: e,
+                        child: Container(
+                          height: 38,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 6),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: e.color ?? Colors.black),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: Text(
+                                e.getLocalizationText(context) ?? '',
+                                style: context.textTheme.bodySmall?.copyWith(
+                                    color: e.color ?? Colors.black)),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    value: state.status,
+                    hint: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 6),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            color: state.status?.color ?? Colors.black),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                          state.status?.getLocalizationText(context) ?? '',
+                          style: context.textTheme.bodySmall?.copyWith(
+                              color: state.status?.color ?? Colors.black)),
+                    ),
+                  ));
+                },
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildAssigneeAvatar(
+      String name, String imageUrl, BuildContext context) {
+    return SizedBox(
+      width: 100,
+      child: Column(
+        children: [
+          SizedBox(
+            width: 30,
+            height: 30,
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(imageUrl),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              name,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              style: context.textTheme.bodyMedium,
+            ),
+          ),
+        ],
       ),
-    ],
-  );
+    );
+  }
 }

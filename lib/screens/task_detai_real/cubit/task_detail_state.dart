@@ -9,4 +9,9 @@ class TaskDetailInfoState with _$TaskDetailInfoState {
     @Default('') String description,
     DateTime? startDate,
     DateTime? endDate,
-}) = _TaskDetailInfoState;}
+    Project? project,
+    @Default([]) List<Comment> comments,
+    @Default('') String comment,
+    @Default([]) List<String> attachmentPaths,
+  }) = _TaskDetailInfoState;
+}

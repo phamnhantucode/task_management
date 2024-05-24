@@ -4,10 +4,8 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +18,6 @@ import 'package:room_master_app/common/extensions/date_time.dart';
 import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/models/dtos/project/project.dart';
-import 'package:room_master_app/screens/chat/bloc/user_friends_cubit.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
 import 'package:room_master_app/screens/component/empty_page.dart';
@@ -95,21 +92,17 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
                 ),
                 onPressed: () {},
               ),
-              Builder(
-                builder: (context) {
-                  return IconButton(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: contrastColor,
-                    ),
-                    onPressed: () {
-                      Scaffold.of(context).openEndDrawer(
-
-                      );
-                    },
-                  );
-                }
-              ),
+              Builder(builder: (context) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: contrastColor,
+                  ),
+                  onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                );
+              }),
             ],
           ),
           endDrawer: const ProjectMenuActionPage(),
@@ -207,8 +200,8 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
             Expanded(
               child: Text(
                 context.watch<ProjectDetailCubit>().state.projectName,
-                style:
-                    context.textTheme.titleLarge?.copyWith(color: contrastColor),
+                style: context.textTheme.titleLarge
+                    ?.copyWith(color: contrastColor),
               ),
             ),
             _isEditing
@@ -833,8 +826,8 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
         padding: const EdgeInsets.all(16),
         child: Text(
           note.content,
-          style: context.textTheme.bodySmall?.copyWith(color: getContrastColor(color.withOpacity(0.5))),
-
+          style: context.textTheme.bodySmall
+              ?.copyWith(color: getContrastColor(color.withOpacity(0.5))),
         ),
       ),
     );
@@ -891,10 +884,9 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
           ],
         ),
         Expanded(
-          child: TabBarView(controller: _tabController, children: [
-            buildTasks(),
-            buildNotes(context)
-          ]),
+          child: TabBarView(
+              controller: _tabController,
+              children: [buildTasks(), buildNotes(context)]),
         ),
       ],
     );
@@ -914,7 +906,8 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
             child: ListView.builder(
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: buildNote(context, state.notes[index], getBackgroundColor(index, state.notes.length)),
+                child: buildNote(context, state.notes[index],
+                    getBackgroundColor(index, state.notes.length)),
               ),
               itemCount: state.notes.length,
             ),
@@ -1036,15 +1029,19 @@ class _MyFloatingActionButtonState extends State<MyFloatingActionButton> {
 class AttachmentDownloadable extends StatefulWidget {
   const AttachmentDownloadable({
     super.key,
-    required this.attachment,
+    this.attachment,
     this.isRemovable = false,
     this.onRemove,
     this.isImage = false,
+    this.filePath,
+    this.isDownloadable = true,
   });
 
-  final Attachment attachment;
+  final Attachment? attachment;
+  final String? filePath;
   final bool isRemovable;
   final void Function()? onRemove;
+  final bool isDownloadable;
   final bool isImage;
 
   @override
@@ -1068,7 +1065,7 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
         if (widget.isRemovable) {
           widget.onRemove?.call();
         } else {
-          downloadAttachment();
+          if (widget.isDownloadable) downloadAttachment();
         }
       },
       child: !widget.isImage
@@ -1106,7 +1103,8 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
                         Flexible(
                           child: Text(
                             overflow: TextOverflow.ellipsis,
-                            widget.attachment.fileName,
+                            widget.attachment?.fileName ??
+                                path.basename(widget.filePath!),
                             style: context.textTheme.bodySmall
                                 ?.copyWith(color: color),
                           ),
@@ -1132,13 +1130,13 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
 
   Future<void> downloadAttachment() async {
     _setDownloadingState(true);
-    var localPath = widget.attachment.filePath;
+    var localPath = widget.attachment!.filePath;
     try {
       final client = http.Client();
-      final request = await client.get(Uri.parse(widget.attachment.filePath));
+      final request = await client.get(Uri.parse(widget.attachment!.filePath));
       final bytes = request.bodyBytes;
       final documentDir = (await getApplicationDocumentsDirectory()).path;
-      localPath = '$documentDir/${widget.attachment.fileName}';
+      localPath = '$documentDir/${widget.attachment!.fileName}';
 
       if (!File(localPath).existsSync()) {
         await File(localPath).writeAsBytes(bytes);
@@ -1153,26 +1151,33 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
     return Stack(children: [
       Padding(
         padding: const EdgeInsets.only(top: 8.0, right: 4.0),
-        child: CachedNetworkImage(
-          height: 80,
-          width: 80,
-          imageBuilder: (context, imageProvider) => Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              image: DecorationImage(
-                image: imageProvider,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+        child: widget.attachment == null
+            ? Image.file(
+                File(widget.filePath!),
+                height: 80,
+                width: 80,
           fit: BoxFit.cover,
-          imageUrl: widget.attachment.filePath,
-          placeholder: (context, url) => const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: CircularProgressIndicator(),
-          ),
-          errorWidget: (context, url, error) => const Icon(Icons.error),
-        ),
+              )
+            : CachedNetworkImage(
+                height: 80,
+                width: 80,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                fit: BoxFit.cover,
+                imageUrl: widget.attachment!.filePath,
+                placeholder: (context, url) => const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
       ),
       if (widget.isRemovable)
         Positioned(
@@ -1205,7 +1210,6 @@ class _AttachmentDownloadableState extends State<AttachmentDownloadable> {
                   padding: EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(
                     color: Colors.white,
-
                   ),
                 ),
               ),

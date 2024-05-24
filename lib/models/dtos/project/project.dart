@@ -124,6 +124,7 @@ class CommentDto with _$CommentDto {
     required String authorId,
     required DateTime createdAt,
     required DateTime updatedAt,
+    required List<String> attachmentIds,
   }) = _CommentDto;
   factory CommentDto.fromJson(Map<String, dynamic> json) => _$CommentDtoFromJson(json);
 }
