@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -324,6 +325,26 @@ class ProjectRepository {
     return null;
   }
 
+  //getTaskDetail stream
+  Stream<Task> getTaskDetailStream(String projectId, String taskId) {
+    return _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final taskDto = TaskDto.fromJson(snapshot.data() as Map<String, dynamic>);
+      final project = await getProject(taskDto.projectId);
+      final author =
+          await UsersRepository.instance.getUserById(taskDto.authorId);
+      final assignees = await Future.wait(taskDto.assigneeIds
+          .map((id) => UsersRepository.instance.getUserById(id)));
+      if (author == null) throw Exception('Author not found');
+
+      return Task.fromTaskDto(taskDto, project, assignees, author);
+    });
+  }
+
   Future<List<Task>> getTasksAssignedToUser(String userId) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collectionGroup('tasks')
@@ -476,9 +497,110 @@ class ProjectRepository {
     }
   }
 
-  void addTaskAssignees(String taskId, String projectId, List<UserDto> newAssignees) {
+  void addTaskAssignees(
+      String taskId, String projectId, List<UserDto> newAssignees) {
     _projectCollection.doc(projectId).collection('tasks').doc(taskId).update({
-      'assigneeIds': FieldValue.arrayUnion(newAssignees.map((e) => e.id).toList())
+      'assigneeIds':
+          FieldValue.arrayUnion(newAssignees.map((e) => e.id).toList())
     });
+  }
+
+  void updateTask(String projectId, TaskDto taskDto) {
+    log('Updating task: ${taskDto.id}');
+    _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskDto.id)
+        .update(taskDto.toJson());
+  }
+
+  Stream<List<Comment>> getCommentStream(String projectId, String taskId) {
+    return _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .collection('comments')
+        .snapshots()
+        .asyncMap((snapshot) => snapshot.docs
+            .map((doc) async {
+              final commentDto = CommentDto.fromJson(doc.data());
+              final task = await getTaskDetail(projectId, taskId);
+              final author = await UsersRepository.instance
+                  .getUserById(commentDto.authorId);
+              final attachments = await getAttachmentsFromComment(
+                  projectId, taskId, commentDto.id);
+              return Comment.fromCommentDto(
+                  CommentDto.fromJson(doc.data()), task!, author!,attachments );
+            })
+            .toList()
+            .wait);
+  }
+
+  Future<List<Attachment>> getAttachmentsFromComment(String projectId, String taskId, String id) {
+    return _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .collection('comments')
+        .doc(id)
+        .collection('attachments')
+        .get()
+        .then((snapshot) => snapshot.docs
+            .map((doc) => Attachment.fromAttachmentDto(
+                AttachmentDto.fromJson(doc.data())))
+            .toList());
+  }
+
+  Future<Attachment> getAttachmentFromComment(String projectId, String taskId, String id, String id2) {
+    return _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .collection('comments')
+        .doc(id)
+        .collection('attachments')
+        .doc(id2)
+        .get()
+        .then((doc) => Attachment.fromAttachmentDto(AttachmentDto.fromJson(doc.data()!)));
+  }
+
+  void addAttachmentToComment(String projectId, String taskId, String commentId, AttachmentDto attachmentDto) {
+    _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .collection('comments')
+        .doc(commentId)
+        .collection('attachments')
+        .doc(attachmentDto.id)
+        .set(attachmentDto.toJson());
+
+    _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .collection('comments')
+        .doc(commentId)
+        .update({
+          'attachmentIds': FieldValue.arrayUnion([attachmentDto.id])
+        });
+  }
+
+  Future<void> addComment(String projectId, String taskId, CommentDto commentDto) async {
+    return _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .collection('comments')
+        .doc(commentDto.id)
+        .set(commentDto.toJson());
+  }
+
+  void updateTaskStatus({required String taskId, required String projectId, required TaskStatus status}) {
+    _projectCollection
+        .doc(projectId)
+        .collection('tasks')
+        .doc(taskId)
+        .update({'status': status.name});
   }
 }
