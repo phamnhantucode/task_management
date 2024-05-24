@@ -14,6 +14,8 @@ import 'package:room_master_app/screens/component/project_card.dart';
 import 'package:room_master_app/screens/component/task_container.dart';
 import 'package:room_master_app/screens/component/tm_elevated_button.dart';
 import 'package:room_master_app/screens/qr_scanner/qr_scanner_screen.dart';
+import 'package:room_master_app/screens/statistic/statistic_project_screen.dart';
+import 'package:room_master_app/screens/statistic/statistic_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../blocs/authentication/authentication_cubit.dart';
@@ -405,7 +407,13 @@ class _StatisticHomeScreenState extends State<StatisticHomeScreen>
                     SizedBox(
                       width: 120,
                       child: TMElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const StatisticProject(),
+                            ),
+                          );
+                        },
                         label: context.l10n.seeall,
                         textColor: context.appColors.textWhite,
                         color: Colors.blue.shade300,

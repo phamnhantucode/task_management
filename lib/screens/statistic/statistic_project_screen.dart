@@ -6,7 +6,7 @@ import '../component/task_least.dart';
 
 
 class StatisticProject extends StatefulWidget {
-   StatisticProject({super.key});
+   const StatisticProject({super.key});
 
   @override
   State<StatisticProject> createState() => _StatisticProjectState();
@@ -18,7 +18,7 @@ class _StatisticProjectState extends State<StatisticProject> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Statistic Project'),
+          title: const Text('Statistic Project'),
           backgroundColor: context.appColors.textWhite,
           foregroundColor: context.appColors.textBlack,
           elevation: 0,

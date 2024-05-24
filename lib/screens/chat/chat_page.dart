@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:room_master_app/common/extensions/extensions.dart';
 import 'package:room_master_app/domain/service/cloud_storage_service.dart';
 import 'package:room_master_app/domain/service/file_picker_service.dart';
 import 'package:room_master_app/models/enum/image_picker_type.dart';
@@ -139,10 +140,21 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final partner = widget.room.users.firstWhere(
+      (user) => user.id != FirebaseChatCore.instance.firebaseUser?.uid,
+    );
     return Scaffold(
         appBar: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle.light,
-          title: const Text('Chat'),
+          title: Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundImage: NetworkImage(partner.imageUrl ?? ''),
+              ),
+              const SizedBox(width: 8),
+              Text(partner.firstName ?? '', style: context.textTheme.labelMedium),
+            ])
         ),
         body: StreamBuilder<types.Room>(
           initialData: widget.room,
