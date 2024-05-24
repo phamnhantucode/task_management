@@ -65,6 +65,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             context.read<AuthenticationCubit>().clean();
           }
           if (state.isAuthenticated) {
+            print("Go Home $state");
+            context.read<AuthenticationCubit>().clean();
             context.go(NavigationPath.home);
           }
         },
