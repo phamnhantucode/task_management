@@ -476,9 +476,9 @@ class ProjectRepository {
     }
   }
 
-  void addTaskAssignees(String taskId, String projectId, List<UserDto> newAssignees) {
+  void addTaskAssignees(String taskId, String projectId, List<String> newAssignees) {
     _projectCollection.doc(projectId).collection('tasks').doc(taskId).update({
-      'assigneeIds': FieldValue.arrayUnion(newAssignees.map((e) => e.id).toList())
+      'assigneeIds': FieldValue.arrayUnion(newAssignees)
     });
   }
 }

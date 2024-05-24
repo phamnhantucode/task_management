@@ -262,22 +262,32 @@ class TaskContainer2 extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(Icons.supervised_user_circle_outlined),
               ),
-              title: Text(isOwner
-                  ? context.l10n.text_add_assignee
-                  : context.l10n.text_assign_to_me),
+              title: Text(context.l10n.text_assign_to_me),
               onTap: () async {
-                final newAssignees = await Navigator.of(context).push<List<UserDto>>(
-                  MaterialPageRoute(
-                      //add transition
-                      builder: (innerContext) =>
-                          MembersPage(projectId: task.projectId.id, selectedUsers: task.assignees,)),
-                );
-                if (newAssignees != null && newAssignees.isNotEmpty) {
                   ProjectRepository.instance.addTaskAssignees(
-                      task.id, task.projectId.id, newAssignees);
-                }
+                      task.id, task.projectId.id, [context.read<AuthenticationCubit>().state.user?.uid ?? '']);
               },
             ),
+            if (isOwner)
+              ListTile(
+                leading: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Icon(Icons.supervised_user_circle_outlined),
+                ),
+                title: Text(context.l10n.text_add_assignee),
+                onTap: () async {
+                  final newAssignees = await Navigator.of(context).push<List<UserDto>>(
+                    MaterialPageRoute(
+                      //add transition
+                        builder: (innerContext) =>
+                            MembersPage(projectId: task.projectId.id, selectedUsers: task.assignees,)),
+                  );
+                  if (newAssignees != null && newAssignees.isNotEmpty) {
+                    ProjectRepository.instance.addTaskAssignees(
+                        task.id, task.projectId.id, newAssignees.map((e) => e.id).toList());
+                  }
+                },
+              ),
           ],
         ),
       ),

@@ -169,8 +169,8 @@ class TaskDetailState extends State<TaskDetail> {
                       style: context.textTheme.labelMedium,
                     ),
                     const SizedBox(height: 10),
-                    buildMembers(contextInner,
-                        contextInner.watch<TaskDetailCubit>().state),
+                    // buildMembers(contextInner,
+                    //     contextInner.watch<TaskDetailCubit>().state),
                     const SizedBox(height: 10),
                     Text(
                       'Comments',
@@ -223,44 +223,44 @@ class TaskDetailState extends State<TaskDetail> {
                     )
                   ]),
             )),
-1          )),
+          )),
         ));
   }
 
-  buildMembers(BuildContext contextState, TaskDetailInfoState state) {
-    onPressAdd(UserDto user, bool isCurrentAdded) {
-      contextState.read<TaskDetailCubit>().assignTaskFor(user, isCurrentAdded);
-    }
-
-    return Row(children: [
-      state.assignee == null
-          ? const SizedBox.shrink()
-          : CircleAvatar(
-              radius: 24,
-              backgroundImage: CachedNetworkImageProvider(
-                  state.assignee!.imageUrl ?? getAvatarUrl(1)),
-            ),
-      const Expanded(child: SizedBox()),
-      TMIconButton(
-        icon: const Icon(Icons.add),
-        onPressed: () {
-          showModalBottomSheet(
-            context: contextState,
-            isScrollControlled: true,
-            builder: (context) {
-              return ModalListMember(
-                projectId: widget.taskInfo.projectId.id,
-                assignee: state.assignee,
-                onPressAdd: onPressAdd,
-                taskId: widget.taskInfo.id,
-              );
-            },
-          );
-        },
-        backgroundColor: context.appColors.buttonEnable.withAlpha(20),
-      )
-    ]);
-  }
+  // buildMembers(BuildContext contextState, TaskDetailInfoState state) {
+  //   onPressAdd(UserDto user, bool isCurrentAdded) {
+  //     contextState.read<TaskDetailCubit>().assignTaskFor(user, isCurrentAdded);
+  //   }
+  //
+  //   return Row(children: [
+  //     state.assignee == null
+  //         ? const SizedBox.shrink()
+  //         : CircleAvatar(
+  //             radius: 24,
+  //             backgroundImage: CachedNetworkImageProvider(
+  //                 state.assignee!.imageUrl ?? getAvatarUrl(1)),
+  //           ),
+  //     const Expanded(child: SizedBox()),
+  //     TMIconButton(
+  //       icon: const Icon(Icons.add),
+  //       onPressed: () {
+  //         showModalBottomSheet(
+  //           context: contextState,
+  //           isScrollControlled: true,
+  //           builder: (context) {
+  //             return ModalListMember(
+  //               projectId: widget.taskInfo.projectId.id,
+  //               assignee: state.assignee,
+  //               onPressAdd: onPressAdd,
+  //               taskId: widget.taskInfo.id,
+  //             );
+  //           },
+  //         );
+  //       },
+  //       backgroundColor: context.appColors.buttonEnable.withAlpha(20),
+  //     )
+  //   ]);
+  // }
 
   _buildTitle() {
     return TopHeader(
