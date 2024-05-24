@@ -1,11 +1,9 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
@@ -293,25 +291,32 @@ class TaskContainer2 extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(Icons.supervised_user_circle_outlined),
               ),
-              title: Text(isOwner
-                  ? context.l10n.text_add_assignee
-                  : context.l10n.text_assign_to_me),
+              title: Text(context.l10n.text_assign_to_me),
               onTap: () async {
-                final newAssignees =
-                    await Navigator.of(context).push<List<UserDto>>(
-                  MaterialPageRoute(
-                      //add transition
-                      builder: (innerContext) => MembersPage(
-                            projectId: task.projectId.id,
-                            selectedUsers: task.assignees,
-                          )),
-                );
-                if (newAssignees != null && newAssignees.isNotEmpty) {
                   ProjectRepository.instance.addTaskAssignees(
-                      task.id, task.projectId.id, newAssignees);
-                }
+                      task.id, task.projectId.id, [context.read<AuthenticationCubit>().state.user?.uid ?? '']);
               },
             ),
+            if (isOwner)
+              ListTile(
+                leading: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Icon(Icons.supervised_user_circle_outlined),
+                ),
+                title: Text(context.l10n.text_add_assignee),
+                onTap: () async {
+                  final newAssignees = await Navigator.of(context).push<List<UserDto>>(
+                    MaterialPageRoute(
+                      //add transition
+                        builder: (innerContext) =>
+                            MembersPage(projectId: task.projectId.id, selectedUsers: task.assignees,)),
+                  );
+                  if (newAssignees != null && newAssignees.isNotEmpty) {
+                    ProjectRepository.instance.addTaskAssignees(
+                        task.id, task.projectId.id, newAssignees.map((e) => e.id).toList());
+                  }
+                },
+              ),
           ],
         ),
       ),

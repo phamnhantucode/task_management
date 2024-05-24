@@ -112,7 +112,7 @@ class UsersPage extends StatelessWidget {
                                     .toList(), (userAccept) {
                               context.read<UserFriendsCubit>().acceptFriend(
                                   context
-                                      .watch<UserFriendsCubit>()
+                                      .read<UserFriendsCubit>()
                                       .state
                                       .userWaitingAccepts
                                       .firstWhere((element) =>
@@ -120,7 +120,7 @@ class UsersPage extends StatelessWidget {
                             }, (userDecline) {
                               context.read<UserFriendsCubit>().declineFriend(
                                   context
-                                      .watch<UserFriendsCubit>()
+                                      .read<UserFriendsCubit>()
                                       .state
                                       .userWaitingAccepts
                                       .firstWhere((element) =>
