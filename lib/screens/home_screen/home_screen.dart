@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.white,
                         ),
                       ),

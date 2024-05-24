@@ -9,13 +9,16 @@ import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
 import 'package:room_master_app/screens/new_task/bloc/new_task_cubit.dart';
 
+import '../../models/domain/project/project.dart';
 import '../component/time_select_pop_up.dart';
 import '../component/tm_text_field.dart';
 
 class NewTaskScreen extends StatefulWidget {
-  const NewTaskScreen({super.key, required this.projectId});
+  const NewTaskScreen({super.key, required this.projectId, this.isEdit = false, this.task});
 
   final String projectId;
+  final bool isEdit;
+  final Task? task;
 
   @override
   State<StatefulWidget> createState() => NewTaskScreenState();
@@ -66,7 +69,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => NewTaskCubit(),
+      create: (context) => NewTaskCubit()..init(isEdit: widget.isEdit, task: widget.task),
       child: Padding(
         padding:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -159,6 +162,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TMTextField(
+            initialText: context.read<NewTaskCubit>().state.name,
             hintText: context.l10n.text_enter_task_name,
             textStyle: context.textTheme.bodyMedium,
             borderColor: context.appColors.borderColor,
@@ -243,6 +247,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
         scale: animation,
         child: child,
       ),
+      reverseDuration: const Duration(milliseconds: 300),
       child: _isFullScreen
           ? Padding(
               padding: const EdgeInsets.all(16.0),
@@ -463,6 +468,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
             height: 8.h,
           ),
           TMTextField(
+            initialText: context.read<NewTaskCubit>().state.description,
             hintText: context.l10n.text_description,
             textStyle: context.textTheme.bodyMedium,
             borderColor: context.appColors.borderColor,
@@ -480,7 +486,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
     return ElevatedButton(
         onPressed: () {
           context.read<NewTaskCubit>().createTask(widget.projectId);
-          context.pop();
+          context.pop(true);
         },
         child: Text(
           context.l10n.text_confirm,

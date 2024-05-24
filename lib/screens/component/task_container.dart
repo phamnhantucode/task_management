@@ -1,9 +1,11 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
@@ -14,6 +16,8 @@ import 'package:room_master_app/l10n/l10n.dart';
 
 import '../../models/domain/project/project.dart';
 import '../../models/dtos/user/user_dto.dart';
+import '../../navigation/navigation.dart';
+import '../new_task/new_task_screen.dart';
 import '../project_detail/members_page.dart';
 import '../project_detail/project_detail_screen.dart';
 
@@ -137,9 +141,12 @@ class TaskContainer2 extends StatelessWidget {
       color: context.appColors.defaultBgContainer,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onLongPress: () {
+        onTap: () {
+          context.push(NavigationPath.taskDetail, extra: '${task.id}__${task.projectId.id}');
+        },
+        onLongPress: () async {
           //vibrate
-          HapticFeedback.vibrate();
+          HapticFeedback.selectionClick();
           showMaterialModalBottomSheet(
             context: context,
             shape: const RoundedRectangleBorder(
@@ -243,7 +250,31 @@ class TaskContainer2 extends StatelessWidget {
                 child: Icon(Icons.edit),
               ),
               title: Text(context.l10n.text_edit_task),
-              onTap: () {},
+              onTap: () {
+                if (!task.assignees.map((e) => e.id).contains(context.read<AuthenticationCubit>().state.user?.uid)){
+                  Flushbar(
+                    message: 'You are not assigned to this task',
+                    duration: const Duration(seconds: 3),
+                  ).show(context);
+                } else {
+                  //action
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => NewTaskScreen(projectId: task.projectId.id, isEdit: true, task: task,),
+                  ).then((value) {
+                    if (value != null && value is bool && value) {
+                      context.pop();
+                      Flushbar(
+                        message: 'Task updated successfully',
+                        duration: const Duration(seconds: 2),
+                        flushbarPosition: FlushbarPosition.TOP,
+                        backgroundColor: Colors.lightBlue,
+                      ).show(context);
+                    }
+                  });
+                }
+              },
             ),
             if (isOwner)
               ListTile(
@@ -257,7 +288,7 @@ class TaskContainer2 extends StatelessWidget {
                       .deleteTaskFromProject(task.id, task.projectId.id);
                 },
               ),
-            ListTile(
+            if (!task.assignees.map((e) => e.id).contains(context.read<AuthenticationCubit>().state.user?.uid)) ListTile(
               leading: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Icon(Icons.supervised_user_circle_outlined),
@@ -266,11 +297,14 @@ class TaskContainer2 extends StatelessWidget {
                   ? context.l10n.text_add_assignee
                   : context.l10n.text_assign_to_me),
               onTap: () async {
-                final newAssignees = await Navigator.of(context).push<List<UserDto>>(
+                final newAssignees =
+                    await Navigator.of(context).push<List<UserDto>>(
                   MaterialPageRoute(
                       //add transition
-                      builder: (innerContext) =>
-                          MembersPage(projectId: task.projectId.id, selectedUsers: task.assignees,)),
+                      builder: (innerContext) => MembersPage(
+                            projectId: task.projectId.id,
+                            selectedUsers: task.assignees,
+                          )),
                 );
                 if (newAssignees != null && newAssignees.isNotEmpty) {
                   ProjectRepository.instance.addTaskAssignees(

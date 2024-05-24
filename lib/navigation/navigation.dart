@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +15,7 @@ import 'package:room_master_app/screens/task_detai_real/task_detail.dart';
 
 import '../blocs/authentication/authentication_cubit.dart';
 import '../common/error_screen.dart';
+import '../models/dtos/project/project.dart';
 import '../models/dtos/user/user_dto.dart';
 import '../screens/auth/login/login_screen.dart';
 import '../screens/auth/register/register_screen.dart';
@@ -27,8 +30,7 @@ abstract class NavigationPath {
   static const login = '/';
   static const register = '/register';
   static const newTask = '/newTask';
-  static const detailTask = '/detailTask';
-  static const detailProject = '/project';
+    static const detailProject = '/project';
   static const listProjects = '/listProjects';
   static const listTasks = '/listTasks';
   static const statistic = '/statistic';
@@ -37,6 +39,7 @@ abstract class NavigationPath {
   static const changePassword = '/changePassword';
   static const notification = '/notification';
   static const addMember = '/addMember';
+  static const taskDetail = '/taskDetail';
 }
 
 abstract class AppRouter {
@@ -93,13 +96,6 @@ abstract class AppRouter {
         builder: (_, __) => StatisticScreen(),
       ),
       GoRoute(
-        path: NavigationPath.detailTask,
-        builder: (context, state) {
-          Task taskINfo = state.extra as Task;
-          return TaskDetail(taskInfo: taskINfo);
-        },
-      ),
-      GoRoute(
         path: NavigationPath.listProjects,
         builder: (_, __) => const ListProjectScreen(),
       ),
@@ -116,6 +112,16 @@ abstract class AppRouter {
         builder: (context, state) => ProjectDetailScreen(
           projectId: GoRouterState.of(context).extra! as String,
         ),
+      ),
+      GoRoute(
+        path: NavigationPath.taskDetail,
+        builder: (context, state) {
+          final lists = (state.extra! as String).split('__');
+          return TaskDetail(
+            taskId: lists.first,
+            projectId: lists.last,
+          );
+        },
       ),
       GoRoute(
         path: NavigationPath.register,
