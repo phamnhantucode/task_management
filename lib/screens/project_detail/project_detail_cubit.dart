@@ -72,19 +72,22 @@ class ProjectDetailCubit extends Cubit<ProjectDetailState> {
     return super.close();
   }
 
+  void setProjectNotification(bool value) {
+    emit(state.copyWith(projectNotification: value));
+  }
+
   void updateProjectName(String value) {
     emit(state.copyWith(projectName: value));
   }
 
   void updateProject() {
     handleUpdateProjectNotification();
-    ProjectRepository.instance.updateProject(ProjectDto.fromProject(
-        state.project!.copyWith(
+    ProjectRepository.instance.updateProject(
             name: state.projectName,
             description: state.projectDescription,
             members: state.members,
             startDate: state.startDate!,
-            endDate: state.endDate)));
+            endDate: state.endDate);
     if (state.tasks.length != state.tasksCopy.length) {
       for (var task in state.tasks) {
         if (!state.tasksCopy.contains(task)) {

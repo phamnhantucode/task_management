@@ -32,8 +32,8 @@ class TaskLeast extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(title, style: context.textTheme.titleSmall),
-                const Spacer(),
+                Expanded(child: Text(title, style: context.textTheme.titleSmall, overflow: TextOverflow.ellipsis, maxLines: 1)),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(

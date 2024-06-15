@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:room_master_app/common/extensions/context.dart';
+import 'package:room_master_app/common/extensions/date_time.dart';
+import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/screens/component/task_info_card.dart';
 
 import '../component/task_least.dart';
@@ -30,15 +32,16 @@ class _StatisticProjectState extends State<StatisticProject> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '10 Jan, 2022',
+                  // '10 Jan, 2022',
+                  getCurrentTimestamp.dateWeeksMonthYearFormat,
                   style: context.textTheme.bodyMedium?.copyWith(color: context.appColors.bgGray),
                 ),
                 const SizedBox(height: 16),
                 GridView.count(
                   shrinkWrap: true,
                   crossAxisCount: 2,
-                  childAspectRatio: 3 / 2,
                   mainAxisSpacing: 10,
+                  childAspectRatio: 1.3,
                   crossAxisSpacing: 10,
                   children: [
                     TaskCardInfo(title: 'Starting', count: 12, color:Colors.blue.shade300),

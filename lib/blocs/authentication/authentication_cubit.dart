@@ -10,7 +10,7 @@ import '../../domain/exception/auth_exception.dart';
 part 'authentication_cubit.freezed.dart';
 part 'authentication_cubit.g.dart';
 
-final class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
+class AuthenticationCubit extends HydratedCubit<AuthenticationState> {
   AuthenticationCubit(this._authRepository)
       : super(const AuthenticationState(isAuthenticated: false));
 

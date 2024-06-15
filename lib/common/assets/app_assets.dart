@@ -19,6 +19,7 @@ abstract class AppAssets {
   static const iconQr = '$iconAsset/ic_qr.svg';
   static const iconMembers = '$iconAsset/ic_members.svg';
   static const iconNotifications = '$iconAsset/ic_notifications.svg';
+  static const iconNotificationsOff = '$iconAsset/ic_notifications_off.svg';
   static const iconNote = '$iconAsset/ic_note.svg';
   static const iconDelete = '$iconAsset/ic_delete.svg';
   static const iconDisable = '$iconAsset/ic_disable.svg';
