@@ -16,8 +16,15 @@ class ProjectRepository {
   Future<void> addProject(ProjectDto project) =>
       _projectCollection.doc(project.id).set(project.toJson());
 
-  Future<void> updateProject(ProjectDto project) =>
-      _projectCollection.doc(project.id).update(project.toJson());
+  Future<void> updateProject({required String description, required String name, required DateTime startDate, required List<UserDto> members, DateTime? endDate}) {
+    return _projectCollection.doc().update({
+      'description': description,
+      'name': name,
+      'startDate': startDate,
+      'members': members,
+      'endDate': endDate
+    });
+  }
 
   Future<void> deleteProject(String projectId) =>
       _projectCollection.doc(projectId).delete();
@@ -479,15 +486,14 @@ class ProjectRepository {
   }
 
   void addTaskAssignees(
-      String taskId, String projectId, List<UserDto> newAssignees) {
+      String taskId, String projectId, List<String> newAssignees) {
     _projectCollection.doc(projectId).collection('tasks').doc(taskId).update({
       'assigneeIds':
-          FieldValue.arrayUnion(newAssignees.map((e) => e.id).toList())
+          FieldValue.arrayUnion(newAssignees)
     });
   }
 
   void updateTask(String projectId, TaskDto taskDto) {
-    log('Updating task: ${taskDto.id}');
     _projectCollection
         .doc(projectId)
         .collection('tasks')

@@ -79,8 +79,8 @@ class NewTaskCubit extends Cubit<NewTaskState> {
 
   void init({required bool isEdit, Task? task}) {
     _isEdit = isEdit;
-    _taskEdit = task!;
     if (isEdit) {
+      _taskEdit = task!;
       emit(state.copyWith(
         name: task.name,
         description: task.description,

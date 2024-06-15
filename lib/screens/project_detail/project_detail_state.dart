@@ -14,5 +14,6 @@ class ProjectDetailState with _$ProjectDetailState {
     @Default('') String projectDescription,
     DateTime? startDate,
     DateTime? endDate,
+    @Default(false) bool projectNotification,
 }) = _ProjectDetailState;
 }

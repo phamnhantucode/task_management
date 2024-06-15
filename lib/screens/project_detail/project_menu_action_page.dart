@@ -9,6 +9,7 @@ import 'package:room_master_app/common/extensions/context.dart';
 import 'package:room_master_app/common/utils/app_utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/dialog/alert_dialog.dart';
+import 'package:room_master_app/screens/component/flushbar/flushbar_alert.dart';
 import 'package:room_master_app/screens/component/tm_text_field.dart';
 import 'package:room_master_app/screens/project_detail/members_page.dart';
 import 'package:room_master_app/screens/project_detail/project_detail_cubit.dart';
@@ -92,8 +93,12 @@ class ProjectMenuActionPage extends StatelessWidget {
                             _buildActionItem(
                                 context,
                                 context.l10n.text_turn_off_notification,
-                                AppAssets.iconNotifications,
-                                () {}),
+                                context.watch<ProjectDetailCubit>().state.projectNotification ? AppAssets.iconNotifications : AppAssets.iconNotificationsOff,
+                                () {
+                                  showSuccessFlushBar(context, 'This project notification have been turn off');
+                                  final cubit = context.read<ProjectDetailCubit>();
+                                  cubit.setProjectNotification(!cubit.state.projectNotification);
+                                }),
                           ],
                         ),
                       ],

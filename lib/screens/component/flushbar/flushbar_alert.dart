@@ -9,3 +9,12 @@ void showAlertFlushBar(BuildContext context, String message) {
      flushbarPosition: FlushbarPosition.TOP,
   ).show(context);
 }
+
+void showSuccessFlushBar(BuildContext context, String message) {
+  Flushbar(
+    message: message,
+    duration: const Duration(seconds: 3),
+    backgroundColor: CupertinoColors.activeBlue,
+    flushbarPosition: FlushbarPosition.TOP,
+  ).show(context);
+}
