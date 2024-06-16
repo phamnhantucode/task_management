@@ -7,7 +7,7 @@ final class TMTextField extends StatelessWidget {
     this.initialText,
     this.hintText,
     this.textStyle,
-    this.maxLines = 1,
+    this.maxLines,
     this.prefixIcon,
     this.keyBoardType,
     this.obscureText = false,
@@ -20,6 +20,7 @@ final class TMTextField extends StatelessWidget {
     this.keyboardType,
     this.errorText,
     this.autoFocus = false,
+    this.contentPadding, this.minLines,
   });
 
   final String? initialText;
@@ -27,7 +28,8 @@ final class TMTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? hintText;
   final TextStyle? textStyle;
-  final int maxLines;
+  final int? maxLines;
+  final int? minLines;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final TextInputType? keyBoardType;
@@ -38,28 +40,37 @@ final class TMTextField extends StatelessWidget {
   final TextEditingController? controller;
   final Color? borderColor;
   final bool autoFocus;
+  final EdgeInsetsGeometry? contentPadding;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       autofocus: autoFocus,
       scrollPadding:
           EdgeInsets.only(bottom: context.mediaQuery.viewInsets.bottom),
       obscureText: obscureText,
-      initialValue: initialText,
-      onChanged: onTextChange,
+      initialValue: controller == null ? initialText : null,
+      onChanged: (value) {
+        if (onTextChange != null) {
+          onTextChange!(value);
+        }
+        controller?.text = value;
+      },
       decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(12),
+          contentPadding: contentPadding ?? const EdgeInsets.all(12),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
                   color: borderColor ?? context.appColors.textWhite)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: borderColor ??  context.appColors.textWhite)),
+              borderSide: BorderSide(
+                  color: borderColor ?? context.appColors.textWhite)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: borderColor ??  context.appColors.textWhite)),
+              borderSide: BorderSide(
+                  color: borderColor ?? context.appColors.textWhite)),
           hintText: hintText,
           hintStyle: context.textTheme.bodyMedium
               ?.copyWith(color: context.appColors.textGray),
@@ -67,6 +78,7 @@ final class TMTextField extends StatelessWidget {
           suffixIcon: suffixIcon,
           errorText: errorText),
       maxLines: maxLines,
+      minLines: minLines,
       style: textStyle,
       keyboardType: keyBoardType,
       validator: validator,

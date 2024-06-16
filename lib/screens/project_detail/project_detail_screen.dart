@@ -73,6 +73,7 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
         final contrastColor = getContrastColor(projectColor ?? Colors.white);
         return Scaffold(
           resizeToAvoidBottomInset: false,
+          backgroundColor: context.appColors.defaultBgContainer,
           appBar: AppBar(
             backgroundColor: projectColor,
             leading: IconButton(
@@ -871,17 +872,30 @@ class ProjectDetailScreenState extends State<ProjectDetailScreen>
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        TabBar(
-          controller: _tabController,
-          indicatorColor: context.appColors.buttonEnable,
-          tabs: [
-            Tab(
-              text: context.l10n.text_tasks,
-            ),
-            Tab(
-              text: context.l10n.text_notes,
-            ),
-          ],
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 1,
+                offset: const Offset(0, 4),
+              )
+            ],
+          ),
+          child: TabBar(
+            controller: _tabController,
+            indicatorColor: context.appColors.buttonEnable,
+            dividerColor: Colors.transparent,
+            tabs: [
+              Tab(
+                text: context.l10n.text_tasks,
+              ),
+              Tab(
+                text: context.l10n.text_notes,
+              ),
+            ],
+          ),
         ),
         Expanded(
           child: TabBarView(

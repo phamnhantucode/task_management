@@ -25,19 +25,6 @@ class _ChatGPTChatPageState extends State<ChatGPTChatPage> {
 
   @override
   void initState() {
-    // contents.add(Content(
-    //   parts: [
-    //     Parts(
-    //       text: 'I will give you this format example: '
-    //           'project: "Project Name", '
-    //           'task: "Task Name", '
-    //           'insufficientDescription: "Description of the task", '
-    //           'And your response should be the description of the task. It is the text of the task description.'
-    //           'For example, if the insufficientDescription of task is "ouline red", the response should be "Button with red outline".',
-    //     )
-    //   ],
-    //   role: 'user',
-    // ));
     super.initState();
   }
 

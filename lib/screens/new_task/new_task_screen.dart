@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:room_master_app/common/extensions/context.dart';
@@ -7,6 +9,7 @@ import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/component/SpacerComponent.dart';
 import 'package:room_master_app/screens/component/calendar_date_picker_dialog.dart';
+import 'package:room_master_app/screens/new_task/bloc/description_generate/bool_cubit.dart';
 import 'package:room_master_app/screens/new_task/bloc/new_task_cubit.dart';
 
 import '../../models/domain/project/project.dart';
@@ -14,7 +17,8 @@ import '../component/time_select_pop_up.dart';
 import '../component/tm_text_field.dart';
 
 class NewTaskScreen extends StatefulWidget {
-  const NewTaskScreen({super.key, required this.projectId, this.isEdit = false, this.task});
+  const NewTaskScreen(
+      {super.key, required this.projectId, this.isEdit = false, this.task});
 
   final String projectId;
   final bool isEdit;
@@ -29,6 +33,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
   bool _isFullScreen = false;
   double keyboardSize = 0;
   bool isSingleDate = false;
+
   @override
   void initState() {
     super.initState();
@@ -69,7 +74,8 @@ class NewTaskScreenState extends State<NewTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => NewTaskCubit()..init(isEdit: widget.isEdit, task: widget.task),
+      create: (context) =>
+          NewTaskCubit()..init(isEdit: widget.isEdit, task: widget.task),
       child: Padding(
         padding:
             EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -82,71 +88,68 @@ class NewTaskScreenState extends State<NewTaskScreen> {
           builder: (context, scrollController) => SafeArea(
             child: SingleChildScrollView(
               controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SpacerComponent.s(
-                      isVertical: true,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Center(
-                                child: Text(
-                              context.l10n.text_create_new_task,
-                              style: context.textTheme.titleMedium,
-                            )),
-                          ),
-                          Positioned(
-                            right: 10,
-                            bottom: 0,
-                            top: 0,
-                            child: IconButton(
-                              style: const ButtonStyle(
-                                padding:
-                                    MaterialStatePropertyAll(EdgeInsets.all(6)),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              icon: const Icon(Icons.close),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SpacerComponent.s(
+                    isVertical: true,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Center(
+                              child: Text(
+                            context.l10n.text_create_new_task,
+                            style: context.textTheme.titleMedium,
+                          )),
+                        ),
+                        Positioned(
+                          right: 10,
+                          bottom: 0,
+                          top: 0,
+                          child: IconButton(
+                            style: const ButtonStyle(
+                              padding:
+                                  MaterialStatePropertyAll(EdgeInsets.all(6)),
                             ),
-                          )
-                        ],
-                      ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(Icons.close),
+                          ),
+                        )
+                      ],
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    _buildProjectNameSection(context),
-                    SizedBox(
-                      height: _isFullScreen ? 16 : 0,
-                    ),
-                    _buildCategorySection(context, [
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design',
-                      'Design'
-                    ]),
-                    _buildDateAndTimeSection(context),
-                    _buildDescriptionSection(context),
-                    _buildConfirmBtn(context)
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  _buildProjectNameSection(context),
+                  SizedBox(
+                    height: _isFullScreen ? 16 : 0,
+                  ),
+                  _buildCategorySection(context, [
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design',
+                    'Design'
+                  ]),
+                  _buildDateAndTimeSection(context),
+                  _buildDescriptionSection(context),
+                  _buildConfirmBtn(context)
+                ],
               ),
             ),
           ),
@@ -157,7 +160,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
 
   Widget _buildProjectNameSection(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -184,7 +187,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
       ),
       child: _isFullScreen
           ? Padding(
-              padding: EdgeInsetsDirectional.only(start: 16.w),
+              padding: EdgeInsetsDirectional.only(start: 24.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -250,7 +253,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
       reverseDuration: const Duration(milliseconds: 300),
       child: _isFullScreen
           ? Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -341,13 +344,13 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                           ),
                           Expanded(
                               child: Text(
-                             context.read<NewTaskCubit>().state.endDate != null
-                              ? context
-                                  .read<NewTaskCubit>()
-                                  .state
-                                  .endDate
-                                  .toString()
-                              : 'End date',
+                            context.read<NewTaskCubit>().state.endDate != null
+                                ? context
+                                    .read<NewTaskCubit>()
+                                    .state
+                                    .endDate
+                                    .toString()
+                                : 'End date',
                             style: context.textTheme.bodyMedium
                                 ?.copyWith(color: context.appColors.textGray),
                           )),
@@ -365,8 +368,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                                     onDateTimeSelected: (e) {
                                       context
                                           .read<NewTaskCubit>()
-                                          .taskOnChangeDateTime(
-                                              endDate: e[0]!);
+                                          .taskOnChangeDateTime(endDate: e[0]!);
                                     }).onShowDialog(context);
                               },
                               icon: Icon(
@@ -402,7 +404,9 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                               onChange: (DateTime dateTime) {
                                 context
                                     .read<NewTaskCubit>()
-                                    .taskOnChangeDateTime(startDate: dateTime, isSingle: isSingleDate);
+                                    .taskOnChangeDateTime(
+                                        startDate: dateTime,
+                                        isSingle: isSingleDate);
                               },
                             )
                           ],
@@ -427,7 +431,8 @@ class NewTaskScreenState extends State<NewTaskScreen> {
                                     ? context
                                             .watch<NewTaskCubit>()
                                             .state
-                                            .endDate ?? context
+                                            .endDate ??
+                                        context
                                             .watch<NewTaskCubit>()
                                             .state
                                             .startDate ??
@@ -455,31 +460,7 @@ class NewTaskScreenState extends State<NewTaskScreen> {
   }
 
   Widget _buildDescriptionSection(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            context.l10n.text_description,
-            style: context.textTheme.labelLarge,
-          ),
-          SizedBox(
-            height: 8.h,
-          ),
-          TMTextField(
-            initialText: context.read<NewTaskCubit>().state.description,
-            hintText: context.l10n.text_description,
-            textStyle: context.textTheme.bodyMedium,
-            borderColor: context.appColors.borderColor,
-            maxLines: 3,
-            onTextChange: (e) {
-              context.read<NewTaskCubit>().taskDescriptionChanged(e);
-            },
-          ),
-        ],
-      ),
-    );
+    return const TFieldTaskDescription();
   }
 
   Widget _buildConfirmBtn(BuildContext context) {
@@ -492,5 +473,219 @@ class NewTaskScreenState extends State<NewTaskScreen> {
           context.l10n.text_confirm,
           style: context.textTheme.titleSmall,
         ));
+  }
+
+}
+
+class TFieldTaskDescription extends StatefulWidget {
+  const TFieldTaskDescription({super.key});
+
+  @override
+  State<TFieldTaskDescription> createState() => _TFieldTaskDescriptionState();
+}
+
+class _TFieldTaskDescriptionState extends State<TFieldTaskDescription> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => BoolCubit(),
+      child: Builder(builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: PortalTarget(
+            visible: context.watch<BoolCubit>().state,
+            anchor: const Aligned(
+              follower: Alignment.bottomLeft,
+              target: Alignment.topLeft,
+            ),
+            portalFollower: _buildAIDescriptionGeneration(context),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.text_description,
+                    style: context.textTheme.labelLarge,
+                  ),
+                  SizedBox(
+                    height: 8.h,
+                  ),
+                  Stack(children: [
+                    BlocBuilder<BoolCubit, bool>(builder: (context, state) {
+                      print(context.read<NewTaskCubit>().state.description);
+                      return TMTextField(
+                        controller: _controller,
+                        minLines: 3,
+                        maxLines: 5,
+                        initialText:
+                        context.read<NewTaskCubit>().state.description,
+                        hintText: context.l10n.text_description,
+                        textStyle: context.textTheme.bodyMedium,
+                        borderColor: context.appColors.borderColor,
+                        onTextChange: (e) {
+                          context.read<NewTaskCubit>().taskDescriptionChanged(e);
+                        },
+                      );
+                    },),
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.bottomRight,
+                        child: IconButton(
+                          onPressed: () {
+                            context.read<BoolCubit>().toggle();
+                          },
+                          icon: const Icon(
+                            Icons.generating_tokens_rounded,
+                            color: Colors.lightBlue,
+                          ),
+                        ),
+                      ),
+                    )
+                  ]),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildAIDescriptionGeneration(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: 150,
+        maxWidth: MediaQuery.of(context).size.width,
+        minHeight: 100,
+        minWidth: MediaQuery.of(context).size.width,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.appColors.defaultBgContainer,
+            borderRadius: BorderRadius.circular(16.r),
+            boxShadow: [
+              BoxShadow(
+                color: context.appColors.textBlack.withOpacity(0.1),
+                blurRadius: 3,
+                offset: const Offset(0, 1),
+              )
+            ],
+          ),
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: SingleChildScrollView(
+              child: TaskDescriptionGenerativeAI(
+                projectName: context.read<NewTaskCubit>().state.projectId ?? '',
+                taskName: context.read<NewTaskCubit>().state.name,
+                insufficiencyDescription:
+                context.read<NewTaskCubit>().state.description,
+                getDescriptionGenerated: (description) {
+                  context.read<BoolCubit>().setFalse();
+                  context
+                      .read<NewTaskCubit>()
+                      .taskDescriptionChanged(description);
+                  setState(() {
+                    _controller.text = description;
+                  });
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class TaskDescriptionGenerativeAI extends StatefulWidget {
+  const TaskDescriptionGenerativeAI(
+      {super.key,
+      required this.projectName,
+      required this.taskName,
+      required this.insufficiencyDescription,
+      required this.getDescriptionGenerated});
+
+  final String projectName;
+  final String taskName;
+  final String insufficiencyDescription;
+  final void Function(String description) getDescriptionGenerated;
+
+  @override
+  State<TaskDescriptionGenerativeAI> createState() =>
+      _TaskDescriptionGenerativeAIState();
+}
+
+class _TaskDescriptionGenerativeAIState
+    extends State<TaskDescriptionGenerativeAI>
+    with SingleTickerProviderStateMixin {
+  bool _isLoading = false;
+  Content initialContent = Content(
+    parts: [
+      Parts(
+        text: 'I will give you this format example: '
+            'project: "Project Name", '
+            'task: "Task Name", '
+            'insufficientDescription: "Description of the task", '
+            'And your response should be the long description of the task. It is the text of the task description.'
+            'For example, if the insufficientDescription of task is "ouline red", the response should be "Button with red outline".',
+      )
+    ],
+    role: 'user',
+  );
+  final gemini = Gemini.instance;
+  String _descriptionGenerated = '';
+
+  @override
+  void initState() {
+    _generateDescription();
+    super.initState();
+  }
+
+  void _generateDescription() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final result = await gemini.chat([
+      initialContent,
+      Content(parts: [
+        Parts(
+            text: 'project: "${widget.projectName}", '
+                'task: "${widget.taskName}", '
+                'insufficientDescription: "${widget.insufficiencyDescription}" ')
+      ], role: 'user')
+    ]);
+    setState(() {
+      _isLoading = false;
+      _descriptionGenerated = result?.output ?? 'No response from the server';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        widget.getDescriptionGenerated(_descriptionGenerated);
+      },
+      child: Center(
+        child: _isLoading
+            ? const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    width: 8,
+                  ),
+                  Text('Generating description...')
+                ],
+              )
+            : Text(_descriptionGenerated),
+      ),
+    );
   }
 }

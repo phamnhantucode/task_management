@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:room_master_app/domain/repositories/test_repository.dart';
 import 'package:room_master_app/screens/bottom_navigation/bloc/bottom_nav_cubit.dart';
@@ -131,19 +132,21 @@ final class AppViewState extends State<AppView> with WidgetsBindingObserver {
           setThemeMode(state.themeSelected);
         }
       },
-      child: ScreenUtilInit(
-        designSize: const Size(430, 932),
-        minTextAdapt: true,
-        child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: AppRouter.routerConfig,
-          themeMode: themeMode,
-          locale: Locale(
-              context.watch<SettingCubit>().state.languageSelected.getLanguageCode()),
+      child: Portal(
+        child: ScreenUtilInit(
+          designSize: const Size(430, 932),
+          minTextAdapt: true,
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: AppRouter.routerConfig,
+            themeMode: themeMode,
+            locale: Locale(
+                context.watch<SettingCubit>().state.languageSelected.getLanguageCode()),
+          ),
         ),
       ),
     );
