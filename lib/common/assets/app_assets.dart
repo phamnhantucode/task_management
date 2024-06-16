@@ -29,4 +29,5 @@ abstract class AppAssets {
   static const gifCongrats = '$iconAsset/congrats.gif';
 
   static const imageBgContainer = '$imageAsset/bg_container.png';
+  static const imageChatGptLogo = '$imageAsset/chatgpt_logo.jpg';
 }

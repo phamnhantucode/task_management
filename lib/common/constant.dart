@@ -1,4 +1,5 @@
 class AppConstants {
+  static const String apiKey = 'AIzaSyBHx58XmMouxTvtL1AIwqUurCSDbTtxnew';
   static const String timeFormat = 'HH:mm';
   static const List<String> monthsInYear = [
     'Jan',

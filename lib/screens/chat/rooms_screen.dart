@@ -7,11 +7,12 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:room_master_app/blocs/authentication/authentication_cubit.dart';
 import 'package:room_master_app/common/extensions/context.dart';
-import 'package:room_master_app/common/utils/utils.dart';
 import 'package:room_master_app/l10n/l10n.dart';
 import 'package:room_master_app/screens/chat/chat_page.dart';
+import 'package:room_master_app/screens/chat/chatgpt_chat_page.dart';
 import 'package:room_master_app/screens/chat/users_page.dart';
 
+import '../../common/assets/app_assets.dart';
 import '../../domain/repositories/friends/friends_repository.dart';
 import '../../models/domain/friend/friend.dart';
 
@@ -148,147 +149,226 @@ class _RoomsScreenState extends State<RoomsScreen> {
                         );
                       }
 
-                      return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final room = snapshot.data![index];
+                      return Column(
+                        children: [
+                          buildChatGptMessage(context, snapshot),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final room = snapshot.data![index];
 
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ChatPage(
-                                    room: room,
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => ChatPage(
+                                        room: room,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      _buildAvatar(room),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(room.name ?? '',
+                                              style: context
+                                                  .textTheme.labelSmall
+                                                  ?.copyWith(
+                                                      color: context.appColors
+                                                          .textBlack)),
+                                          const SizedBox(
+                                            height: 2,
+                                          ),
+                                          StreamBuilder<List<types.Message>>(
+                                              stream: FirebaseChatCore.instance
+                                                  .messages(
+                                                      snapshot.data![index]),
+                                              builder: (context, snapshot) {
+                                                String lastMessage = '';
+                                                if (snapshot.hasData) {
+                                                  switch (snapshot
+                                                      .data!.first.type) {
+                                                    case types
+                                                          .MessageType.audio:
+                                                    case types
+                                                          .MessageType.custom:
+                                                    case types
+                                                          .MessageType.system:
+                                                    case types.MessageType
+                                                          .unsupported:
+                                                    case types
+                                                          .MessageType.video:
+                                                      if (snapshot.data!.first
+                                                              .author.id ==
+                                                          _user!.uid) {
+                                                        lastMessage = context
+                                                            .l10n
+                                                            .text_you_have_sent_a_message;
+                                                      } else {
+                                                        lastMessage = context
+                                                            .l10n
+                                                            .text_someone_have_sent_a_message(
+                                                                snapshot
+                                                                        .data!
+                                                                        .first
+                                                                        .author
+                                                                        .firstName ??
+                                                                    '');
+                                                      }
+                                                    case types.MessageType.file:
+                                                      if (snapshot.data!.first
+                                                              .author.id ==
+                                                          _user!.uid) {
+                                                        lastMessage = context
+                                                            .l10n
+                                                            .text_you_have_sent_a_file;
+                                                      } else {
+                                                        lastMessage = context
+                                                            .l10n
+                                                            .text_someone_have_sent_a_file(
+                                                                snapshot
+                                                                        .data!
+                                                                        .first
+                                                                        .author
+                                                                        .firstName ??
+                                                                    '');
+                                                      }
+                                                    case types
+                                                          .MessageType.image:
+                                                      if (snapshot.data!.first
+                                                              .author.id ==
+                                                          _user!.uid) {
+                                                        lastMessage = context
+                                                            .l10n
+                                                            .text_you_have_sent_an_image;
+                                                      } else {
+                                                        lastMessage = context
+                                                            .l10n
+                                                            .text_someone_have_sent_an_image(
+                                                                snapshot
+                                                                        .data!
+                                                                        .first
+                                                                        .author
+                                                                        .firstName ??
+                                                                    '');
+                                                      }
+                                                    case types.MessageType.text:
+                                                      if (snapshot.data!.first
+                                                              .author.id ==
+                                                          _user!.uid) {
+                                                        lastMessage = (snapshot
+                                                                    .data!.first
+                                                                as types
+                                                                .TextMessage)
+                                                            .text;
+                                                      } else {
+                                                        lastMessage =
+                                                            '${snapshot.data?.first.author.firstName}: ${(snapshot.data!.first as types.TextMessage).text}';
+                                                      }
+                                                  }
+                                                  return Text(lastMessage,
+                                                      style: context
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                              color: context
+                                                                  .appColors
+                                                                  .colorDarkGray));
+                                                } else {
+                                                  return Text(
+                                                      "Start your conservation here",
+                                                      style: context
+                                                          .textTheme.bodySmall
+                                                          ?.copyWith(
+                                                              color: context
+                                                                  .appColors
+                                                                  .colorDarkGray));
+                                                }
+                                              })
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );
                             },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                children: [
-                                  _buildAvatar(room),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(room.name ?? '',
-                                          style: context.textTheme.labelSmall
-                                              ?.copyWith(
-                                                  color: context
-                                                      .appColors.textBlack)),
-                                      const SizedBox(
-                                        height: 2,
-                                      ),
-                                      StreamBuilder<List<types.Message>>(
-                                          stream: FirebaseChatCore.instance
-                                              .messages(snapshot.data![index]),
-                                          builder: (context, snapshot) {
-                                            String lastMessage = '';
-                                            if (snapshot.hasData) {
-                                              switch (
-                                                  snapshot.data!.first.type) {
-                                                case types.MessageType.audio:
-                                                case types.MessageType.custom:
-                                                case types.MessageType.system:
-                                                case types
-                                                      .MessageType.unsupported:
-                                                case types.MessageType.video:
-                                                  if (snapshot.data!.first
-                                                          .author.id ==
-                                                      _user!.uid) {
-                                                    lastMessage = context.l10n
-                                                        .text_you_have_sent_a_message;
-                                                  } else {
-                                                    lastMessage = context.l10n
-                                                        .text_someone_have_sent_a_message(
-                                                            snapshot
-                                                                    .data!
-                                                                    .first
-                                                                    .author
-                                                                    .firstName ??
-                                                                '');
-                                                  }
-                                                case types.MessageType.file:
-                                                  if (snapshot.data!.first
-                                                          .author.id ==
-                                                      _user!.uid) {
-                                                    lastMessage = context.l10n
-                                                        .text_you_have_sent_a_file;
-                                                  } else {
-                                                    lastMessage = context.l10n
-                                                        .text_someone_have_sent_a_file(
-                                                            snapshot
-                                                                    .data!
-                                                                    .first
-                                                                    .author
-                                                                    .firstName ??
-                                                                '');
-                                                  }
-                                                case types.MessageType.image:
-                                                  if (snapshot.data!.first
-                                                          .author.id ==
-                                                      _user!.uid) {
-                                                    lastMessage = context.l10n
-                                                        .text_you_have_sent_an_image;
-                                                  } else {
-                                                    lastMessage = context.l10n
-                                                        .text_someone_have_sent_an_image(
-                                                            snapshot
-                                                                    .data!
-                                                                    .first
-                                                                    .author
-                                                                    .firstName ??
-                                                                '');
-                                                  }
-                                                case types.MessageType.text:
-                                                  if (snapshot.data!.first
-                                                          .author.id ==
-                                                      _user!.uid) {
-                                                    lastMessage = (snapshot
-                                                                .data!
-                                                                .first as types
-                                                            .TextMessage)
-                                                        .text;
-                                                  } else {
-                                                    lastMessage =
-                                                        '${snapshot.data?.first.author.firstName}: ${(snapshot.data!.first as types.TextMessage).text}';
-                                                  }
-                                              }
-                                              return Text(lastMessage,
-                                                  style: context
-                                                      .textTheme.bodySmall
-                                                      ?.copyWith(
-                                                          color: context
-                                                              .appColors
-                                                              .colorDarkGray));
-                                            } else {
-                                              return Text(
-                                                  "Start your conservation here",
-                                                  style: context
-                                                      .textTheme.bodySmall
-                                                      ?.copyWith(
-                                                          color: context
-                                                              .appColors
-                                                              .colorDarkGray));
-                                            }
-                                          })
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                          ),
+                        ],
                       );
                     },
                   ),
                 ),
               ],
             ),
+    );
+  }
+
+  GestureDetector buildChatGptMessage(
+      BuildContext context, AsyncSnapshot<List<types.Room>> snapshot) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ChatGPTChatPage()
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 8,
+        ),
+        child: Row(
+          children: [
+            Container(
+                width: 60,
+                height: 60,
+                margin: const EdgeInsets.only(right: 16),
+                child: CircleAvatar(
+                    backgroundColor: Colors.transparent,
+                    backgroundImage:
+                        Image.asset(AppAssets.imageChatGptLogo).image,
+                    radius: 20,
+                    child: Text(
+                      '',
+                      style: context.textTheme.labelSmall
+                          ?.copyWith(color: context.appColors.textBlack),
+                    ))),
+
+            Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+                Text('ChatGPT',
+                    style: context
+                        .textTheme.labelSmall
+                        ?.copyWith(
+                        color: context.appColors
+                            .textBlack)),
+                const SizedBox(
+                  height: 2,
+                ),Text(
+                    "Start your conservation here",
+                    style: context
+                        .textTheme.bodySmall
+                        ?.copyWith(
+                        color: context
+                            .appColors
+                            .colorDarkGray)),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 

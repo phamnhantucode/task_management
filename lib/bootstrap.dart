@@ -1,19 +1,18 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:equatable/equatable.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:room_master_app/common/constant.dart';
 
 import 'app/app.dart';
 import 'app/app_bloc_observer.dart';
 import 'common/di/service_locator.dart';
 import 'common/error_screen.dart';
 import 'common/logger/logger.dart';
-import 'firebase_options.dart';
 
 Future<void> initializeFlutterApp() async {
 
@@ -36,6 +35,11 @@ Future<void> initializeFlutterApp() async {
   );
 
   ErrorWidget.builder = (details) => ErrorScreen(details: details);
+
+
+  Gemini.init(
+    apiKey: AppConstants.apiKey,
+  );
 
   runApp(const App());
 }
