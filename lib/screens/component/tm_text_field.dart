@@ -55,7 +55,6 @@ final class TMTextField extends StatelessWidget {
         if (onTextChange != null) {
           onTextChange!(value);
         }
-        controller?.text = value;
       },
       decoration: InputDecoration(
           contentPadding: contentPadding ?? const EdgeInsets.all(12),

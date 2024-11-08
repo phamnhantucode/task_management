@@ -213,8 +213,14 @@ class AddMemberPage extends StatelessWidget {
                 height: 44,
                 onPressed: () {
 
-                  context
-                      .pop(context.read<UserFriendsCubit>().state.usersSelected.toList()..removeWhere((element) => usersAlreadySelected.contains(element)));
+                  if (usersAlreadySelected.length == 0) {
+                    context.pop<List<UserDto>>(context.read<UserFriendsCubit>().state.usersSelected.toList());
+                    return;
+                  } else {
+
+                    context
+                        .pop<List<UserDto>>(context.read<UserFriendsCubit>().state.usersSelected.toList()..removeWhere((element) => usersAlreadySelected.contains(element)));
+                  }
                 },
                 label: context.l10n.text_confirm,
                 style: context.textTheme.bodyMedium?.copyWith(

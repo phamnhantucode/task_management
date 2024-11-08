@@ -16,15 +16,17 @@ class ProjectRepository {
   Future<void> addProject(ProjectDto project) =>
       _projectCollection.doc(project.id).set(project.toJson());
 
-  Future<void> updateProject({required String description, required String name, required DateTime startDate, required List<UserDto> members, DateTime? endDate}) {
-    return _projectCollection.doc().update({
-      'description': description,
-      'name': name,
-      'startDate': startDate,
-      'members': members,
-      'endDate': endDate
-    });
-  }
+  // Future<void> updateProject({required String description, required String name, required DateTime startDate, required List<UserDto> members, DateTime? endDate}) {
+  //   return _projectCollection.doc().update({
+  //     'description': description,
+  //     'name': name,
+  //     'startDate': startDate,
+  //     'members': members,
+  //     'endDate': endDate,
+  //   });
+  // }
+
+
 
   Future<void> deleteProject(String projectId) =>
       _projectCollection.doc(projectId).delete();
@@ -589,5 +591,9 @@ class ProjectRepository {
         .collection('tasks')
         .doc(taskId)
         .update({'status': status.name});
+  }
+
+  Future<void> updateProject({required ProjectDto projectDto}) {
+    return _projectCollection.doc(projectDto.id).update(projectDto.toJson());
   }
 }

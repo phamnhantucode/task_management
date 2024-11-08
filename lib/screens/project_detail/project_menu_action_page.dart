@@ -76,6 +76,7 @@ class ProjectMenuActionPage extends StatelessWidget {
                                               .project
                                               ?.members ??
                                           []);
+                              print(listUsersSelected);
                               if (listUsersSelected != null) {
                                 context
                                     .read<ProjectDetailCubit>()
